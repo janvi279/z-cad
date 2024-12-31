@@ -92,7 +92,7 @@ const Login = () => {
                 autoComplete='email'
                 value={email}
                 onChange={handleEmailChange}
-                className='block p-2 w-full rounded-md border-0 px-4 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 outline-none sm:text-sm sm:leading-6'
+                className='block p-2 w-full rounded-md border-0 px-4 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-500 outline-none sm:text-sm sm:leading-6'
                 placeholder='Enter Email'
               />
               {emailError && (
@@ -110,7 +110,7 @@ const Login = () => {
                 autoComplete='current-password'
                 value={password}
                 onChange={handlePasswordChange}
-                className='block p-2 w-full rounded-md border-0 px-4 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 outline-none sm:text-sm sm:leading-6'
+                className='block p-2 w-full rounded-md border-0 px-4 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-500 outline-none sm:text-sm sm:leading-6'
                 placeholder='Enter Password'
               />
               <div
@@ -130,7 +130,7 @@ const Login = () => {
             {/* <div className='text-right'>
               <Link
                 to='/forgot-password'
-                className='text-sm text-blue-500 hover:text-blue-600'
+                className='text-sm text-primary-500 hover:text-primary-600'
               >
                 Forgot password?
               </Link>

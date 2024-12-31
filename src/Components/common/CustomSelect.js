@@ -37,7 +37,7 @@ const CustomSelect = ({
         {required && <span className="text-[#D34053]">*</span>}
       </h5>
       <div
-        className={`relative w-full ${isInvalid ? 'border-blue-500' : 'border-gray-300'} rounded-lg`}
+        className={`relative w-full ${isInvalid ? 'border-primary-500' : 'border-gray-300'} rounded-lg`}
       >
         <Select
           {...field}

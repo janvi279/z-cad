@@ -151,7 +151,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                         setOpenSubmenu(openSubmenu === index ? null : index)
                       } // Toggle submenu
                       className={`flex items-center justify-between gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${openSubmenu === index
-                        ? 'bg-primary-50 border-l-4 border-l-blue-500'
+                        ? 'bg-primary-50 border-l-4 border-l-primary-500'
                         : ''
                         }`}
                     >
@@ -174,7 +174,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               to={subItem.path}
                               onClick={() => setSidebarOpen(!sidebarOpen)}
                               className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${pathname === subItem.path
-                                ? 'bg-primary-50 w-full border-l-4 border-l-blue-500'
+                                ? 'bg-primary-50 w-full border-l-4 border-l-primary-500'
                                 : ''
                                 }`}
                             >
@@ -193,7 +193,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     to={item.path}
                     onClick={() => setSidebarOpen(!sidebarOpen)}
                     className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${pathname === item.path
-                      ? 'bg-primary-50 border-l-4 border-l-blue-500'
+                      ? 'bg-primary-50 border-l-4 border-l-primary-500'
                       : ''
                       }`}
                   >
