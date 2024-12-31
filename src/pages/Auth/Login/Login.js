@@ -138,7 +138,7 @@ const Login = () => {
             <button
               type='submit'
               disabled={!!emailError || !!passwordError || loading}
-              className='w-full py-3 px-4 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors'
+              className='w-full py-3 px-4 rounded-full bg-primary-500 hover:bg-primary-600 text-white font-medium transition-colors'
             >
               {loading ? (
                 <div className='w-5 h-5 mx-auto border-2 border-white border-solid rounded-full loader animate-spin border-t-transparent'></div>

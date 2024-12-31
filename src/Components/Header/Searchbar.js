@@ -35,7 +35,7 @@ const SearchBar = ({ isOpen, onClose }) => {
             {/* Project Filter */}
             <button
               onClick={() => handleFilterToggle('project')}
-              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.project ? 'bg-blue-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
+              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.project ? 'bg-primary-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
             >
               <FiBriefcase className='w-4 h-4 mr-2' />
               Project
@@ -43,7 +43,7 @@ const SearchBar = ({ isOpen, onClose }) => {
             {/* Deadline Filter */}
             <button
               onClick={() => handleFilterToggle('deadline')}
-              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.deadline ? 'bg-blue-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
+              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.deadline ? 'bg-primary-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
             >
               <FiClock className='w-4 h-4 mr-2' />
               Deadline
@@ -51,7 +51,7 @@ const SearchBar = ({ isOpen, onClose }) => {
             {/* Type Filter */}
             <button
               onClick={() => handleFilterToggle('type')}
-              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.type ? 'bg-blue-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
+              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.type ? 'bg-primary-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
             >
               <FiType className='w-4 h-4 mr-2' />
               Type
@@ -59,7 +59,7 @@ const SearchBar = ({ isOpen, onClose }) => {
             {/* Assignee Filter */}
             <button
               onClick={() => handleFilterToggle('assignee')}
-              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.assignee ? 'bg-blue-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
+              className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm transition-colors ${selectedFilters.assignee ? 'bg-primary-500 text-white' : 'border-gray-200 hover:border-gray-300'}`}
             >
               <FiUsers className='w-4 h-4 mr-2' />
               Assignee

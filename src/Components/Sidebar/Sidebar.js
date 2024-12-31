@@ -150,8 +150,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                       onClick={() =>
                         setOpenSubmenu(openSubmenu === index ? null : index)
                       } // Toggle submenu
-                      className={`flex items-center justify-between gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-blue-50 ${openSubmenu === index
-                        ? 'bg-blue-50 border-l-4 border-l-blue-500'
+                      className={`flex items-center justify-between gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${openSubmenu === index
+                        ? 'bg-primary-50 border-l-4 border-l-blue-500'
                         : ''
                         }`}
                     >
@@ -173,8 +173,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                             <NavLink
                               to={subItem.path}
                               onClick={() => setSidebarOpen(!sidebarOpen)}
-                              className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-blue-50 ${pathname === subItem.path
-                                ? 'bg-blue-50 w-full border-l-4 border-l-blue-500'
+                              className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${pathname === subItem.path
+                                ? 'bg-primary-50 w-full border-l-4 border-l-blue-500'
                                 : ''
                                 }`}
                             >
@@ -192,8 +192,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <NavLink
                     to={item.path}
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-blue-50 ${pathname === item.path
-                      ? 'bg-blue-50 border-l-4 border-l-blue-500'
+                    className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${pathname === item.path
+                      ? 'bg-primary-50 border-l-4 border-l-blue-500'
                       : ''
                       }`}
                   >
@@ -209,7 +209,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       <div className='mt-auto py-4 border-t border-gray-200'>
         <button
           onClick={handleLogout}
-          className='flex items-center gap-3 border-b w-full rounded-lg py-3 px-3 text-gray-700 hover:bg-blue-50'
+          className='flex items-center gap-3 border-b w-full rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50'
         >
           <AiOutlineLogout className='text-xl' />
           <span className='font-medium'>Logout</span>
