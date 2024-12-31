@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
+import WelcomeBox from './WelcomeBox'
+import SalesChart from './SalesChart'
 
 const Home = () => {
   return (
-    <div className='p-6'>
-      Dashboard
-    </div>
+    <>
+      <WelcomeBox />
+      <SalesChart />
+    </>
   )
 }
 
