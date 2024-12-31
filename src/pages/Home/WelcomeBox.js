@@ -13,7 +13,7 @@ const WelcomeBox = () => {
                     <h1 className="text-2xl font-medium text-sky-500">
                         Welcome to the ZCAD PUBLICATION Dashboard
                     </h1>
-                    <p className="text-gray-600">Admin</p>
+                    <p className="text-gray-600">John Doe</p>
                     <div className="flex items-center gap-1 text-sm text-gray-500">
                         <FiClock />
                         <span>Last Login: 5:50 pm (December 27, 2024)</span>
