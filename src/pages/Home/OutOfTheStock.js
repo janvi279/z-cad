@@ -56,7 +56,7 @@ const OutOfTheStoke = () => {
             <div className='flex items-center justify-between border-b px-4 pb-2'>
                 <h1 className='text-2xl'>Out Of The Stock</h1>
             </div>
-            <div className='mt-4 flex gap-4'>
+            <div className='mt-4 mb-4 flex gap-4'>
                 <button className='px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600'>
                     PRINT
                 </button>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
 import WelcomeBox from './WelcomeBox';
 import SalesChart from './SalesChart';
 import StoreAnalytics from './StoreAnalytics';
@@ -7,16 +6,13 @@ import SalesByProduct from './SalesByProduct';
 import Notifications from './Notifications';
 import LatestTopic from './LatestTopic';
 import StoreStatus from './StoreStatus';
+import OutOfTheStock from './OutOfTheStock';
 
 const Home = () => {
   const [activeButton, setActiveButton] = useState('salesByDate'); 
-  const navigate = useNavigate(); 
 
   const handleButtonClick = (button) => {
     setActiveButton(button);
-    if (button === 'outOfStock') {
-      navigate('/out-of-stock'); 
-    }
   };
 
   return (
@@ -40,22 +36,29 @@ const Home = () => {
         </div>
       </div>
 
-      <WelcomeBox />
-      <SalesChart />
+     
+      {activeButton === 'outOfStock' ? (
+        <OutOfTheStock />
+      ) : (
+        <>
+          <WelcomeBox />
+          <SalesChart />
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-10'>
-        <StoreAnalytics />
-        <SalesByProduct />
-      </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-10'>
+            <StoreAnalytics />
+            <SalesByProduct />
+          </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-10'>
-        <Notifications />
-        <LatestTopic />
-      </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-10'>
+            <Notifications />
+            <LatestTopic />
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
-        <StoreStatus />
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+            <StoreStatus />
+          </div>
+        </>
+      )}
     </>
   );
 };
