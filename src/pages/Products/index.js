@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import Select from "react-select"; 
+import Select from "react-select";
 import { FiBox } from "react-icons/fi";
 import { CiImageOn } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
@@ -9,7 +9,7 @@ const columns = [
   {
     name: (
       <>
-        <CiImageOn title="Image" className="h-5 w-5"/>
+        <CiImageOn title="Image" className="h-5 w-5" />
       </>
     ),
     selector: (row) => row.image,
@@ -40,6 +40,21 @@ const columns = [
   { name: "Actions", selector: (row) => row.actions },
 ];
 
+const categoryOptions = [
+  { value: "option1", label: "Option 1" },
+  { value: "option2", label: "Option 2" },
+];
+
+const typeOptions = [
+  { value: "allProductType", label: "All Product Type" },
+  { value: "simpleProduct", label: "Simple Product" },
+  { value: "downloadable", label: "Downloadable" },
+  { value: "virtual", label: "Virtual" },
+  { value: "variableProduct", label: "Variable Product" },
+  { value: "groupedProduct", label: "Grouped Product" },
+  { value: "externalAffiliateProduct", label: "External / Affiliate Product" },
+];
+
 const Products = () => {
   const [activeButton, setActiveButton] = useState("all");
   const [data, setData] = useState([]);
@@ -47,11 +62,11 @@ const Products = () => {
   const [pages, setPages] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
-  const [selectedOption1, setSelectedOption1] = useState(null);
-  const [selectedOption2, setSelectedOption2] = useState(null);
-
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
 
   const handlePageChange = (page) => setPages(page);
+
   const handlelimitChange = (newPerPage) => {
     setLimit(newPerPage);
     setPages(1);
@@ -62,21 +77,6 @@ const Products = () => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const options1 = [
-    { value: "option1", label: "Option 1" },
-    { value: "option2", label: "Option 2" },
-  ];
-
-  const options2 = [
-    { value: "allProductType", label: "All Product Type" },
-    { value: "simpleProduct", label: "Simple Product" },
-    { value: "downloadable", label: "Downloadable" },
-    { value: "virtual", label: "Virtual" },
-    { value: "variableProduct", label: "Variable Product" },
-    { value: "groupedProduct", label: "Grouped Product" },
-    { value: "externalAffiliateProduct", label: "External / Affiliate Product" },
-  ];
-
   return (
     <>
       {/* Button Section */}
@@ -85,9 +85,8 @@ const Products = () => {
           {["all", "archived", "pending", "published", "draft"].map((btn) => (
             <div
               key={btn}
-              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${
-                activeButton === btn ? "bg-primary-100 text-primary-600" : "hover:text-primary-600"
-              }`}
+              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${activeButton === btn ? "bg-primary-100 text-primary-600" : "hover:text-primary-600"
+                }`}
               onClick={() => setActiveButton(btn)}
             >
               <button>{btn.charAt(0).toUpperCase() + btn.slice(1)}</button>
@@ -96,22 +95,20 @@ const Products = () => {
         </div>
       </div>
 
-      {/* Filters and Data Table Section */}
       <div className="bg-white p-4 rounded-lg">
-        {/* Filters */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-4">
             <Select
-              options={options1}
+              options={categoryOptions}
               placeholder="Filter By Category"
-              value={selectedOption1}
-              onChange={setSelectedOption1}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
             />
             <Select
-              options={options2}
+              options={typeOptions}
               placeholder="All Product Type"
-              value={selectedOption2}
-              onChange={setSelectedOption2}
+              value={selectedType}
+              onChange={setSelectedType}
             />
           </div>
           <input
@@ -123,7 +120,6 @@ const Products = () => {
           />
         </div>
 
-        {/* Data Table */}
         <DataTable
           columns={columns}
           data={filteredData}
