@@ -41,8 +41,6 @@ const columns = [
 ];
 
 const categoryOptions = [
-  { value: "option1", label: "Option 1" },
-  { value: "option2", label: "Option 2" },
 ];
 
 const typeOptions = [
