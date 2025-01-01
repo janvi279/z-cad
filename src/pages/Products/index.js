@@ -50,40 +50,6 @@ const Products = () => {
   const [selectedOption1, setSelectedOption1] = useState(null);
   const [selectedOption2, setSelectedOption2] = useState(null);
 
-  useEffect(() => {
-    const tempData = [
-      {
-        id: 1,
-        image: "img1",
-        name: "Product 1",
-        sku: "P001",
-        status: "Active",
-        stock: 100,
-        price: 20,
-        taxonomies: "Category A",
-        type: "Type 1",
-        views: 120,
-        date: "2025-01-01",
-        actions: "Edit",
-      },
-      {
-        id: 2,
-        image: "img2",
-        name: "Product 2",
-        sku: "P002",
-        status: "Inactive",
-        stock: 50,
-        price: 30,
-        taxonomies: "Category B",
-        type: "Type 2",
-        views: 100,
-        date: "2025-01-02",
-        actions: "Edit",
-      },
-    ];
-    setData(tempData);
-    setTotalRows(tempData.length);
-  }, []);
 
   const handlePageChange = (page) => setPages(page);
   const handlelimitChange = (newPerPage) => {
