@@ -13,6 +13,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegMessage } from "react-icons/fa6";
 
 import { removeToken } from '../../utils/cookies/Cookies'
+import { PiMoney } from 'react-icons/pi'
 
 const dataList = [
   {
@@ -52,7 +53,7 @@ const dataList = [
   },
   {
     label: 'Ledger Book',
-    icon: <FaBookOpen />,
+    icon: <PiMoney />,
     path: '/ledger-book',
   },
   {

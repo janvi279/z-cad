@@ -7,6 +7,7 @@ import Settings from '../pages/Settings'
 import Payments from '../pages/Payments'
 import LedgerBook from '../pages/LedgerBook'
 import Reviews from '../pages/Reviews'
+import Notifications from '../pages/Notifications'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -18,7 +19,7 @@ const AllRoute = [
   { path: '/payments', element: <Payments />, permission: { read: true } },
   { path: '/ledger-book', element: <LedgerBook />, permission: { read: true } },
   { path: '/reviews', element: <Reviews />, permission: { read: true } },
- 
+  { path: '/notifications', element: <Notifications />, permission: { read: true } },
 ]
 
 export default AllRoute
