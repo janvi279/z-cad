@@ -39,18 +39,6 @@ const OutOfTheStoke = () => {
         setPages(1);
     };
 
-    useEffect(() => {
-        const temporaryData = [
-            { id: 1, product: 'Product A', parent: 'Category 1', unitInStock: 5, stockStatus: 'Out of Stock', actions: 'View' },
-            { id: 2, product: 'Product B', parent: 'Category 2', unitInStock: 0, stockStatus: 'Out of Stock', actions: 'View' },
-            { id: 3, product: 'Product C', parent: 'Category 1', unitInStock: 10, stockStatus: 'In Stock', actions: 'View' },
-            { id: 4, product: 'Product D', parent: 'Category 3', unitInStock: 0, stockStatus: 'Out of Stock', actions: 'View' },
-            { id: 5, product: 'Product E', parent: 'Category 2', unitInStock: 3, stockStatus: 'Out of Stock', actions: 'View' },
-        ];
-        setData(temporaryData);
-        setTotalRows(temporaryData.length);
-    }, []);
-
     return (
         <div>
             <div className='flex items-center justify-between border-b px-4 pb-2'>
