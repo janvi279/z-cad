@@ -41,6 +41,9 @@ const Media = () => {
         <div>
             <div className='flex items-center justify-between border-b px-4 pb-2'>
                 <h1 className='text-2xl'>Media</h1>
+                <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-md flex items-center gap-2">
+                    Bulk Delete
+                </button>
             </div>
             <DataTable
                 columns={columns}
