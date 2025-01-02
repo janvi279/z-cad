@@ -31,7 +31,6 @@ const OrderOptions = [
 ]
 
 const Orders = () => {
-  const [activeButton, setActiveButton] = useState('all')
   const [data, setData] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [pages, setPages] = useState(1)
