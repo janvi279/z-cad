@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import Select from 'react-select'
-import { CiImageOn } from 'react-icons/ci'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { FiMoreHorizontal } from 'react-icons/fi'
 
 const columns = [
@@ -31,7 +32,6 @@ const OrderOptions = [
 ]
 
 const Orders = () => {
-  const [activeButton, setActiveButton] = useState('all')
   const [data, setData] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [pages, setPages] = useState(1)
@@ -39,6 +39,8 @@ const Orders = () => {
   const [totalRows, setTotalRows] = useState(0)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
 
   const handlePageChange = (page) => setPages(page)
 
@@ -52,55 +54,51 @@ const Orders = () => {
   return (
     <>
       {/* Button Section */}
-      <div className='bg-white text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
+      <div className='bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
         Order Sections
       </div>
 
-      <div className='bg-white p-4 rounded-lg'>
-        <div className='flex justify-between items-center mb-4'>
-          {/* Grouped Buttons and Selectors */}
-          <div className='flex gap-4 items-center'>
-            {/* Buttons */}
-            <div className='flex gap-4 mb-4'>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                Print
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                PDF
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                EXCEL
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                CSV
-              </button>
-            </div>
-            
-            {/* Date Input */}
-            <div className='inline-block'>
-              <input
-                type='date'
-                className='px-4 py-2 text-sm border rounded-md text-gray-600'
-                placeholder='Choose Date Range'
-              />
-            </div>
+      <div className='bg-white shadow p-4 rounded-lg'>
+        <div className='flex justify-between gap-4 items-center mb-4'>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            Print
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            PDF
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            EXCEL
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            CSV
+          </button>
 
-            {/* Selectors */}
-            <div className='flex gap-4'>
-              <Select
-                options={ProductOptions}
-                placeholder='Filter By Product'
-                value={selectedProduct}
-                onChange={setSelectedProduct}
-              />
-              <Select
-                options={OrderOptions}
-                placeholder='Filter By Order'
-                value={selectedOrder}
-                onChange={setSelectedOrder}
-              />
-            </div>
+          {/* Date Input */}
+          <div className="inline-block">
+            <DatePicker
+              selected={startDate}
+              onChange={(update) => setDateRange(update)}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              isClearable
+              placeholderText="Choose Date Range"
+              className="px-4 py-2 text-sm border rounded-md text-gray-600"
+            />
           </div>
+
+          <Select
+            options={ProductOptions}
+            placeholder='Filter By Product'
+            value={selectedProduct}
+            onChange={setSelectedProduct}
+          />
+          <Select
+            options={OrderOptions}
+            placeholder='Filter By Order'
+            value={selectedOrder}
+            onChange={setSelectedOrder}
+          />
 
           {/* Search Bar Positioned to the Right */}
           <input

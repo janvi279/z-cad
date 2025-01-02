@@ -45,6 +45,7 @@ const Media = () => {
                     Bulk Delete
                 </button>
             </div>
+            
             <DataTable
                 columns={columns}
                 data={data}
