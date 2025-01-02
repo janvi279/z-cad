@@ -60,11 +60,12 @@ const Payments = () => {
 
   return (
     <>
-      <div className='bg-white text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
+      <div className='bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
         Transactions For: {currentMonth}
         <div className='relative group'>
-          <button className='bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 flex items-center justify-center'>
-            <MdOutlineCurrencyRupee /> Withdrawal
+          <button className='bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 flex items-center gap-1'>
+            <MdOutlineCurrencyRupee className='w-4 h-4'/> 
+            <span className='text-sm'>Withdrawal</span>
           </button>
           <span className='absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
             Withdrawal Requests
@@ -72,7 +73,7 @@ const Payments = () => {
         </div>
       </div>
 
-      <div className='bg-white p-4 rounded-lg'>
+      <div className='bg-white shadow p-4 rounded-lg'>
         <div className='flex flex-wrap gap-4 items-center mb-4'>
           <button className='bg-blue-500 text-white py-2 px-4 rounded'>
             Print

@@ -29,7 +29,6 @@ const RequestedOptions = [
 ]
 
 const Refund = () => {
-  const [activeButton, setActiveButton] = useState('all')
   const [data, setData] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [pages, setPages] = useState(1)
@@ -50,16 +49,12 @@ const Refund = () => {
   return (
     <>
       {/* Button Section */}
-      <div className='bg-white text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
+      <div className='bg-white text-primary-500 rounded-lg shadow text-xl p-2 flex justify-between items-center mb-6'>
         Refund Requests
       </div>
 
-      <div className='bg-white p-4 rounded-lg'>
-        <div className='flex justify-between items-center mb-4'>
-          {/* Grouped Buttons and Selectors */}
-          <div className='flex gap-4 items-center'>
-            {/* Buttons */}
-            <div className='flex gap-4 mb-4'>
+      <div className='bg-white shadow p-4 rounded-lg'>
+        <div className='flex justify-between gap-4 items-center mb-4'>
               <button className='bg-blue-500 text-white py-2 px-4 rounded'>
                 Print
               </button>
@@ -72,18 +67,16 @@ const Refund = () => {
               <button className='bg-blue-500 text-white py-2 px-4 rounded'>
                 CSV
               </button>
-            </div>
+            
 
-            {/* Selectors */}
-            <div className='flex gap-4'>
+           
               <Select
                 options={RequestedOptions}
                 placeholder='Filter By Requested'
                 value={selectedRequest}
                 onChange={setSelectedRequest}
               />
-            </div>
-          </div>
+          
 
           {/* Search Bar Positioned to the Right */}
           <input

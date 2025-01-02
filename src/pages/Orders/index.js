@@ -51,11 +51,11 @@ const Orders = () => {
   return (
     <>
       {/* Button Section */}
-      <div className='bg-white text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
+      <div className='bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
         Order Sections
       </div>
 
-      <div className='bg-white p-4 rounded-lg'>
+      <div className='bg-white shadow p-4 rounded-lg'>
         <div className='flex justify-between items-center mb-4'>
           {/* Grouped Buttons and Selectors */}
           <div className='flex gap-4 items-center'>

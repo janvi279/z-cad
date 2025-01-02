@@ -53,7 +53,7 @@ const typeOptions = [
 ]
 
 const Products = () => {
-  const [activeButton, setActiveButton] = useState('all')
+  const [activeButton, setActiveButton] = useState('All')
   const [data, setData] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [pages, setPages] = useState(1)
@@ -77,9 +77,9 @@ const Products = () => {
   return (
     <>
       {/* Button Section */}
-      <div className='bg-white p-2 flex justify-between items-center mb-6'>
+      <div className='bg-white p-2 flex justify-between items-center rounded-lg mb-6 shadow'>
         <div className='flex gap-4'>
-          {['all', 'archived', 'pending', 'published', 'draft'].map((btn) => (
+          {['All', 'Archived', 'Pending', 'Published', 'Draft'].map((btn) => (
             <div
               key={btn}
               className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${
@@ -104,7 +104,7 @@ const Products = () => {
         </div>
       </div>
 
-      <div className='bg-white p-4 rounded-lg'>
+      <div className='bg-white p-4 shadow rounded-lg'>
         <div className='flex justify-between items-center mb-4'>
           <div className='flex gap-4'>
             <Select
@@ -128,7 +128,7 @@ const Products = () => {
             onChange={handleSearchChange}
           />
         </div>
-
+  
         <DataTable
           columns={columns}
           data={filteredData}
@@ -139,7 +139,7 @@ const Products = () => {
           onChangePage={handlePageChange}
           onChangelimit={handlelimitChange}
         />
-      </div>
+        </div>
     </>
   )
 }
