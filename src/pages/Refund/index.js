@@ -45,7 +45,6 @@ const Refund = () => {
 
   const handleSearchChange = (e) => setSearchTerm(e.target.value)
 
-
   return (
     <>
       {/* Button Section */}
@@ -55,28 +54,25 @@ const Refund = () => {
 
       <div className='bg-white shadow p-4 rounded-lg'>
         <div className='flex justify-between gap-4 items-center mb-4'>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                Print
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                PDF
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                EXCEL
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                CSV
-              </button>
-            
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            Print
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            PDF
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            EXCEL
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            CSV
+          </button>
 
-           
-              <Select
-                options={RequestedOptions}
-                placeholder='Filter By Requested'
-                value={selectedRequest}
-                onChange={setSelectedRequest}
-              />
-          
+          <Select
+            options={RequestedOptions}
+            placeholder='Filter By Requested'
+            value={selectedRequest}
+            onChange={setSelectedRequest}
+          />
 
           {/* Search Bar Positioned to the Right */}
           <input

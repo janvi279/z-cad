@@ -56,50 +56,41 @@ const Orders = () => {
       </div>
 
       <div className='bg-white shadow p-4 rounded-lg'>
-        <div className='flex justify-between items-center mb-4'>
-          {/* Grouped Buttons and Selectors */}
-          <div className='flex gap-4 items-center'>
-            {/* Buttons */}
-            <div className='flex gap-4 mb-4'>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                Print
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                PDF
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                EXCEL
-              </button>
-              <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-                CSV
-              </button>
-            </div>
-            
-            {/* Date Input */}
-            <div className='inline-block'>
-              <input
-                type='date'
-                className='px-4 py-2 text-sm border rounded-md text-gray-600'
-                placeholder='Choose Date Range'
-              />
-            </div>
+        <div className='flex justify-between gap-4 items-center mb-4'>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            Print
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            PDF
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            EXCEL
+          </button>
+          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+            CSV
+          </button>
 
-            {/* Selectors */}
-            <div className='flex gap-4'>
-              <Select
-                options={ProductOptions}
-                placeholder='Filter By Product'
-                value={selectedProduct}
-                onChange={setSelectedProduct}
-              />
-              <Select
-                options={OrderOptions}
-                placeholder='Filter By Order'
-                value={selectedOrder}
-                onChange={setSelectedOrder}
-              />
-            </div>
+          {/* Date Input */}
+          <div className='inline-block'>
+            <input
+              type='date'
+              className='px-4 py-2 text-sm border rounded-md text-gray-600'
+              placeholder='Choose Date Range'
+            />
           </div>
+
+          <Select
+            options={ProductOptions}
+            placeholder='Filter By Product'
+            value={selectedProduct}
+            onChange={setSelectedProduct}
+          />
+          <Select
+            options={OrderOptions}
+            placeholder='Filter By Order'
+            value={selectedOrder}
+            onChange={setSelectedOrder}
+          />
 
           {/* Search Bar Positioned to the Right */}
           <input
