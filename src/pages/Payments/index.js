@@ -3,6 +3,8 @@ import DataTable from 'react-data-table-component'
 import Select from 'react-select'
 import { FiMoreHorizontal } from 'react-icons/fi'
 import { MdOutlineCurrencyRupee } from 'react-icons/md'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const columns = [
   {
@@ -37,6 +39,8 @@ const Payments = () => {
   const [limit, setLimit] = useState(10)
   const [totalRows, setTotalRows] = useState(data.length)
   const [selectedRequest, setSelectedRequest] = useState(null)
+  const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
 
   const currentMonth = new Date().toLocaleString('default', {
     month: 'long',
@@ -95,11 +99,18 @@ const Payments = () => {
             onChange={setSelectedRequest}
           />
 
-          <input
-            type='date'
-            className='px-4 py-2 text-sm border rounded-md text-gray-600'
-            placeholder='Choose Date Range'
-          />
+          <div className="inline-block">
+                      <DatePicker
+                        selected={startDate}
+                        onChange={(update) => setDateRange(update)}
+                        startDate={startDate}
+                        endDate={endDate}
+                        selectsRange
+                        isClearable
+                        placeholderText="Choose Date Range"
+                        className="px-4 py-2 text-sm border rounded-md text-gray-600"
+                      />
+                    </div>
 
           <input
             type='text'

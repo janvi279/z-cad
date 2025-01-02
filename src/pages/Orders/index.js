@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import Select from 'react-select'
-import { CiImageOn } from 'react-icons/ci'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { FiMoreHorizontal } from 'react-icons/fi'
 
 const columns = [
@@ -38,6 +39,8 @@ const Orders = () => {
   const [totalRows, setTotalRows] = useState(0)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
 
   const handlePageChange = (page) => setPages(page)
 
@@ -71,11 +74,16 @@ const Orders = () => {
           </button>
 
           {/* Date Input */}
-          <div className='inline-block'>
-            <input
-              type='date'
-              className='px-4 py-2 text-sm border rounded-md text-gray-600'
-              placeholder='Choose Date Range'
+          <div className="inline-block">
+            <DatePicker
+              selected={startDate}
+              onChange={(update) => setDateRange(update)}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              isClearable
+              placeholderText="Choose Date Range"
+              className="px-4 py-2 text-sm border rounded-md text-gray-600"
             />
           </div>
 
