@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import CustomerSupport from './CustomerSupport';
 import StoreHours from './StoreHours';
 import Location from './Location';
 import Payment from './Payment';
@@ -21,9 +20,6 @@ const Settings = () => {
     }
     if (activeComponent === 'SEO') {
       return <Seo />;
-    }
-    if (activeComponent === 'CustomerSupport') {
-      return <CustomerSupport />;
     }
     if (activeComponent === 'StoreHours') {
       return <StoreHours />;
@@ -78,16 +74,6 @@ const Settings = () => {
                 onClick={() => setActiveComponent('SEO')}
               >
                 SEO
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'CustomerSupport' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('CustomerSupport')}
-              >
-                Customer Support
               </button>
             </li>
             <li>
