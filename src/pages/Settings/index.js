@@ -104,7 +104,7 @@ const Settings = () => {
         </div>
 
         {/* Main content area */}
-        <div className="w-3/4 p-6">{renderComponent()}</div>
+        <div className="w-3/4 pl-6">{renderComponent()}</div>
       </div>
     </>
   );

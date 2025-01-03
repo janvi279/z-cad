@@ -143,7 +143,7 @@ const Store = () => {
               isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            {isSubmitting ? 'Saving...' : 'Save'}
           </button>
         </form>
       </FormikProvider>
