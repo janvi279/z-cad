@@ -4,13 +4,15 @@ import { FiEye, FiEyeOff } from 'react-icons/fi'
 import CustomFile from '../../Components/common/CustomFile'
 import CustomInput from '../../Components/common/CustomInput'
 import CustomTextarea from '../../Components/common/CustomTextarea'
+import CustomQuill from '../../Components/common/CustomQuill'
+
 const Personal = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false)
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
-      };
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -34,64 +36,65 @@ const Personal = () => {
         },
     });
 
+
     return (
         <div className="bg-gray-100 p-4 rounded-lg shadow">
             <FormikProvider value={formik}>
                 <form onSubmit={formik.handleSubmit} className="space-y-4">
 
-                    <Field 
+                    <Field
                         name="avtar"
                         label="Profile Picture"
                         component={CustomFile}
-                    />   
+                    />
 
-                    <Field 
+                    <Field
                         name="firstName"
                         label="First Name"
                         component={CustomInput}
                         placeholder="Enter First Name"
-                    /> 
+                    />
 
-                    <Field 
+                    <Field
                         name="lastName"
                         label="Last Name"
                         component={CustomInput}
                         placeholder="Enter Last Name"
                     />
-                    
-                    <Field 
+
+                    <Field
                         name="email"
                         label="Email"
                         component={CustomInput}
                         placeholder="Enter Email"
                     />
 
-                    <Field 
+                    <Field
                         name="phone"
                         label="Phone"
                         component={CustomInput}
                         placeholder="Enter Mobile Number"
                     />
                     <div className='relative'>
-                    <Field 
-                        name="password"
-                        label="Password"
-                        type={showPassword ? 'text' : 'password'}
-                        component={CustomInput}
-                        placeholder="Enter Password"
-                    />
-                     <div
-                className="absolute inset-y-0 pt-5 right-4 flex items-center cursor-pointer"
-                onClick={togglePasswordVisibility}
-              >
-                {showPassword ? <FiEyeOff /> : <FiEye />}
-              </div>
+                        <Field
+                            name="password"
+                            label="Password"
+                            type={showPassword ? 'text' : 'password'}
+                            component={CustomInput}
+                            placeholder="Enter Password"
+                        />
+                        <div
+                            className="absolute inset-y-0 pt-5 right-4 flex items-center cursor-pointer"
+                            onClick={togglePasswordVisibility}
+                        >
+                            {showPassword ? <FiEyeOff /> : <FiEye />}
+                        </div>
                     </div>
 
-                    <Field 
+                    <Field
                         name="about"
                         label="About"
-                        component={CustomTextarea}
+                        component={CustomQuill}
                         placeholder="Tell us about yourself"
                     />
                     <button

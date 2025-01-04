@@ -5,6 +5,7 @@ import CustomFile from '../../Components/common/CustomFile';
 import CustomSelect from '../../Components/common/CustomSelect';
 import CustomTextarea from '../../Components/common/CustomTextarea';
 import CustomCheckbox from '../../Components/common/CustomCheckbox';
+import CustomQuill from '../../Components/common/CustomQuill';
 
 const Store = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -106,7 +107,7 @@ const Store = () => {
               {formik.values.storeListBannerType === 'video' && (
                 <Field name="storeListVideoBanner" label="Store List Video Banner" component={CustomFile} />
               )}
-              <Field name="shopDiscription" label="Shop Description" component={CustomTextarea} />
+              <Field name="shopDiscription" label="Shop Description" component={CustomQuill} />
             </div>
           </div>
 
