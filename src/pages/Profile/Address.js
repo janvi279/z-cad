@@ -10,7 +10,7 @@ const Address = () => {
   const [countryOptions, setCountryOptions] = useState([]);
   const [stateOptions, setStateOptions] = useState([]);
 
- 
+
   useEffect(() => {
     const countries = Country.getAllCountries().map((country) => ({
       value: country.isoCode,
@@ -19,8 +19,6 @@ const Address = () => {
     setCountryOptions(countries);
   }, []);
 
- 
- 
 
   const formik = useFormik({
     initialValues: {
@@ -29,10 +27,10 @@ const Address = () => {
       address: '',
       address2: '',
       country: '',
-      state: '', 
+      state: '',
       city: '',
       postCode: '',
-      sameAsBilling: false,
+      sameAsBilling: true, 
     },
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
@@ -46,6 +44,7 @@ const Address = () => {
     },
   });
 
+
   useEffect(() => {
     if (formik.values.country) {
       const states = State.getStatesOfCountry(formik.values.country).map((state) => ({
@@ -54,7 +53,12 @@ const Address = () => {
       }));
       setStateOptions(states);
     }
-  },[formik.values.country])
+  }, [formik.values.country]);
+
+ 
+  const handleSameAsBillingChange = (e) => {
+    formik.setFieldValue('sameAsBilling', e.target.checked);
+  };
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg shadow">
@@ -93,7 +97,7 @@ const Address = () => {
                 component={CustomSelect}
                 options={countryOptions}
                 value={formik.values.country}
-                onChange={formik.handleChange} 
+                onChange={formik.handleChange}
               />
               <Field
                 name="state"
@@ -101,7 +105,7 @@ const Address = () => {
                 component={CustomSelect}
                 options={stateOptions}
                 value={formik.values.state}
-                onChange={formik.handleChange} 
+                onChange={formik.handleChange}
               />
               <Field
                 name="city"
@@ -115,6 +119,8 @@ const Address = () => {
               />
             </div>
           </div>
+
+          
           <div>
             <h3 className="text-xl text-primary-500 font-semibold">Shipping</h3>
             <div className="space-y-2 mt-2">
@@ -122,9 +128,67 @@ const Address = () => {
                 name="sameAsBilling"
                 label="Same as Billing"
                 component={CustomCheckbox}
+                onChange={handleSameAsBillingChange} 
               />
             </div>
+
+            
+            {!formik.values.sameAsBilling && (
+              <div className="space-y-2 mt-2">
+                <Field
+                  name="shippingFirstName"
+                  label="First Name"
+                  placeholder="Enter First Name"
+                  component={CustomInput}
+                />
+                <Field
+                  name="shippingLastName"
+                  label="Last Name"
+                  placeholder="Enter Last Name"
+                  component={CustomInput}
+                />
+                <Field
+                  name="shippingAddress"
+                  label="Address"
+                  placeholder="Enter Address"
+                  component={CustomInput}
+                />
+                <Field
+                  name="shippingAddress2"
+                  label="Address 2"
+                  placeholder="Enter Address 2"
+                  component={CustomInput}
+                />
+                <Field
+                  name="shippingCountry"
+                  label="Country"
+                  component={CustomSelect}
+                  options={countryOptions}
+                  value={formik.values.shippingCountry}
+                  onChange={formik.handleChange}
+                />
+                <Field
+                  name="shippingState"
+                  label="State"
+                  component={CustomSelect}
+                  options={stateOptions}
+                  value={formik.values.shippingState}
+                  onChange={formik.handleChange}
+                />
+                <Field
+                  name="shippingCity"
+                  label="City / Town"
+                  component={CustomInput}
+                />
+                <Field
+                  name="shippingPostCode"
+                  label="Postcode / Zip"
+                  component={CustomInput}
+                />
+              </div>
+            )}
           </div>
+
           <button
             type="submit"
             disabled={isSubmitting}
