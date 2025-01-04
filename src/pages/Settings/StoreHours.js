@@ -27,7 +27,7 @@ const StoreHours = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
       try {
-        console.log('Submitted Values:', values); // Log form values for debugging
+        console.log('Submitted Values:', values); 
         resetForm();
       } catch (error) {
         console.error('Submission error:', error);
@@ -110,30 +110,30 @@ const StoreHours = () => {
                                 className="border rounded p-2 w-full"
                               />
                             </div>
-                            {formik.values[`${day}OpeningTime`].length > 1 && (
+                            {index === 0 && (
+                            <button
+                              type="button"
+                              onClick={() => formik.setFieldValue(`${day}OpeningTime`, [...formik.values[`${day}OpeningTime`], { time: '' }])}
+                              className="text-white bg-primary-500 w-8 h-8 flex items-center justify-center rounded-full"
+                            >
+                              +
+                            </button>
+                            )}
+                            {index > 0 && (
                               <button
                                 type="button"
                                 onClick={() => remove(index)}
-                                className="border-[1px] border-red-500 p-1 rounded-lg bg-red-500 text-white"
+                                className="text-white bg-red-500 w-8 h-8 flex items-center justify-center rounded-full"
                               >
                                 -
                               </button>
                             )}
                           </div>
                         ))}
+
                       </div>
                     )}
                   </FieldArray>
-                  {/* Plus button should be placed here after closing time */}
-                  <div className="mt-2 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => formik.setFieldValue(`${day}OpeningTime`, [...formik.values[`${day}OpeningTime`], { time: '' }])}
-                      className="text-blue-500"
-                    >
-                      +
-                    </button>
-                  </div>
                 </div>
               ))}
             </div>
