@@ -20,12 +20,13 @@ const CustomSelect = ({
   label,
   required,
   options,
+  isMulti = false, 
   ...props
 }) => {
   const isInvalid = !!touched[field.name] && !!errors[field.name];
 
-  // Map the options to match the format expected by react-select
-  const formattedOptions = options.map(option => ({
+ 
+  const formattedOptions = options.map((option) => ({
     value: option.value,
     label: option.label,
   }));
@@ -43,10 +44,20 @@ const CustomSelect = ({
           {...field}
           {...props}
           options={formattedOptions}
-          value={formattedOptions.find((option) => option.value == field.value)}
-          onChange={(selectedOption) => field.onChange({ target: { name: field.name, value: selectedOption?.value } })}
+          value={isMulti
+            ? formattedOptions.filter((option) => field.value.includes(option.value))
+            : formattedOptions.find((option) => option.value === field.value)}
+          onChange={(selectedOption) => {
+            if (isMulti) {
+              const values = selectedOption ? selectedOption.map((option) => option.value) : [];
+              field.onChange({ target: { name: field.name, value: values } });
+            } else {
+              field.onChange({ target: { name: field.name, value: selectedOption?.value } });
+            }
+          }}
           placeholder={`Select ${label}`}
           isClearable
+          isMulti={isMulti}  
           className="react-select-container rounded-lg"
           classNamePrefix="react-select"
           styles={reactSelectStyles}
