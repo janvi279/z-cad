@@ -38,12 +38,12 @@ const Location = () => {
               Store Address
             </h3>
             <div className='space-y-2 mt-2'>
-              <Field 
-              name='street'
-               label='Street'
-               placeholder="Street Address" 
-               component={CustomInput} 
-               />
+              <Field
+                name='street'
+                label='Street'
+                placeholder="Street Address"
+                component={CustomInput}
+              />
               <Field
                 name='street2'
                 label='Street 2'
@@ -51,31 +51,31 @@ const Location = () => {
                 component={CustomInput}
               />
 
-              <Field 
-              name='city'
-               label='City/Town'
-                component={CustomInput} 
+              <Field
+                name='city'
+                label='City/Town'
+                component={CustomInput}
                 placeholder="City / Town"
-                />
-
-              <Field 
-              name='zip' 
-              label='Postcode/Zip' 
-              component={CustomInput} 
-              placeholder="Postcode / Zip"
-                />
+              />
 
               <Field
-                name='state'
-                label='State'
-                component={CustomSelect}
-                options={[{ value: 'gujarat', label: 'Gujarat' }]}
+                name='zip'
+                label='Postcode/Zip'
+                component={CustomInput}
+                placeholder="Postcode / Zip"
               />
               <Field
                 name='country'
                 label='Country'
                 component={CustomSelect}
                 options={[{ value: 'india', label: 'India' }]}
+              />
+
+              <Field
+                name='state'
+                label='State'
+                component={CustomSelect}
+                options={[{ value: 'gujarat', label: 'Gujarat' }]}
               />
             </div>
           </div>
@@ -99,9 +99,8 @@ const Location = () => {
           <button
             type='submit'
             disabled={isSubmitting}
-            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
-              isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
           >
             {isSubmitting ? 'Saving...' : 'Save'}
           </button>
