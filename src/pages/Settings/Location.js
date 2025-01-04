@@ -1,10 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useFormik, FormikProvider, Field } from 'formik'
 import CustomInput from '../../Components/common/CustomInput'
 import CustomSelect from '../../Components/common/CustomSelect'
+import { Country, State } from 'country-state-city';
 
 const Location = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
+   const [countryOptions, setCountryOptions] = useState([]);
+    const [stateOptions, setStateOptions] = useState([]);
+
+     useEffect(() => {
+        const countries = Country.getAllCountries().map((country) => ({
+          value: country.isoCode,
+          label: country.name,
+        }));
+        setCountryOptions(countries);
+      }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -27,6 +38,16 @@ const Location = () => {
       }
     },
   })
+
+ useEffect(() => {
+    if (formik.values.country) {
+      const states = State.getStatesOfCountry(formik.values.country).map((state) => ({
+        value: state.isoCode,
+        label: state.name,
+      }));
+      setStateOptions(states);
+    }
+  },[formik.values.country])
 
   return (
     <div className='bg-gray-100 p-4 rounded-lg shadow'>
@@ -64,20 +85,25 @@ const Location = () => {
               component={CustomInput} 
               placeholder="Postcode / Zip"
                 />
-
-              <Field
-                name='state'
-                label='State'
-                component={CustomSelect}
-                options={[{ value: 'gujarat', label: 'Gujarat' }]}
-              />
               <Field
                 name='country'
                 label='Country'
                 component={CustomSelect}
-                options={[{ value: 'india', label: 'India' }]}
+                options={countryOptions}
+                value={formik.values.country}
+                onChange={formik.handleChange}
               />
             </div>
+            
+              <Field
+                name='state'
+                label='State'
+                component={CustomSelect}
+                options={stateOptions}
+                value={formik.values.state}
+                onChange={formik.handleChange}
+              />
+              
           </div>
 
           {/* Store Location Section */}
