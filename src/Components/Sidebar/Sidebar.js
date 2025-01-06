@@ -1,223 +1,145 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { MdHome, MdOutlinePayment } from 'react-icons/md'
+import React, { useEffect, useRef, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { MdHome, MdOutlinePayment } from 'react-icons/md';
 import {
   AiOutlineLogout,
-  AiOutlineProduct,
-  AiOutlineShoppingCart
-} from 'react-icons/ai'
-import { FaAngleDown, FaBookOpen } from 'react-icons/fa'
-import { GoFileMedia } from "react-icons/go";
-import { LuRepeat2 } from "react-icons/lu";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FaRegMessage } from "react-icons/fa6";
+  AiOutlineShoppingCart,
+  AiOutlineMessage,
+} from 'react-icons/ai';
+import { GoFileMedia } from 'react-icons/go';
+import { LuRepeat2 } from 'react-icons/lu';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { FaRegMessage } from 'react-icons/fa6';
+import { PiMoney } from 'react-icons/pi';
+import { FiMenu } from 'react-icons/fi'; // Hamburger menu icon
+import { removeToken } from '../../utils/cookies/Cookies';
 
-import { removeToken } from '../../utils/cookies/Cookies'
-import { PiMoney } from 'react-icons/pi'
-
+// Navigation data
 const dataList = [
-  {
-    label: 'Home',
-    icon: <MdHome />,
-    path: '/',
-  },
-  {
-    label: 'Media',
-    icon: <GoFileMedia />,
-    path: '/media',
-  },
-  {
-    label: 'Products',
-    icon: <AiOutlineProduct />,
-    path: '/products',
-  },
-  {
-    label: 'Orders',
-    icon: <AiOutlineShoppingCart />,
-    path: '/orders',
-  },
-  {
-    label: 'Refund',
-    icon: <LuRepeat2 />,
-    path: '/refund',
-  },
-  {
-    label: 'Settings',
-    icon: <IoSettingsOutline />,
-    path: '/settings',
-  },
-  {
-    label: 'Payments',
-    icon: <MdOutlinePayment />,
-    path: '/payments',
-  },
-  {
-    label: 'Ledger Book',
-    icon: <PiMoney />,
-    path: '/ledger-book',
-  },
-  {
-    label: 'Reviews',
-    icon: <FaRegMessage />,
-    path: '/reviews',
-  },
-]
+  { label: 'Home', icon: <MdHome />, path: '/' },
+  { label: 'Media', icon: <GoFileMedia />, path: '/media' },
+  { label: 'Products', icon: <AiOutlineShoppingCart />, path: '/products' },
+  { label: 'Orders', icon: <AiOutlineShoppingCart />, path: '/orders' },
+  { label: 'Refund', icon: <LuRepeat2 />, path: '/refund' },
+  { label: 'Settings', icon: <IoSettingsOutline />, path: '/settings' },
+  { label: 'Payments', icon: <MdOutlinePayment />, path: '/payments' },
+  { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
+  { label: 'Reviews', icon: <FaRegMessage />, path: '/reviews' },
+];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
-  const location = useLocation()
-  const { pathname } = location
+  const location = useLocation();
+  const { pathname } = location;
 
-  const trigger = useRef(null)
-  const sidebar = useRef(null)
+  const trigger = useRef(null);
+  const sidebar = useRef(null);
 
-  const storedSidebarExpanded = localStorage.getItem('sidebar-expanded')
+  const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
   const [sidebarExpanded, setSidebarExpanded] = useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
-  )
+    storedSidebarExpanded === null ? true : storedSidebarExpanded === 'true'
+  );
 
-  const [openSubmenu, setOpenSubmenu] = useState(null)
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
+  // Logout handler
   const handleLogout = () => {
-    removeToken()
+    removeToken();
     setTimeout(() => {
-      navigate('/login')
-    }, 100)
-  }
+      navigate('/login');
+    }, 100);
+  };
 
-  // Close sidebar when clicking outside
+  // Save expanded state in localStorage
+  useEffect(() => {
+    localStorage.setItem('sidebar-expanded', sidebarExpanded.toString());
+  }, [sidebarExpanded]);
+
+  // Close sidebar on click outside
   useEffect(() => {
     const clickHandler = ({ target }) => {
-      if (!sidebar.current || !trigger.current) return
+      if (!sidebar.current || !trigger.current) return;
       if (
         !sidebarOpen ||
         sidebar.current.contains(target) ||
         trigger.current.contains(target)
       )
-        return
-      setSidebarOpen(false)
-    }
-    document.addEventListener('click', clickHandler)
-    return () => document.removeEventListener('click', clickHandler)
-  })
+        return;
+      setSidebarOpen(false);
+    };
+    document.addEventListener('click', clickHandler);
+    return () => document.removeEventListener('click', clickHandler);
+  });
 
   // Close sidebar on 'Escape' key press
   useEffect(() => {
     const keyHandler = ({ keyCode }) => {
-      if (!sidebarOpen || keyCode !== 27) return
-      setSidebarOpen(false)
-    }
-    document.addEventListener('keydown', keyHandler)
-    return () => document.removeEventListener('keydown', keyHandler)
-  })
-
-  useEffect(() => {
-    localStorage.setItem('sidebar-expanded', sidebarExpanded.toString())
-    if (sidebarExpanded) {
-      document.querySelector('body')?.classList.add('sidebar-expanded')
-    } else {
-      document.querySelector('body')?.classList.remove('sidebar-expanded')
-    }
-  }, [sidebarExpanded])
+      if (!sidebarOpen || keyCode !== 27) return;
+      setSidebarOpen(false);
+    };
+    document.addEventListener('keydown', keyHandler);
+    return () => document.removeEventListener('keydown', keyHandler);
+  });
 
   return (
     <aside
       ref={sidebar}
-      className={`absolute lg:static left-0 top-0 z-[9999] flex h-screen w-72 flex-col bg-white shadow-lg lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      className={`absolute lg:static left-0 top-0 z-50 flex h-screen flex-col bg-white shadow-lg lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }  transition-[width] duration-300 ${sidebarExpanded ? 'w-72' : 'w-20'}`}
     >
-      <div className='flex items-center gap-3 px-4 py-4'>
-        <NavLink to='/' className='text-xl font-medium text-black'>
+      {/* Header Section */}
+      <div className="flex items-center justify-between px-4 py-4">
+        {/* Sidebar Title */}
+        <NavLink to="/" className={`text-xl font-medium text-black ${!sidebarExpanded ? 'hidden' : ''}`}>
           ZCAD
         </NavLink>
+        {/* Hamburger Icon */}
         <button
           ref={trigger}
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          aria-controls='sidebar'
-          aria-expanded={sidebarOpen}
-          className='hidden'
-        ></button>
+          onClick={() => setSidebarExpanded(!sidebarExpanded)}
+          className="text-gray-500 hover:text-black focus:outline-none"
+        >
+          <FiMenu className="text-2xl" />
+        </button>
       </div>
-      <div className='no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear'>
-        <nav className='px-2'>
-          <ul className='flex flex-col gap-1'>
+
+      {/* Navigation Links */}
+      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+        <nav className="px-2">
+          <ul className="flex flex-col gap-1">
             {dataList.map((item, index) => (
               <li key={index}>
-                {/* Handle normal links */}
-                {item.submenu ? (
-                  <>
-                    <button
-                      onClick={() =>
-                        setOpenSubmenu(openSubmenu === index ? null : index)
-                      } // Toggle submenu
-                      className={`flex items-center justify-between gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${openSubmenu === index
-                        ? 'bg-primary-50 border-l-4 border-l-primary-500'
-                        : ''
-                        }`}
-                    >
-                      <div className='flex items-center gap-3'>
-                        {item.icon}
-                        <span className='font-medium'>{item.label}</span>
-                      </div>
-                      {/* Arrow icon with right margin */}
-                      <FaAngleDown
-                        className={`transform duration-200 ml-[120px] ${openSubmenu === index ? 'rotate-180' : ''
-                          }`}
-                      />
-                    </button>
-
-                    {openSubmenu === index && (
-                      <ul className='pl-6'>
-                        {item.submenu.map((subItem, subIndex) => (
-                          <li key={subIndex}>
-                            <NavLink
-                              to={subItem.path}
-                              onClick={() => setSidebarOpen(!sidebarOpen)}
-                              className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${pathname === subItem.path
-                                ? 'bg-primary-50 w-full border-l-4 border-l-primary-500'
-                                : ''
-                                }`}
-                            >
-                              {subItem.icon}
-                              <span className='font-medium'>
-                                {subItem.label}
-                              </span>
-                            </NavLink>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </>
-                ) : (
-                  <NavLink
-                    to={item.path}
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${pathname === item.path
-                      ? 'bg-primary-50 border-l-4 border-l-primary-500'
+                <NavLink
+                  to={item.path}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${
+                    pathname === item.path
+                      ? 'bg-primary-50 border-l-4 border-primary-500'
                       : ''
-                      }`}
-                  >
-                    {item.icon}
-                    <span className='font-medium'>{item.label}</span>
-                  </NavLink>
-                )}
+                  }`}
+                  title={!sidebarExpanded ? item.label : ''}
+                >
+                  {item.icon}
+                  {sidebarExpanded && <span className="font-medium">{item.label}</span>}
+                </NavLink>
               </li>
             ))}
           </ul>
         </nav>
       </div>
-      <div className='mt-auto py-4 border-t border-gray-200'>
+
+      {/* Logout Section */}
+      <div className="mt-auto py-4 border-t border-gray-200">
         <button
           onClick={handleLogout}
-          className='flex items-center gap-3 border-b w-full rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50'
+          className="flex items-center gap-3 w-full rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50"
         >
-          <AiOutlineLogout className='text-xl' />
-          <span className='font-medium'>Logout</span>
+          <AiOutlineLogout className="text-xl" />
+          {sidebarExpanded && <span className="font-medium">Logout</span>}
         </button>
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

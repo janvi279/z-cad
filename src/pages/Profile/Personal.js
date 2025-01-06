@@ -100,7 +100,7 @@ const Personal = () => {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                        className={`bg-blue-500 text-white px-4 py-2  rounded hover:bg-blue-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
                     >
                         {isSubmitting ? 'Saving...' : 'Save'}
