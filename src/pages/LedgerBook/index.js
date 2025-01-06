@@ -53,8 +53,8 @@ const LedgerBook = () => {
 
   return (
     <>
-      <div className='bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
-        <h1 className='text-xl'>Ledger Book</h1>
+      <div className='bg-white shadow rounded-lg py-2 px-4 flex justify-between items-center mb-6'>
+        <h1 className='text-xl text-primary-500'>Ledger Book</h1>
         <div className='flex gap-2'>
           <Select
             options={options1}

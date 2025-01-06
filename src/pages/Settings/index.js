@@ -29,7 +29,7 @@ const Settings = () => {
   return (
     <>
       {/* Header */}
-      <div className="bg-white shadow rounded-lg text-primary-500 text-xl p-4 flex justify-between items-center mb-6">
+      <div className="bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6">
         Store Settings
       </div>
 
@@ -47,11 +47,10 @@ const Settings = () => {
             ].map((item) => (
               <li key={item.key}>
                 <button
-                  className={`w-full text-left py-2 px-4 rounded transition ${
-                    activeComponent === item.key
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-200'
-                  }`}
+                  className={`w-full text-left py-2 px-4 rounded transition ${activeComponent === item.key
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-200'
+                    }`}
                   onClick={() => setActiveComponent(item.key)}
                 >
                   {item.label}

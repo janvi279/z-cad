@@ -56,17 +56,16 @@ const Reviews = () => {
 
   return (
     <>
-      <div className='bg-white text-primary-500 text-xl p-4 flex justify-between items-center mb-6 rounded-lg shadow'>
+      <div className='bg-white text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6 rounded-lg shadow'>
         {/* Filter Buttons */}
         <div className='flex gap-4'>
           {['All', 'Approved', 'Pending'].map((btn) => (
             <button
               key={btn}
-              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${
-                activeButton === btn
-                  ? 'bg-primary-100 text-primary-600'
-                  : 'hover:text-primary-600'
-              }`}
+              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${activeButton === btn
+                ? 'bg-primary-100 text-primary-600'
+                : 'hover:text-primary-600'
+                }`}
               onClick={() => setActiveButton(btn)}
             >
               {btn}
@@ -76,11 +75,11 @@ const Reviews = () => {
 
         {/* Product Reviews Button */}
         <div className='relative group'>
-          <button className='bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 flex items-center gap-1'>
+          <button className='bg-primary-500 text-white px-3 py-1.5 rounded-lg hover:bg-primary-600 flex items-center gap-1'>
             <FiBox className='w-4 h-4' />
             <span className='text-sm'>Product Reviews</span>
           </button>
-          <span className='absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg'>
+          <span className='absolute z-50 top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg'>
             Product Reviews
           </span>
         </div>

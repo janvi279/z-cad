@@ -6,16 +6,16 @@ import { Country, State } from 'country-state-city';
 
 const Location = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
-   const [countryOptions, setCountryOptions] = useState([]);
-    const [stateOptions, setStateOptions] = useState([]);
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [stateOptions, setStateOptions] = useState([]);
 
-     useEffect(() => {
-        const countries = Country.getAllCountries().map((country) => ({
-          value: country.isoCode,
-          label: country.name,
-        }));
-        setCountryOptions(countries);
-      }, []);
+  useEffect(() => {
+    const countries = Country.getAllCountries().map((country) => ({
+      value: country.isoCode,
+      label: country.name,
+    }));
+    setCountryOptions(countries);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -39,7 +39,7 @@ const Location = () => {
     },
   })
 
- useEffect(() => {
+  useEffect(() => {
     if (formik.values.country) {
       const states = State.getStatesOfCountry(formik.values.country).map((state) => ({
         value: state.isoCode,
@@ -47,7 +47,7 @@ const Location = () => {
       }));
       setStateOptions(states);
     }
-  },[formik.values.country])
+  }, [formik.values.country])
 
   return (
     <div className='bg-gray-100 p-4 rounded-lg shadow'>
@@ -59,12 +59,12 @@ const Location = () => {
               Store Address
             </h3>
             <div className='space-y-2 mt-2'>
-              <Field 
-              name='street'
-               label='Street'
-               placeholder="Street Address" 
-               component={CustomInput} 
-               />
+              <Field
+                name='street'
+                label='Street'
+                placeholder="Street Address"
+                component={CustomInput}
+              />
               <Field
                 name='street2'
                 label='Street 2'
@@ -72,19 +72,19 @@ const Location = () => {
                 component={CustomInput}
               />
 
-              <Field 
-              name='city'
-               label='City/Town'
-                component={CustomInput} 
+              <Field
+                name='city'
+                label='City/Town'
+                component={CustomInput}
                 placeholder="City / Town"
-                />
+              />
 
-              <Field 
-              name='zip' 
-              label='Postcode/Zip' 
-              component={CustomInput} 
-              placeholder="Postcode / Zip"
-                />
+              <Field
+                name='zip'
+                label='Postcode/Zip'
+                component={CustomInput}
+                placeholder="Postcode / Zip"
+              />
               <Field
                 name='country'
                 label='Country'
@@ -94,16 +94,16 @@ const Location = () => {
                 onChange={formik.handleChange}
               />
             </div>
-            
-              <Field
-                name='state'
-                label='State'
-                component={CustomSelect}
-                options={stateOptions}
-                value={formik.values.state}
-                onChange={formik.handleChange}
-              />
-              
+
+            <Field
+              name='state'
+              label='State'
+              component={CustomSelect}
+              options={stateOptions}
+              value={formik.values.state}
+              onChange={formik.handleChange}
+            />
+
           </div>
 
           {/* Store Location Section */}
@@ -125,9 +125,8 @@ const Location = () => {
           <button
             type='submit'
             disabled={isSubmitting}
-            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
-              isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
           >
             {isSubmitting ? 'Saving...' : 'Save'}
           </button>

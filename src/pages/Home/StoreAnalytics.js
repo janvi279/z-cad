@@ -72,7 +72,7 @@ const data = {
 const StoreAnalytics = () => {
   return (
     <div className="w-full">
-      <div className="bg-primary-700 text-white p-3 flex items-center gap-2 rounded-t-lg">
+      <div className="bg-primary-500 text-white p-3 flex items-center gap-2 rounded-t-lg">
         <BsGraphUp className="text-lg" />
         <h2 className="text-lg">Store Analytics</h2>
       </div>

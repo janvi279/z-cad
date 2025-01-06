@@ -41,7 +41,7 @@ const Payment = () => {
     <div className="bg-gray-100 p-4 rounded-lg shadow">
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className="space-y-4">
-         
+
           <Field
             name="paymentMethod"
             label="Preferred Payment Method"
@@ -49,7 +49,7 @@ const Payment = () => {
             options={PaymentMethodOptions}
           />
 
-          
+
           {formik.values.paymentMethod === 'paypal' && (
             <Field
               name="paypalEmail"
@@ -58,7 +58,7 @@ const Payment = () => {
             />
           )}
 
-          
+
           {formik.values.paymentMethod === 'banktransfer' && (
             <div>
               <h3 className="text-xl text-primary-500 font-semibold">
@@ -124,13 +124,12 @@ const Payment = () => {
             </div>
           )}
 
-          
+
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
-              isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
           >
             {isSubmitting ? 'Saving...' : 'Save'}
           </button>

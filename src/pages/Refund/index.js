@@ -48,22 +48,22 @@ const Refund = () => {
   return (
     <>
       {/* Button Section */}
-      <div className='bg-white text-primary-500 rounded-lg shadow text-xl p-2 flex justify-between items-center mb-6'>
+      <div className='bg-white text-primary-500 rounded-lg shadow text-xl py-2 px-4 flex justify-between items-center mb-6'>
         Refund Requests
       </div>
 
       <div className='bg-white shadow p-4 rounded-lg'>
         <div className='flex justify-between gap-4 items-center mb-4'>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             Print
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             PDF
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             EXCEL
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             CSV
           </button>
 

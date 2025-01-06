@@ -110,41 +110,37 @@ const SalesChart = () => {
         <div className='flex items-center justify-between'>
           <div className='space-x-2'>
             <button
-              className={`px-4 py-2 text-sm rounded-md ${
-                selectedPeriod === 'year'
-                  ? 'bg-sky-100 text-sky-600'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'year'
+                ? 'bg-sky-100 text-sky-600'
+                : 'text-gray-600 hover:bg-gray-100'
+                }`}
               onClick={() => setSelectedPeriod('year')}
             >
               Year
             </button>
             <button
-              className={`px-4 py-2 text-sm rounded-md ${
-                selectedPeriod === 'last-month'
-                  ? 'bg-sky-100 text-sky-600'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'last-month'
+                ? 'bg-sky-100 text-sky-600'
+                : 'text-gray-600 hover:bg-gray-100'
+                }`}
               onClick={() => setSelectedPeriod('last-month')}
             >
               Last Month
             </button>
             <button
-              className={`px-4 py-2 text-sm rounded-md ${
-                selectedPeriod === 'this-month'
-                  ? 'bg-sky-100 text-sky-600'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'this-month'
+                ? 'bg-sky-100 text-sky-600'
+                : 'text-gray-600 hover:bg-gray-100'
+                }`}
               onClick={() => setSelectedPeriod('this-month')}
             >
               This Month
             </button>
             <button
-              className={`px-4 py-2 text-sm rounded-md ${
-                selectedPeriod === 'last-7-days'
-                  ? 'bg-sky-100 text-sky-600'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'last-7-days'
+                ? 'bg-sky-100 text-sky-600'
+                : 'text-gray-600 hover:bg-gray-100'
+                }`}
               onClick={() => setSelectedPeriod('last-7-days')}
             >
               Last 7 Days
@@ -180,24 +176,24 @@ const SalesChart = () => {
           </button>
         </div>
 
-        <div className='grid grid-cols-5 gap-4 text-center'>
-          <div className='p-4 border rounded-lg'>
+        <div className='grid grid-cols-5 gap-3 text-center'>
+          <div className='p-3 border rounded-lg'>
             <p className='text-lg font-medium'>₹0.00</p>
             <p className='text-sm text-gray-500'>gross sales in this period</p>
           </div>
-          <div className='p-4 border rounded-lg'>
+          <div className='p-3 border rounded-lg'>
             <p className='text-lg font-medium'>₹0.00</p>
             <p className='text-sm text-gray-500'>total withdrawal</p>
           </div>
-          <div className='p-4 border rounded-lg'>
+          <div className='p-3 border rounded-lg'>
             <p className='text-lg font-medium'>₹0.00</p>
             <p className='text-sm text-gray-500'>total refund</p>
           </div>
-          <div className='p-4 border rounded-lg'>
+          <div className='p-3 border rounded-lg'>
             <p className='text-lg font-medium'>0</p>
             <p className='text-sm text-gray-500'>orders placed</p>
           </div>
-          <div className='p-4 border rounded-lg'>
+          <div className='p-3 border rounded-lg'>
             <p className='text-lg font-medium'>0</p>
             <p className='text-sm text-gray-500'>items purchased</p>
           </div>

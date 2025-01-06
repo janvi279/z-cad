@@ -15,22 +15,22 @@ const options = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: false, 
+      display: false,
     },
     tooltip: {
-      enabled: false, 
+      enabled: false,
     },
   },
-  cutout: '5%', 
+  cutout: '5%',
 }
 
 const data = {
-  labels: ['No Sales Yet'], 
+  labels: ['No Sales Yet'],
   datasets: [
     {
-      data: [10], 
-      backgroundColor: ['rgb(45, 187, 199)'], 
-      borderWidth: 0, 
+      data: [10],
+      backgroundColor: ['rgb(45, 187, 199)'],
+      borderWidth: 0,
     },
   ],
 }
@@ -38,7 +38,7 @@ const data = {
 const SalesByProduct = () => {
   return (
     <div className="w-full">
-      <div className="bg-primary-700 text-white p-3 flex items-center justify-between rounded-t-lg">
+      <div className="bg-primary-500 text-white p-3 flex items-center justify-between rounded-t-lg">
         <div className="flex items-center gap-2">
           <BiDollar className="text-lg" />
           <h2 className="text-lg">Sales by Product</h2>

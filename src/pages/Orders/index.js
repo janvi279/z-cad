@@ -54,22 +54,22 @@ const Orders = () => {
   return (
     <>
       {/* Button Section */}
-      <div className='bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
-        Order Sections
+      <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
+        Orders
       </div>
 
       <div className='bg-white shadow p-4 rounded-lg'>
         <div className='flex justify-between gap-4 items-center mb-4'>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             Print
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             PDF
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             EXCEL
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             CSV
           </button>
 

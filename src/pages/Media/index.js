@@ -39,13 +39,13 @@ const Media = () => {
 
     return (
         <div>
-            <div className='bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
+            <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
                 <h1 className='text-xl'>Media</h1>
                 <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-md flex items-center gap-2">
                     Bulk Delete
                 </button>
             </div>
-            
+
             <DataTable
                 columns={columns}
                 data={data}

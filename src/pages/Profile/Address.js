@@ -30,7 +30,7 @@ const Address = () => {
       state: '',
       city: '',
       postCode: '',
-      sameAsBilling: true, 
+      sameAsBilling: true,
     },
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
@@ -55,7 +55,7 @@ const Address = () => {
     }
   }, [formik.values.country]);
 
- 
+
   const handleSameAsBillingChange = (e) => {
     formik.setFieldValue('sameAsBilling', e.target.checked);
   };
@@ -120,7 +120,7 @@ const Address = () => {
             </div>
           </div>
 
-          
+
           <div>
             <h3 className="text-xl text-primary-500 font-semibold">Shipping</h3>
             <div className="space-y-2 mt-2">
@@ -128,11 +128,11 @@ const Address = () => {
                 name="sameAsBilling"
                 label="Same as Billing"
                 component={CustomCheckbox}
-                onChange={handleSameAsBillingChange} 
+                onChange={handleSameAsBillingChange}
               />
             </div>
 
-            
+
             {!formik.values.sameAsBilling && (
               <div className="space-y-2 mt-2">
                 <Field
@@ -192,7 +192,7 @@ const Address = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? 'Saving...' : 'Save'}
           </button>

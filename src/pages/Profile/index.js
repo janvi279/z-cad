@@ -37,11 +37,10 @@ const Profile = () => {
             ].map((item) => (
               <li key={item.key}>
                 <button
-                  className={`w-full text-left py-2 px-4 rounded transition-all ${
-                    activeComponent === item.key
-                      ? 'bg-blue-500 text-white'
+                  className={`w-full text-left py-2 px-4 rounded transition-all ${activeComponent === item.key
+                      ? 'bg-primary-500 text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                   onClick={() => setActiveComponent(item.key)}
                 >
                   {item.label}

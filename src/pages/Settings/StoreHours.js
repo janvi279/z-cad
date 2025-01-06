@@ -27,7 +27,7 @@ const StoreHours = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
       try {
-        console.log('Submitted Values:', values); 
+        console.log('Submitted Values:', values);
         resetForm();
       } catch (error) {
         console.error('Submission error:', error);
@@ -111,13 +111,13 @@ const StoreHours = () => {
                               />
                             </div>
                             {index === 0 && (
-                            <button
-                              type="button"
-                              onClick={() => formik.setFieldValue(`${day}OpeningTime`, [...formik.values[`${day}OpeningTime`], { time: '' }])}
-                              className="text-white bg-primary-500 w-8 h-8 flex items-center justify-center rounded-full"
-                            >
-                              +
-                            </button>
+                              <button
+                                type="button"
+                                onClick={() => formik.setFieldValue(`${day}OpeningTime`, [...formik.values[`${day}OpeningTime`], { time: '' }])}
+                                className="text-white bg-primary-500 w-8 h-8 flex items-center justify-center rounded-full"
+                              >
+                                +
+                              </button>
                             )}
                             {index > 0 && (
                               <button
@@ -142,7 +142,7 @@ const StoreHours = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? 'Saving...' : 'Save'}
           </button>

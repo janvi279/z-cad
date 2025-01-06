@@ -77,16 +77,15 @@ const Products = () => {
   return (
     <>
       {/* Button Section */}
-      <div className='bg-white p-2 flex justify-between items-center rounded-lg mb-6 shadow'>
+      <div className='bg-white py-2 px-4 flex justify-between items-center rounded-lg mb-6 shadow'>
         <div className='flex gap-4'>
           {['All', 'Archived', 'Pending', 'Published', 'Draft'].map((btn) => (
             <div
               key={btn}
-              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${
-                activeButton === btn
-                  ? 'bg-primary-100 text-primary-600'
-                  : 'hover:text-primary-600'
-              }`}
+              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${activeButton === btn
+                ? 'bg-primary-100 text-primary-600'
+                : 'hover:text-primary-600'
+                }`}
               onClick={() => setActiveButton(btn)}
             >
               <button>{btn.charAt(0).toUpperCase() + btn.slice(1)}</button>
@@ -94,8 +93,8 @@ const Products = () => {
           ))}
         </div>
         <div className='relative group'>
-          <button className='bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 flex items-center justify-center'>
-            <CiSaveDown2 className='w-6 h-6' />
+          <button className='bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 flex items-center justify-center'>
+            <CiSaveDown2 className='w-5 h-5' />
           </button>
 
           <span className='absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
@@ -128,7 +127,7 @@ const Products = () => {
             onChange={handleSearchChange}
           />
         </div>
-  
+
         <DataTable
           columns={columns}
           data={filteredData}
@@ -139,7 +138,7 @@ const Products = () => {
           onChangePage={handlePageChange}
           onChangelimit={handlelimitChange}
         />
-        </div>
+      </div>
     </>
   )
 }

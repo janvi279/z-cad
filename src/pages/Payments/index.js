@@ -40,7 +40,7 @@ const Payments = () => {
   const [totalRows, setTotalRows] = useState(data.length)
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [dateRange, setDateRange] = useState([null, null]);
-    const [startDate, endDate] = dateRange;
+  const [startDate, endDate] = dateRange;
 
   const currentMonth = new Date().toLocaleString('default', {
     month: 'long',
@@ -64,11 +64,11 @@ const Payments = () => {
 
   return (
     <>
-      <div className='bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6'>
+      <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
         Transactions For: {currentMonth}
         <div className='relative group'>
-          <button className='bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 flex items-center gap-1'>
-            <MdOutlineCurrencyRupee className='w-4 h-4'/> 
+          <button className='bg-primary-500 text-white px-3 py-1.5 rounded-lg hover:bg-primary-600 flex items-center gap-1'>
+            <MdOutlineCurrencyRupee className='w-4 h-4' />
             <span className='text-sm'>Withdrawal</span>
           </button>
           <span className='absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
@@ -79,16 +79,16 @@ const Payments = () => {
 
       <div className='bg-white shadow p-4 rounded-lg'>
         <div className='flex flex-wrap gap-4 items-center mb-4'>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             Print
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             PDF
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             EXCEL
           </button>
-          <button className='bg-blue-500 text-white py-2 px-4 rounded'>
+          <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             CSV
           </button>
 
@@ -100,17 +100,17 @@ const Payments = () => {
           />
 
           <div className="inline-block">
-                      <DatePicker
-                        selected={startDate}
-                        onChange={(update) => setDateRange(update)}
-                        startDate={startDate}
-                        endDate={endDate}
-                        selectsRange
-                        isClearable
-                        placeholderText="Choose Date Range"
-                        className="px-4 py-2 text-sm border rounded-md text-gray-600"
-                      />
-                    </div>
+            <DatePicker
+              selected={startDate}
+              onChange={(update) => setDateRange(update)}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              isClearable
+              placeholderText="Choose Date Range"
+              className="px-4 py-2 text-sm border rounded-md text-gray-600"
+            />
+          </div>
 
           <input
             type='text'
