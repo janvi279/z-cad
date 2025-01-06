@@ -20,47 +20,41 @@ const Profile = () => {
 
   return (
     <>
+      {/* Header */}
       <div className="bg-white shadow rounded-lg text-primary-500 text-xl p-4 flex justify-between items-center mb-6">
-        <h1 className="font-bold">Profile Manager</h1>
+        Profile Manager
       </div>
 
-      <div className="flex">
-        <div className="w-1/4 bg-gray-100 p-4 shadow">
-          <ul className="space-y-1">
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'Personal' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('Personal')}
-              >
-                Personal
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'Address' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('Address')}
-              >
-                Address
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'Social' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('Social')}
-              >
-                Social
-              </button>
-            </li>
+      {/* Responsive Layout */}
+      <div className="flex flex-col lg:flex-row">
+        {/* Sidebar Navigation */}
+        <div className="w-full lg:w-1/4 bg-gray-100 p-4 shadow mb-4 lg:mb-0">
+          <ul className="space-y-2">
+            {[
+              { label: 'Personal', key: 'Personal' },
+              { label: 'Address', key: 'Address' },
+              { label: 'Social', key: 'Social' },
+            ].map((item) => (
+              <li key={item.key}>
+                <button
+                  className={`w-full text-left py-2 px-4 rounded transition-all ${
+                    activeComponent === item.key
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setActiveComponent(item.key)}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
 
-        <div className="w-3/4 pl-6">{renderComponent()}</div>
+        {/* Main Content */}
+        <div className="w-full lg:w-3/4 lg:pl-6">
+          {renderComponent()}
+        </div>
       </div>
     </>
   );

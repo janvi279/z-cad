@@ -112,7 +112,7 @@ const Store = () => {
           </div>
 
           {/* Store Visibility Setup */}
-          <div>
+          <div className='pt-8'>
             <h3 className="text-xl text-primary-500 font-semibold">Store Visibility Setup</h3>
             <div className="space-y-2 mt-2">
               <Field

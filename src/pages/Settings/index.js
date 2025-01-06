@@ -6,7 +6,7 @@ import Seo from './Seo';
 import Store from './Store';
 
 const Settings = () => {
-  const [activeComponent, setActiveComponent] = useState('Store'); 
+  const [activeComponent, setActiveComponent] = useState('Store');
 
   const renderComponent = () => {
     if (activeComponent === 'Store') {
@@ -28,69 +28,43 @@ const Settings = () => {
 
   return (
     <>
-      <div className="bg-white shadow rounded-lg text-primary-500 text-xl p-2 flex justify-between items-center mb-6">
+      {/* Header */}
+      <div className="bg-white shadow rounded-lg text-primary-500 text-xl p-4 flex justify-between items-center mb-6">
         Store Settings
       </div>
-      
-      <div className="flex">
-        {/* Left-side navigation */}
-        <div className="w-1/4 bg-gray-100 p-4 shadow">
-          <ul className="space-y-1 ">
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'Store' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('Store')}
-              >
-                Store
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'Location' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('Location')}
-              >
-                Location
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'Payment' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('Payment')}
-              >
-                Payment
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'SEO' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('SEO')}
-              >
-                SEO
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${
-                  activeComponent === 'StoreHours' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => setActiveComponent('StoreHours')}
-              >
-                Store Hours
-              </button>
-            </li>
+
+      {/* Responsive Layout */}
+      <div className="flex flex-col lg:flex-row">
+        {/* Sidebar Navigation */}
+        <div className="w-full lg:w-1/4 bg-gray-100 p-4 shadow mb-4 lg:mb-0">
+          <ul className="space-y-2">
+            {[
+              { label: 'Store', key: 'Store' },
+              { label: 'Location', key: 'Location' },
+              { label: 'Payment', key: 'Payment' },
+              { label: 'SEO', key: 'SEO' },
+              { label: 'Store Hours', key: 'StoreHours' },
+            ].map((item) => (
+              <li key={item.key}>
+                <button
+                  className={`w-full text-left py-2 px-4 rounded transition ${
+                    activeComponent === item.key
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setActiveComponent(item.key)}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
 
-        {/* Main content area */}
-        <div className="w-3/4 pl-6">{renderComponent()}</div>
+        {/* Main Content */}
+        <div className="w-full lg:w-3/4 lg:pl-6">
+          <div>{renderComponent()}</div>
+        </div>
       </div>
     </>
   );
