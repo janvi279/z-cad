@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import PageNotFound from './pages/PageNotFound'
 
-import SignUp from './pages/Auth/SignUp/SignUp'
 import Login from './pages/Auth/Login/Login'
+import Register from  './pages/Auth/Register/Register'
 
 import DefaultLayout from './Layout/DefualtLayout'
 
@@ -21,8 +21,8 @@ const App = () => {
       <Routes>
         <Route path='/*' element={<PageNotFound />} />
         <Route element={<PublicRoute />}>
-          <Route path='/signup' element={<SignUp />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
         </Route>
         <Route element={<PrivateRoute />}>
           <Route element={<DefaultLayout />}>
