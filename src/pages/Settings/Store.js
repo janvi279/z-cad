@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik, FormikProvider, Field } from 'formik';
 import CustomInput from '../../Components/common/CustomInput';
 import CustomFile from '../../Components/common/CustomFile';
@@ -6,9 +6,43 @@ import CustomSelect from '../../Components/common/CustomSelect';
 import CustomTextarea from '../../Components/common/CustomTextarea';
 import CustomCheckbox from '../../Components/common/CustomCheckbox';
 import CustomQuill from '../../Components/common/CustomQuill';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const Store = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('setting-store')
+      console.log(response);
+      if (response && response.status === 200) {
+        const StoreData = {
+          email: response.data.result.email,
+          mobile: response.data.result.mobile,
+          logo: response.data.result.logo,
+          bannerType: response.data.result.bannerType,
+          storeBanner: response.data.result.storeBanner,
+          mobileBanner: response.data.result.mobileBanner,
+          videoBanner: response.data.result.videoBanner,
+          silderBannerLink: response.data.result.silderBannerLink,
+          storeListBannerType: response.data.result.storeListBannerType,
+          storeListBanner: response.data.result.storeListBanner,
+          storeListVideoBanner: response.data.result.storeListVideoBanner,
+          shopDiscription: response.data.result.shopDiscription,
+          autherNamePosition: response.data.result.autherNamePosition,
+          productPerPage: response.data.result.productPerPage,
+          hideEmail: response.data.result.hideEmail,
+          hideMobile: response.data.result.hideMobile,
+          hideAddress: response.data.result.hideAddress,
+          hideMap: response.data.result.hideMap,
+          hideAbout: response.data.result.hideAbout,
+        }
+        formik.setValues(StoreData);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -17,12 +51,12 @@ const Store = () => {
       logo: null,
       bannerType: '',
       storeBanner: '',
-      mobileBanner: '',
-      videoBanner: '',
+      mobileBanner: null,
+      videoBanner: null,
       silderBannerLink: '',
       storeListBannerType: '',
-      storeListBanner: '',
-      storeListVideoBanner: '',
+      storeListBanner: null,
+      storeListVideoBanner: null,
       shopDiscription: '',
       autherNamePosition: '',
       productPerPage: '',
@@ -32,11 +66,34 @@ const Store = () => {
       hideMap: false,
       hideAbout: false,
     },
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        resetForm();
+       const formData = new FormData();
+       formData.append('email', values.email)
+       formData.append('mobile', values.mobile)
+       /* formData.append('logo', values.logo) */
+       formData.append('bannerType', values.bannerType)
+       formData.append('storeBanner', values.storeBanner)
+       formData.append('mobileBanner', values.mobileBanner)
+       formData.append('videoBanner', values.videoBanner)
+       formData.append('silderBannerLink', values.silderBannerLink)
+       formData.append('storeListBannerType', values.storeListBannerType)
+       formData.append('storeListBanner', values.storeListBanner)
+       formData.append('storeListVideoBanner', values.storeListVideoBanner)
+       formData.append('shopDiscription', values.shopDiscription)
+       formData.append('autherNamePosition', values.autherNamePosition)
+       formData.append('productPerPage', values.productPerPage)
+       formData.append('hideEmail', values.hideEmail)
+       formData.append('hideMobile', values.hideMobile)
+       formData.append('hideAddress', values.hideAddress)
+       formData.append('hideMap', values.hideMap)
+       formData.append('hideAbout', values.hideAbout)
+
+       const response = await axiosAuthInstance.post('setting-store/add', formData)
+       if (response && response.status === 200) {
+         fetchData();
+       }
       } catch (error) {
         console.error('Submission error:', error);
       } finally {
@@ -44,6 +101,10 @@ const Store = () => {
       }
     },
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const BannerTypeOptions = [
     { value: 'staticImage', label: 'Static Image' },
