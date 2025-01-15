@@ -33,30 +33,30 @@ const Login = () => {
   }
 
   const handleSubmit = (event) => {
-    event.preventDefault()
-    setToken("zcad")
-    navigate('/')
-    // setLoading(true)
+    /*  event.preventDefault()
+     setToken("zcad")
+     navigate('/') */
+    setLoading(true)
 
-    // if (validateForm()) {
-    //   axiosCommonInstance
-    //     .post('/auth/login', {
-    //       email,
-    //       password,
-    //     })
-    //     .then((res) => {
-    //       setToken(res.data?.token) // Save the token in cookies
+    if (validateForm()) {
+      axiosCommonInstance
+        .post('auth/login', {
+          email,
+          password,
+        })
+        .then((res) => {
+          setToken(res.data?.token) // Save the token in cookies
 
-    //       // Redirect to the homepage after successful login
-    //       navigate('/')
-    //     })
-    //     .catch((err) => {
-    //       console.log('err :>> ', err)
-    //     })
-    //     .finally(() => {
-    //       setLoading(false)
-    //     })
-    // }
+          // Redirect to the homepage after successful login
+          navigate('/')
+        })
+        .catch((err) => {
+          console.log('err :>> ', err)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
   }
 
   const handleEmailChange = (e) => {
@@ -78,7 +78,7 @@ const Login = () => {
       <div className='w-full max-w-[400px] mx-auto'>
         <div className='flex flex-col items-center gap-6 mb-12'>
           <h1 className='text-4xl font-serif'>ZCAD</h1>
-          
+
         </div>
         <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
         <div className='w-full'>
@@ -142,7 +142,7 @@ const Login = () => {
                 to='/register'
                 className='text-sm text-primary-500 hover:text-primary-600'
               >
-                Register 
+                Register
               </Link>
             </div>
             <button

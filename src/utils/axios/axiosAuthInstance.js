@@ -3,7 +3,7 @@ import { getToken } from '../cookies/Cookies'
 import toast from 'react-hot-toast'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:6000/api/',
+  baseURL: 'http://localhost:5050/api/',
 })
 
 axiosInstance.interceptors.request.use(
