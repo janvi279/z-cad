@@ -4,6 +4,7 @@ import CustomInput from '../../Components/common/CustomInput';
 import CustomCheckbox from '../../Components/common/CustomCheckbox';
 import CustomSelect from '../../Components/common/CustomSelect';
 import { Country, State } from 'country-state-city';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const Address = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,6 +18,37 @@ const Address = () => {
     }));
     setCountryOptions(countries);
   }, []);
+
+  const fetchData = async () => {
+
+    try {
+      const response = await axiosAuthInstance.get('address-detail')
+      if (response && response.status === 200) {
+        const AddressData = {
+          firstName: response.data.result.firstName,
+          lastName: response.data.result.lastName,
+          address: response.data.result.address,
+          address2: response.data.result.address2,
+          country: response.data.result.country,
+          state: response.data.result.state,
+          city: response.data.result.city,
+          postCode: response.data.result.postCode,
+          sameAsBilling: response.data.result.sameAsBilling,
+          shippingFirstName: response.data.result.shippingFirstName,
+          shippingLastName: response.data.result.shippingLastName,
+          shippingAddress: response.data.result.shippingAddress,
+          shippingAddress2: response.data.result.shippingAddress2,
+          shippingCountry: response.data.result.shippingCountry,
+          shippingState: response.data.result.shippingState,
+          shippingCity: response.data.result.shippingCity,
+          shippingPostCode: response.data.result.shippingPostCode,
+        };
+        formik.setValues(AddressData);
+      }
+    } catch (error) {
+      console.error('fetching data Error:', error);
+    }
+};
 
   const formik = useFormik({
     initialValues: {
@@ -41,7 +73,10 @@ const Address = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
       try {
-        resetForm();
+       const response = await axiosAuthInstance.post('address-detail/add', values);
+       if (response && response.status === 200) {
+         fetchData(); 
+       }
       } catch (error) {
         console.error('Submission error:', error);
       } finally {
@@ -49,6 +84,10 @@ const Address = () => {
       }
     },
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (formik.values.country) {

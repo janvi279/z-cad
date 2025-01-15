@@ -55,7 +55,9 @@ const Personal = () => {
                 formData.append('lastName', values.lastName)
                 formData.append('email', values.email)
                 formData.append('phone', values.phone)
-                formData.append('password', values.password)
+                if (values.password) {
+                    formData.append('password', values.password)
+                }
                 formData.append('about', values.about)
 
                 const response = await axiosAuthInstance.post('personal-detail/add', formData);
@@ -118,7 +120,7 @@ const Personal = () => {
                             label="Password"
                             type={showPassword ? 'text' : 'password'}
                             component={CustomInput}
-                            placeholder="Enter Password"
+                            placeholder="Set New Password - Leave Blank to Retain Current Password "
                         />
                         <div
                             className="absolute inset-y-0 pt-5 right-4 flex items-center cursor-pointer"
