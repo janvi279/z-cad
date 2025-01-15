@@ -33,14 +33,14 @@ const Login = () => {
   }
 
   const handleSubmit = (event) => {
-    /*  event.preventDefault()
-     setToken("zcad")
+     event.preventDefault()
+    /*  setToken("zcad")
      navigate('/') */
     setLoading(true)
 
     if (validateForm()) {
       axiosCommonInstance
-        .post('auth/login', {
+        .post('/auth/login', {
           email,
           password,
         })

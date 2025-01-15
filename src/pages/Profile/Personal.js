@@ -1,22 +1,45 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useFormik, FormikProvider, Field } from 'formik'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import CustomFile from '../../Components/common/CustomFile'
 import CustomInput from '../../Components/common/CustomInput'
 import CustomTextarea from '../../Components/common/CustomTextarea'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import CustomQuill from '../../Components/common/CustomQuill'
 
 const Personal = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
 
+   
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+    
+    const fetchData = async () => {
+        try {
+            const response = await axiosAuthInstance.get('personal-detail');
+            if (response && response.status === 200) {
+                const ProfileData = {
+                    firstName: response.data.result.firstName,
+                    lastName: response.data.result.lastName,
+                    email: response.data.result.email,
+                    phone: response.data.result.phone,
+                    password: '',
+                    about: response.data.result.about,
+                };
+                formik.setValues(ProfileData);
+            }
+        } catch (error) {
+            console.error('Fetching data error:', error);
+        }
+    };
+
+   
     const formik = useFormik({
         initialValues: {
-            avtar: '',
+           /*  avtar: '', */
             firstName: '',
             lastName: '',
             email: '',
@@ -24,10 +47,21 @@ const Personal = () => {
             password: '',
             about: '',
         },
-        onSubmit: async (values, { resetForm }) => {
+        onSubmit: async (values) => {
             setIsSubmitting(true);
             try {
-                resetForm();
+                const formData = new FormData();
+                formData.append('firstName', values.firstName)
+                formData.append('lastName', values.lastName)
+                formData.append('email', values.email)
+                formData.append('phone', values.phone)
+                formData.append('password', values.password)
+                formData.append('about', values.about)
+
+                const response = await axiosAuthInstance.post('personal-detail/add', formData);
+                if (response && response.status === 200) {
+                    fetchData(); 
+                }
             } catch (error) {
                 console.error('Submission error:', error);
             } finally {
@@ -36,6 +70,9 @@ const Personal = () => {
         },
     });
 
+    useEffect(() => {
+        fetchData(); 
+    }, []); 
 
     return (
         <div className="bg-gray-100 p-4 rounded-lg shadow">
@@ -100,15 +137,14 @@ const Personal = () => {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`bg-primary-500 text-white px-4 py-2  rounded hover:bg-primary-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
+                        className={`bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {isSubmitting ? 'Saving...' : 'Save'}
                     </button>
                 </form>
             </FormikProvider>
         </div>
-    )
+    );
 }
 
-export default Personal
+export default Personal;
