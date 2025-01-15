@@ -1,11 +1,35 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useFormik, FormikProvider, Field } from 'formik'
 import CustomInput from '../../Components/common/CustomInput'
 import CustomFile from '../../Components/common/CustomFile'
 import CustomTextarea from '../../Components/common/CustomTextarea'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 
 const Seo = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('setting-seo');
+      
+      if (response && response.status === 200) {
+        const SeoData = {
+          seoTitle: response.data.result.seoTitle,
+          metaDescription: response.data.result.metaDescription,
+          metaKeyword: response.data.result.metaKeyword,
+          facebookTitle: response.data.result.facebookTitle,
+          facebookDescription: response.data.result.facebookDescription,
+          facebookImage: response.data.result.facebookImage,
+          twitterTitle: response.data.result.twitterTitle,
+          twitterDescription: response.data.result.twitterDescription,
+          twitterImage: response.data.result.twitterImage,
+        };
+        formik.setValues(SeoData)
+      }
+    } catch (error) {
+      console.error('Fetching data error:', error)
+    }
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -22,7 +46,21 @@ const Seo = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true)
       try {
-        resetForm()
+        const formData = new FormData();
+        formData.append('seoTitle', values.seoTitle)
+        formData.append('metaDescription', values.metaDescription)
+        formData.append('metaKeyword', values.metaKeyword)
+        formData.append('facebookTitle', values.facebookTitle)
+        formData.append('facebookDescription', values.facebookDescription)
+        formData.append('facebookImage', values.facebookImage)
+        formData.append('twitterTitle', values.twitterTitle)
+        formData.append('twitterDescription', values.twitterDescription)
+        formData.append('twitterImage', values.twitterImage)
+
+        const response = await axiosAuthInstance.post('setting-seo/add', formData);
+        if (response && response.status === 200) {
+         fetchData();
+        }
       } catch (error) {
         console.error('Submission error:', error)
       } finally {
@@ -30,6 +68,10 @@ const Seo = () => {
       }
     },
   })
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   return (
     <div className='bg-gray-100 p-4 rounded-lg shadow'>
