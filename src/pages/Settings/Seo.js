@@ -11,7 +11,6 @@ const Seo = () => {
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('setting-seo');
-      
       if (response && response.status === 200) {
         const SeoData = {
           seoTitle: response.data.result.seoTitle,
@@ -38,24 +37,28 @@ const Seo = () => {
       metaKeyword: '',
       facebookTitle: '',
       facebookDescription: '',
-      facebookImage: '',
+      facebookImage: null,
       twitterTitle: '',
       twitterDescription: '',
-      twitterImage: '',
+      twitterImage: null,
     },
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       setIsSubmitting(true)
       try {
-        const formData = new FormData();
+        const formData = new FormData();    
         formData.append('seoTitle', values.seoTitle)
         formData.append('metaDescription', values.metaDescription)
         formData.append('metaKeyword', values.metaKeyword)
         formData.append('facebookTitle', values.facebookTitle)
         formData.append('facebookDescription', values.facebookDescription)
-        formData.append('facebookImage', values.facebookImage)
+        if (values.facebookImage) {
+          formData.append('facebookImage', values.facebookImage);
+        }
         formData.append('twitterTitle', values.twitterTitle)
         formData.append('twitterDescription', values.twitterDescription)
-        formData.append('twitterImage', values.twitterImage)
+        if (values.twitterImage) {
+          formData.append('twitterImage', values.twitterImage);
+        }
 
         const response = await axiosAuthInstance.post('setting-seo/add', formData);
         if (response && response.status === 200) {

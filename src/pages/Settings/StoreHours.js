@@ -1,10 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik, FormikProvider, Field, FieldArray } from 'formik';
 import CustomCheckbox from '../../Components/common/CustomCheckbox';
 import CustomSelect from '../../Components/common/CustomSelect';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const StoreHours = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('setting-storehours')
+      console.log(response);
+      if (response && response.status === 200) {
+        const StoreHoursData = {
+          enableStore: response.data.result.enableStore,
+          disablePurchaseOffTime: response.data.result.disablePurchaseOffTime,
+          setWeekOff: response.data.result.setWeekOff,
+          mondayOpeningTime: response.data.result.mondayOpeningTime,
+          mondayClosingTime: response.data.result.mondayClosingTime,
+          tuesdayOpeningTime: response.data.result.tuesdayOpeningTime,
+          tuesdayClosingTime: response.data.result.tuesdayClosingTime,
+          wednesdayOpeningTime: response.data.result.wednesdayOpeningTime,
+          wednesdayClosingTime: response.data.result.wednesdayClosingTime,
+          thursdayOpeningTime: response.data.result.thursdayOpeningTime,
+          thursdayClosingTime: response.data.result.thursdayClosingTime,
+        };
+        formik.setValues(StoreHoursData);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
 
   const formik = useFormik({
     initialValues: {
@@ -27,8 +54,11 @@ const StoreHours = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
       try {
-        console.log('Submitted Values:', values);
-        resetForm();
+        const response = await axiosAuthInstance.post('setting-storehours/add', values)
+        console.log(response);
+        if (response && response.status === 200) {
+          fetchData();
+        }
       } catch (error) {
         console.error('Submission error:', error);
       } finally {
@@ -36,6 +66,10 @@ const StoreHours = () => {
       }
     },
   });
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const daysOfWeekOptions = [
     { label: 'Monday', value: 'monday' },
@@ -130,12 +164,12 @@ const StoreHours = () => {
                             )}
                           </div>
                         ))}
-
                       </div>
                     )}
                   </FieldArray>
                 </div>
               ))}
+
             </div>
           </div>
 
