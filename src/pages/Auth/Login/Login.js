@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { setToken } from '../../../utils/cookies/Cookies'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import axiosCommonInstance from '../.././../utils/axios/axiosCommanInstance'
+import { AuthContext } from '../../../Context/AuthContext'
 
 const Login = () => {
   const navigate = useNavigate()
+  const { saveProfile } = useContext(AuthContext);
+
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -33,9 +36,8 @@ const Login = () => {
   }
 
   const handleSubmit = (event) => {
-     event.preventDefault()
-    /*  setToken("zcad")
-     navigate('/') */
+    event.preventDefault()
+
     setLoading(true)
 
     if (validateForm()) {
@@ -45,9 +47,8 @@ const Login = () => {
           password,
         })
         .then((res) => {
-          setToken(res.data?.token) // Save the token in cookies
-
-          // Redirect to the homepage after successful login
+          setToken(res.data?.token)
+          saveProfile(res.data?.user)
           navigate('/')
         })
         .catch((err) => {

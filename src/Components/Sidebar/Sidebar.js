@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { MdHome, MdOutlinePayment } from 'react-icons/md';
 import {
   AiOutlineLogout,
   AiOutlineShoppingCart,
-  AiOutlineUser 
+  AiOutlineUser
 } from 'react-icons/ai';
 import { GoFileMedia } from 'react-icons/go';
 import { LuRepeat2 } from 'react-icons/lu';
@@ -13,6 +13,7 @@ import { FaRegMessage } from 'react-icons/fa6';
 import { PiMoney } from 'react-icons/pi';
 import { FiMenu } from 'react-icons/fi'; // Hamburger menu icon
 import { removeToken } from '../../utils/cookies/Cookies';
+import { AuthContext } from '../../Context/AuthContext';
 
 // Navigation data
 const dataList = [
@@ -25,11 +26,14 @@ const dataList = [
   { label: 'Payments', icon: <MdOutlinePayment />, path: '/payments' },
   { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
   { label: 'Reviews', icon: <FaRegMessage />, path: '/reviews' },
-  {label : 'Author Info', icon: <AiOutlineUser />, path: '/author-info'},
+  { label: 'Author Info', icon: <AiOutlineUser />, path: '/author-info' },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
+  const { getProfile, removeProfile } = useContext(AuthContext);
+  const profileData = getProfile();
+
   const { pathname } = location;
 
   const trigger = useRef(null);
@@ -48,6 +52,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     setTimeout(() => {
       navigate('/login');
     }, 100);
+    removeProfile();
   };
 
   // Save expanded state in localStorage
@@ -81,12 +86,24 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+  const filteredDataList = dataList.filter(item => {
+    switch (profileData?.role) {
+      case "ADMIN":
+        return item.label === 'Home' || item.label === 'Author Info';
+
+      case "AUTHOR":
+        return item.label !== 'Author Info';
+
+      default:
+        return true;
+    }
+  });
+
   return (
     <aside
       ref={sidebar}
-      className={`absolute lg:static left-0 top-0 z-50 flex h-screen flex-col bg-white shadow-lg lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }  transition-[width] duration-300 ${sidebarExpanded ? 'w-72' : 'w-20'}`}
+      className={`absolute lg:static left-0 top-0 z-50 flex h-screen flex-col bg-white shadow-lg lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }  transition-[width] duration-300 ${sidebarExpanded ? 'w-72' : 'w-20'}`}
     >
       {/* Header Section */}
       <div className="flex items-center justify-between px-4 py-4">
@@ -108,16 +125,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <nav className="px-2">
           <ul className="flex flex-col gap-1">
-            {dataList.map((item, index) => (
+            {filteredDataList.map((item, index) => (
               <li key={index}>
                 <NavLink
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${
-                    pathname === item.path
-                      ? 'bg-primary-50 border-l-4 border-primary-500'
-                      : ''
-                  }`}
+                  className={`flex items-center gap-3 rounded-lg py-3 px-3 text-gray-700 hover:bg-primary-50 ${pathname === item.path
+                    ? 'bg-primary-50 border-l-4 border-primary-500'
+                    : ''
+                    }`}
                   title={!sidebarExpanded ? item.label : ''}
                 >
                   {item.icon}

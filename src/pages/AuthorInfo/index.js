@@ -58,7 +58,8 @@ const AuthorInfo = () => {
   }, [pages, limit]);
 
   return (
-    <div className='p-4'>
+    <div className='p-3'>
+      <h1 className="text-2xl mb-3">Authors</h1>
       <DataTable
         columns={columns}
         data={data}

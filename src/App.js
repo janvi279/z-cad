@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import PageNotFound from './pages/PageNotFound'
 
 import Login from './pages/Auth/Login/Login'
-import Register from  './pages/Auth/Register/Register'
+import Register from './pages/Auth/Register/Register'
 
 import DefaultLayout from './Layout/DefualtLayout'
 
@@ -13,27 +13,30 @@ import PrivateRoute from './Components/custom/PrivateRoute'
 
 import AllRoutes from './Navigation/index'
 import { Toaster } from 'react-hot-toast'
+import { AuthProvider } from './Context/AuthContext'
 
 const App = () => {
   return (
     <BrowserRouter>
       <Toaster />
-      <Routes>
-        <Route path='/*' element={<PageNotFound />} />
-        <Route element={<PublicRoute />}>
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-        </Route>
-        <Route element={<PrivateRoute />}>
-          <Route element={<DefaultLayout />}>
-            {AllRoutes.map((route, index) => {
-              return (
-                <Route key={index} path={route.path} element={route.element} />
-              )
-            })}
+      <AuthProvider>
+        <Routes>
+          <Route path='/*' element={<PageNotFound />} />
+          <Route element={<PublicRoute />}>
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
           </Route>
-        </Route>
-      </Routes>
+          <Route element={<PrivateRoute />}>
+            <Route element={<DefaultLayout />}>
+              {AllRoutes.map((route, index) => {
+                return (
+                  <Route key={index} path={route.path} element={route.element} />
+                )
+              })}
+            </Route>
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
