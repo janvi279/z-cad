@@ -4,7 +4,7 @@ import { MdHome, MdOutlinePayment } from 'react-icons/md';
 import {
   AiOutlineLogout,
   AiOutlineShoppingCart,
-  AiOutlineMessage,
+  AiOutlineUser 
 } from 'react-icons/ai';
 import { GoFileMedia } from 'react-icons/go';
 import { LuRepeat2 } from 'react-icons/lu';
@@ -25,6 +25,7 @@ const dataList = [
   { label: 'Payments', icon: <MdOutlinePayment />, path: '/payments' },
   { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
   { label: 'Reviews', icon: <FaRegMessage />, path: '/reviews' },
+  {label : 'Author Info', icon: <AiOutlineUser />, path: '/author-info'},
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
