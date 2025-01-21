@@ -4,6 +4,9 @@ import toast from 'react-hot-toast'
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:8015/api/',
+
+  /* baseURL: '' */
+
 })
 
 axiosInstance.interceptors.request.use(

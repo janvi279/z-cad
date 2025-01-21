@@ -208,15 +208,35 @@ const View = () => {
                             </tr>
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Store Banner</td>
-                                <td className='border-b px-4 py-2'>{data.settingStore.storeBanner}</td>
+                                <td className='border-b px-4 py-2'>{data.settingStore.storeBanner ? (
+                                     <img src={data.settingStore.storeBanner} alt='Logo' className='w-24 h-24 sm:w-32 sm:h-32 object-contain' />
+                                    ) : (
+                                        <span>No Logo available</span>
+                                )}</td>
                             </tr>
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Mobile Banner</td>
-                                <td className='border-b px-4 py-2'>{data.settingStore.mobileBanner}</td>
+                                <td className='border-b px-4 py-2'>{data.settingStore.mobileBanner ? 
+                                (
+                                    <img src={data.settingStore.mobileBanner} alt='Logo' className='w-24 h-24 sm:w-32 sm:h-32 object-contain' />
+                                ) : (
+                                    <span>No Logo available</span>
+                                )}</td>
                             </tr>
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Video Banner</td>
-                                <td className='border-b px-4 py-2'>{data.settingStore.videoBanner}</td>
+                                <td className='border-b px-4 py-2'>{data.settingStore.videoBanner ? (
+                                     <video
+                                     src={data.settingStore.videoBanner}
+                                     controls
+                                     className='w-32 h-32 sm:w-48 sm:h-48 object-contain'
+                                 >
+                                     Your browser does not support the video tag.
+                                 </video>
+                             ) : (
+                                 <span>No Video available</span>
+                             )
+                                }</td>
                             </tr>
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Slider Banner Link</td>
@@ -228,11 +248,23 @@ const View = () => {
                             </tr>
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Store List Banner</td>
-                                <td className='border-b px-4 py-2'>{data.settingStore.storeListBanner}</td>
+                                <td className='border-b px-4 py-2'>{data.settingStore.storeListBanner ? (
+                                     <img src={data.settingStore.storeListBanner} alt='Logo' className='w-24 h-24 sm:w-32 sm:h-32 object-contain' />
+                                ) :(
+                                     <span>No Logo available</span>
+                                )}</td>
                             </tr>
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Store List Video Banner</td>
-                                <td className='border-b px-4 py-2'>{data.settingStore.storeListVideoBanner}</td>
+                                <td className='border-b px-4 py-2'>{data.settingStore.storeListVideoBanner ? (
+                                    <video
+                                    src={data.settingStore.videoBanner}
+                                    controls
+                                    className='w-32 h-32 sm:w-48 sm:h-48 object-contain'
+                                >
+                                    Your browser does not support the video tag.
+                                </video>
+                                ) : (<span>No Video available</span>)}</td>
                             </tr>
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Shop Description</td>

@@ -68,31 +68,43 @@ const Store = () => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-       const formData = new FormData();
-       formData.append('email', values.email)
-       formData.append('mobile', values.mobile)
-       /* formData.append('logo', values.logo) */
-       formData.append('bannerType', values.bannerType)
-       formData.append('storeBanner', values.storeBanner)
-       formData.append('mobileBanner', values.mobileBanner)
-       formData.append('videoBanner', values.videoBanner)
-       formData.append('silderBannerLink', values.silderBannerLink)
-       formData.append('storeListBannerType', values.storeListBannerType)
-       formData.append('storeListBanner', values.storeListBanner)
-       formData.append('storeListVideoBanner', values.storeListVideoBanner)
-       formData.append('shopDiscription', values.shopDiscription)
-       formData.append('autherNamePosition', values.autherNamePosition)
-       formData.append('productPerPage', values.productPerPage)
-       formData.append('hideEmail', values.hideEmail)
-       formData.append('hideMobile', values.hideMobile)
-       formData.append('hideAddress', values.hideAddress)
-       formData.append('hideMap', values.hideMap)
-       formData.append('hideAbout', values.hideAbout)
+        const formData = new FormData();
+        formData.append('email', values.email)
+        formData.append('mobile', values.mobile)
+        if (values.logo) {
+          formData.append('logo', values.logo)
+        }
+        formData.append('bannerType', values.bannerType)
+        if (values.storeBanner) {
+          formData.append('storeBanner', values.storeBanner)
+        }
+        if (values.mobileBanner) {
+          formData.append('mobileBanner', values.mobileBanner)
+        }
+        if (values.videoBanner) {
+          formData.append('videoBanner', values.videoBanner)
+        }
+        formData.append('silderBannerLink', values.silderBannerLink)
+        formData.append('storeListBannerType', values.storeListBannerType)
+        if (values.storeListBanner) {
+          formData.append('storeListBanner', values.storeListBanner)
+        }
+        if (values.storeListVideoBanner) {
+          formData.append('storeListVideoBanner', values.storeListVideoBanner)
+        }
+        formData.append('shopDiscription', values.shopDiscription)
+        formData.append('autherNamePosition', values.autherNamePosition)
+        formData.append('productPerPage', values.productPerPage)
+        formData.append('hideEmail', values.hideEmail)
+        formData.append('hideMobile', values.hideMobile)
+        formData.append('hideAddress', values.hideAddress)
+        formData.append('hideMap', values.hideMap)
+        formData.append('hideAbout', values.hideAbout)
 
-       const response = await axiosAuthInstance.post('setting-store/add', formData)
-       if (response && response.status === 200) {
-         fetchData();
-       }
+        const response = await axiosAuthInstance.post('setting-store/add', formData)
+        if (response && response.status === 200) {
+          fetchData();
+        }
       } catch (error) {
         console.error('Submission error:', error);
       } finally {

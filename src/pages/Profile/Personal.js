@@ -3,7 +3,6 @@ import { useFormik, FormikProvider, Field } from 'formik'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import CustomFile from '../../Components/common/CustomFile'
 import CustomInput from '../../Components/common/CustomInput'
-import CustomTextarea from '../../Components/common/CustomTextarea'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import CustomQuill from '../../Components/common/CustomQuill'
 
@@ -20,8 +19,10 @@ const Personal = () => {
     const fetchData = async () => {
         try {
             const response = await axiosAuthInstance.get('personal-detail');
+            console.log(response);
             if (response && response.status === 200) {
                 const ProfileData = {
+                    avtar: response.data.result.avtar,
                     firstName: response.data.result.firstName,
                     lastName: response.data.result.lastName,
                     email: response.data.result.email,
@@ -39,7 +40,7 @@ const Personal = () => {
    
     const formik = useFormik({
         initialValues: {
-           /*  avtar: '', */
+            avtar: null, 
             firstName: '',
             lastName: '',
             email: '',
@@ -51,6 +52,9 @@ const Personal = () => {
             setIsSubmitting(true);
             try {
                 const formData = new FormData();
+                if (values.avtar) {
+                    formData.append('avtar', values.avtar)
+                }
                 formData.append('firstName', values.firstName)
                 formData.append('lastName', values.lastName)
                 formData.append('email', values.email)
@@ -61,6 +65,7 @@ const Personal = () => {
                 formData.append('about', values.about)
 
                 const response = await axiosAuthInstance.post('personal-detail/add', formData);
+                console.log(response);
                 if (response && response.status === 200) {
                     fetchData(); 
                 }
