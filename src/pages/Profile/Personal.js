@@ -19,7 +19,6 @@ const Personal = () => {
     const fetchData = async () => {
         try {
             const response = await axiosAuthInstance.get('personal-detail');
-            console.log(response);
             if (response && response.status === 200) {
                 const ProfileData = {
                     avtar: response.data.result.avtar,
@@ -53,7 +52,7 @@ const Personal = () => {
             try {
                 const formData = new FormData();
                 if (values.avtar) {
-                    formData.append('avtar', values.avtar)
+                    formData.append('avtar', values.avtar) 
                 }
                 formData.append('firstName', values.firstName)
                 formData.append('lastName', values.lastName)
@@ -90,8 +89,17 @@ const Personal = () => {
                         name="avtar"
                         label="Profile Picture"
                         component={CustomFile}
+                        url={formik.values.avtar}
                     />
-
+                    {formik.values.avtar && typeof formik.values.avtar === 'string' && (
+                        <div className="mt-2">
+                            <img
+                                src={formik.values.avtar}
+                                alt="Current Profile"
+                                className="w-32 h-32 object-contain rounded-md"
+                            />
+                        </div>
+                    )}
                     <Field
                         name="firstName"
                         label="First Name"

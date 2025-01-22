@@ -150,22 +150,71 @@ const Store = () => {
           <div>
             <h3 className="text-xl text-primary-500 font-semibold">Store Brand Setup</h3>
             <div className="space-y-2 mt-2">
-              <Field name="logo" label="Logo" component={CustomFile} />
+              <Field name="logo" label="Logo" component={CustomFile}
+                url={formik.values.logo}
+              />
+              {formik.values.logo && typeof formik.values.logo === 'string' && (
+                <div className="mt-2">
+                  <img
+                    src={formik.values.logo}
+                    alt="Current Profile"
+                    className="w-32 h-32 object-contain rounded-md"
+                  />
+                </div>
+              )}
               <Field
                 name="bannerType"
                 label="Banner Type"
                 component={CustomSelect}
                 options={BannerTypeOptions}
               />
-              <Field name="mobileBanner" label="Mobile Banner" component={CustomFile} />
+              <Field
+                name="mobileBanner"
+                label="Mobile Banner"
+                component={CustomFile}
+                url={formik.values.mobileBanner}
+              />
+              {formik.values.mobileBanner && typeof formik.values.mobileBanner === 'string' && (
+                <div className="mt-2">
+                  <img
+                    src={formik.values.mobileBanner}
+                    alt="Current Profile"
+                    className="w-32 h-32 object-contain rounded-md"
+                  />
+                </div>
+              )}
               {formik.values.bannerType === 'staticImage' && (
-                <Field name="storeBanner" label="Store Banner" component={CustomFile} />
+                 <>
+                 <Field name="storeBanner" label="Store Banner" component={CustomFile} url={formik.values.storeBanner} />
+                 {formik.values.storeBanner && typeof formik.values.storeBanner === 'string' && (
+                   <div className="mt-2">
+                     <img
+                       src={formik.values.storeBanner}
+                       alt="Current Store Banner"
+                       className="w-32 h-32 object-contain rounded-md"
+                     />
+                   </div>
+                 )}
+               </>
               )}
               {formik.values.bannerType === 'slider' && (
                 <Field name="silderBannerLink" label="Slider Banner Link" component={CustomInput} />
               )}
               {formik.values.bannerType === 'video' && (
+                <>
                 <Field name="videoBanner" label="Video Banner" component={CustomFile} />
+                {formik.values.videoBanner && typeof formik.values.videoBanner === 'string' && (
+                  <div className="mt-2">
+                    <video
+                      src={formik.values.videoBanner}
+                      className="w-32 h-32 object-contain rounded-md"
+                      controls
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                )}
+              </>
               )}
               <Field
                 name="storeListBannerType"
@@ -174,10 +223,35 @@ const Store = () => {
                 options={StoreListOfBannerOptions}
               />
               {formik.values.storeListBannerType === 'staticImage' && (
-                <Field name="storeListBanner" label="Store List Banner" component={CustomFile} />
+            
+                <Field
+                  name="storeListBanner"
+                  label="Store List Banner"
+                  component={CustomFile}
+                  url={formik.values.storeListBanner}
+                />
+              
               )}
               {formik.values.storeListBannerType === 'video' && (
-                <Field name="storeListVideoBanner" label="Store List Video Banner" component={CustomFile} />
+                 <>
+                 <Field
+                   name="storeListVideoBanner"
+                   label="Store List Video Banner"
+                   component={CustomFile}
+                   url={formik.values.storeListVideoBanner}
+                 />
+                 {formik.values.storeListVideoBanner && typeof formik.values.storeListVideoBanner === 'string' && (
+                   <div className="mt-2">
+                     <video
+                       src={formik.values.storeListVideoBanner}
+                       className="w-32 h-32 object-contain rounded-md"
+                       controls
+                     >
+                       Your browser does not support the video tag.
+                     </video>
+                   </div>
+                 )}
+               </>
               )}
               <Field name="shopDiscription" label="Shop Description" component={CustomQuill} />
             </div>

@@ -126,7 +126,17 @@ const Seo = () => {
                 name='facebookImage'
                 label='Facebook Image'
                 component={CustomFile}
+                url={formik.values.facebookImage} 
               />
+               {formik.values.facebookImage && typeof formik.values.facebookImage === 'string' && (
+                        <div className="mt-2">
+                            <img
+                                src={formik.values.facebookImage}
+                                alt="Current FacebookImage"
+                                className="w-32 h-32 object-contain rounded-md"
+                            />
+                        </div>
+                    )}
             </div>
           </div>
 
@@ -151,7 +161,17 @@ const Seo = () => {
                 name='twitterImage'
                 label='Twitter Image'
                 component={CustomFile}
+                url={formik.values.twitterImage} 
               />
+              {formik.values.twitterImage && typeof formik.values.twitterImage === 'string' && (
+                        <div className="mt-2">
+                            <img
+                                src={formik.values.twitterImage}
+                                alt="Current TwitterImage"
+                                className="w-32 h-32 object-contain rounded-md"
+                            />
+                        </div>
+                    )}
             </div>
           </div>
 

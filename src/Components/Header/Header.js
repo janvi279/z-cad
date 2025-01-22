@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom'
 import { RiMenu2Fill } from 'react-icons/ri'
-import { FiSearch, FiMail, FiPlus } from 'react-icons/fi'
 import { BiBell } from 'react-icons/bi'
 import { HiOutlineSpeakerphone } from 'react-icons/hi'
 import { FaBook } from 'react-icons/fa'
 import { CiUser } from 'react-icons/ci'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useContext, useRef, useState } from 'react'
+import { AuthContext } from '../../Context/AuthContext'
 
 const Header = (props) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const searchRef = useRef(null)
+
+  const { profileData } = useContext(AuthContext);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -94,7 +96,19 @@ const Header = (props) => {
                 to='/profile'
                 className='flex items-center justify-center w-full h-full text-gray-600 group-hover:text-white'
               >
-                <CiUser className='text-xl' />
+                  {profileData && profileData?.avtar ?
+                <div className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-orange-100 hover:bg-orange-200'>
+                  <img
+                    src={profileData.avtar}
+                    alt='Profile'
+                    className='w-full h-full rounded-full object-cover'
+                  />
+                </div>
+                :
+                <div className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-orange-500 hover:bg-orange-600'>
+                  <CiUser className='text-xl' />
+                </div>
+              }
               </Link>
             </div>
             <span className='absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity'>
