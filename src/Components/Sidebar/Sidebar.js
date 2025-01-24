@@ -11,7 +11,7 @@ import { LuRepeat2 } from 'react-icons/lu';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { FaRegMessage } from 'react-icons/fa6';
 import { PiMoney } from 'react-icons/pi';
-import { FiMenu } from 'react-icons/fi'; // Hamburger menu icon
+import { FiMenu,FiCheckCircle } from 'react-icons/fi'; // Hamburger menu icon
 import { removeToken } from '../../utils/cookies/Cookies';
 import { AuthContext } from '../../Context/AuthContext';
 
@@ -27,6 +27,7 @@ const dataList = [
   { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
   { label: 'Reviews', icon: <FaRegMessage />, path: '/reviews' },
   { label: 'Author Info', icon: <AiOutlineUser />, path: '/author-info' },
+  {label: 'Author Request', icon: <FiCheckCircle />, path: '/author-request'},
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -89,10 +90,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const filteredDataList = dataList.filter(item => {
     switch (profileData?.role) {
       case "ADMIN":
-        return item.label === 'Home' || item.label === 'Author Info';
+        return item.label === 'Home' || item.label === 'Author Info' || item.label === 'Author Request';
 
       case "AUTHOR":
-        return item.label !== 'Author Info';
+        return item.label !== 'Author Info' || item.label !== 'Author Request';
 
       default:
         return true;

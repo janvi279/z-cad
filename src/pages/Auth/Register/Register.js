@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { useFormik, FormikProvider, Field } from 'formik';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import CustomInput from '../../../Components/common/CustomInput';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { setToken } from '../../../utils/cookies/Cookies'
 import axiosCommanInstance from '../../../utils/axios/axiosCommanInstance';
 import * as  Yup from 'yup';
 
@@ -21,7 +19,6 @@ const validationSchema = Yup.object({
 
 const Register = () => {
 
-    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,12 +41,8 @@ const Register = () => {
                 email: values.email,
                 password: values.password,
             });
-            setToken(response.data?.token);
-
-            /* NOTE: This is only when to upload in vercel without backend */
-           /*  setToken("zcad");  */
-            toast.success(response.data?.message)
-            navigate('/')
+            toast.success(response.data?.message);
+            formik.resetForm(); 
         } catch(error) {
             toast.error(error.response?.data?.message)
         } finally {

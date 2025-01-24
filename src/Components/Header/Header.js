@@ -53,8 +53,6 @@ const Header = (props) => {
               >
                 <BiBell className='text-xl' />
               </Link>
-
-              {/* <div className='absolute -top-1 right-0 w-4 h-5 bg-red-500 rounded-full text-sm text-white pl-1'>2</div> */}
             </div>
 
             <span className='absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity'>
@@ -97,7 +95,7 @@ const Header = (props) => {
                 className='flex items-center justify-center w-full h-full text-gray-600 group-hover:text-white'
               >
                   {profileData && profileData?.avtar ?
-                <div className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-orange-100 hover:bg-orange-200'>
+                <div className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-primary-100 hover:bg-primary-200'>
                   <img
                     src={profileData.avtar}
                     alt='Profile'
@@ -105,7 +103,7 @@ const Header = (props) => {
                   />
                 </div>
                 :
-                <div className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-orange-500 hover:bg-orange-600'>
+                <div className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-gray-300 hover:text-white'>
                   <CiUser className='text-xl' />
                 </div>
               }

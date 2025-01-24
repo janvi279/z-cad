@@ -9,6 +9,15 @@ const columns = [
   { name: 'Last Name', selector: (row) => row.lastName },
   { name: 'Email', selector: (row) => row.email },
   { name: 'Mobile No.', selector: (row) => row.phone },
+  { name: 'Status', selector:(row)=>   (
+    <span
+      className={` ${
+        row.status === "1" ? "text-red-500" : "text-green-500"
+      }`}
+    >
+      {row.status === "1" ? "Not Approve" : "Approved"}
+    </span>
+  )},
   { name: 'Actions', selector: (row) => row.actions },
 ];
 
@@ -21,7 +30,7 @@ const AuthorInfo = () => {
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('author/get-all-author', {
-        params: { page: pages, limit: limit },
+        page: pages, limit: limit ,
       });
       if (response && response.status === 200) {
         const transformedData = response.data.result.docs.map((item) => ({

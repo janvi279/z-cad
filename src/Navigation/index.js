@@ -11,6 +11,7 @@ import Notifications from '../pages/Notifications'
 import Profile from '../pages/Profile'
 import AuthorInfo from '../pages/AuthorInfo/index'
 import ViewAuthorInfo from '../pages/AuthorInfo/Actions/View'
+import AuthorRequest from '../pages/AuthorRequest/index'
 
 
 const AllRoute = [
@@ -27,7 +28,8 @@ const AllRoute = [
   { path: '/profile', element: <Profile />, permission: { read: true } },
 
   { path: '/author-info', element: <AuthorInfo />, permission: {read: true}},
-  { path: '/author-info/view/:id', element: <ViewAuthorInfo />, permission:{read:true}}
+  { path: '/author-info/view/:id', element: <ViewAuthorInfo />, permission:{read:true}},
+  { path: '/author-request', element: <AuthorRequest/>, permission:{read:true}},
 ]
 
 export default AllRoute
