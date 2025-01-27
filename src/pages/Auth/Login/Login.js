@@ -7,7 +7,7 @@ import { AuthContext } from '../../../Context/AuthContext'
 
 const Login = () => {
   const navigate = useNavigate()
-  const { saveProfile } = useContext(AuthContext);
+  const { saveProfile } = useContext(AuthContext)
 
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
@@ -79,9 +79,8 @@ const Login = () => {
       <div className='w-full max-w-[400px] mx-auto'>
         <div className='flex flex-col items-center gap-6 mb-12'>
           <h1 className='text-4xl font-serif'>ZCAD</h1>
-
         </div>
-        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+        <h2 className='text-2xl font-semibold text-center mb-6'>Login</h2>
         <div className='w-full'>
           <form onSubmit={handleSubmit} className='space-y-6'>
             <div className='space-y-2'>
@@ -130,21 +129,23 @@ const Login = () => {
                 <p className='text-red-600 text-sm'>{passwordError}</p>
               )}
             </div>
-            {/* <div className='text-right'>
-              <Link
-                to='/forgot-password'
-                className='text-sm text-primary-500 hover:text-primary-600'
-              >
-                Forgot password?
-              </Link>
-            </div> */}
-            <div className='text-right'>
-              <Link
-                to='/register'
-                className='text-sm text-primary-500 hover:text-primary-600'
-              >
-                Register
-              </Link>
+            <div className='flex justify-between'>
+              <div className='text-left'>
+                <Link
+                  to='/forgot-password'
+                  className='text-sm text-primary-500 hover:text-primary-600'
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className='text-right'>
+                <Link
+                  to='/register'
+                  className='text-sm text-primary-500 hover:text-primary-600'
+                >
+                  Register
+                </Link>
+              </div>
             </div>
             <button
               type='submit'

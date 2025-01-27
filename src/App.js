@@ -14,6 +14,8 @@ import PrivateRoute from './Components/custom/PrivateRoute'
 import AllRoutes from './Navigation/index'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './Context/AuthContext'
+import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword'
+import ResetPassword from './pages/Auth/ResetPassword/ResetPassword'
 
 const App = () => {
   return (
@@ -25,6 +27,8 @@ const App = () => {
           <Route element={<PublicRoute />}>
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
+            <Route path='/forgot-password' element={<ForgotPassword />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
           </Route>
           <Route element={<PrivateRoute />}>
             <Route element={<DefaultLayout />}>
