@@ -15,7 +15,7 @@ import AllRoutes from './Navigation/index'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './Context/AuthContext'
 import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword'
-import ResetPassword from './pages/Auth/ResetPassword/ResetPassword'
+import ResetPassword from './pages/Auth/ForgotPassword/ResetPassword'
 
 const App = () => {
   return (

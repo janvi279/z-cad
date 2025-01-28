@@ -73,8 +73,8 @@ const Index = () => {
     fetchData();
   }, [pages, limit]);
 
-  const handleOpenModal = () => {
-    const authorDetail = data.find((item) => item._id);
+  const handleOpenModal = (id) => {
+    const authorDetail = data.find((item) => item._id === id);
     setSelectedAuthor(authorDetail);
     setIsModalOpen(true);
   };
