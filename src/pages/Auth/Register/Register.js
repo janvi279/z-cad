@@ -74,9 +74,7 @@ const Register = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
                 <div className='flex flex-col items-center gap-6 mb-8'>
-                    <div className='rounded-full border-2 border-primary-500 p-4'>
                         <img className='h-[80px]' src={ZCADLogo} alt="ZCAD Logo" />
-                    </div>
                 </div>
                 <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
                 <FormikProvider value={formik}>

@@ -79,9 +79,7 @@ const Login = () => {
     <div className='min-h-screen flex items-center justify-center bg-gray-100 p-4'>
       <div className='w-full bg-white shadow-2xl rounded-lg max-w-md mx-auto p-8'>
         <div className='flex flex-col items-center gap-6 mb-8'>
-          <div className='rounded-full border-2 border-primary-500 p-4'>
          <img className='h-[80px]' src={ZCADLogo} alt="ZCAD Logo" />
-         </div>
         </div>
         <h2 className='text-2xl font-semibold text-center mb-8'>Login</h2>
         <form onSubmit={handleSubmit} className='space-y-6'>
