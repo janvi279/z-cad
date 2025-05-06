@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import Select from 'react-select'
-import { FiBox } from 'react-icons/fi'
+import { FiBox,FiEye } from 'react-icons/fi'
 import { CiImageOn, CiSaveDown2 } from 'react-icons/ci'
 import { FaEye } from 'react-icons/fa'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
+import {Link} from 'react-router-dom'
 
 const columns = [
   {
@@ -14,31 +16,38 @@ const columns = [
     ),
     selector: (row) => row.image,
   },
-  { name: 'Name', selector: (row) => row.name },
+  {name: 'Title', selector: (row) => row.title},
+  // { name: 'Name', selector: (row) => row.name },
+  
   { name: 'SKU', selector: (row) => row.sku },
   { name: 'Status', selector: (row) => row.status },
-  { name: 'Stock', selector: (row) => row.stock },
+  // { name: 'Stock', selector: (row) => row.stock },
   { name: 'Price', selector: (row) => row.price },
-  { name: 'Taxonomies', selector: (row) => row.taxonomies },
-  {
-    name: (
-      <>
-        <FiBox title='Type' className='h-5 w-5' />
-      </>
-    ),
-    selector: (row) => row.type,
-  },
-  {
-    name: (
-      <>
-        <FaEye title='View' className='h-5 w-5' />
-      </>
-    ),
-    selector: (row) => row.views,
-  },
-  { name: 'Date', selector: (row) => row.date },
+  // { name: 'Taxonomies', selector: (row) => row.taxonomies },
+  // {
+  //   name: (
+  //     <>
+  //       <FiBox title='Type' className='h-5 w-5' />
+  //     </>
+  //   ),
+  //   selector: (row) => row.type,
+  // },
+  // {
+  //   name: (
+  //     <>
+  //       <FaEye title='View' className='h-5 w-5' />
+  //     </>
+  //   ),
+  //   selector: (row) => row.views,
+  // },
+  // { name: 'Date', selector: (row) => row.date },
   { name: 'Actions', selector: (row) => row.actions },
 ]
+
+// const columns = [
+//   {name: 'Title', selector: (row) => row.title},
+//   {name: 'Handle', selector: (row) => row.handle}
+// ]
 
 const categoryOptions = []
 
@@ -62,6 +71,52 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedType, setSelectedType] = useState(null)
 
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/product');
+      if (response && response.status === 200) {
+        const transformedData = response.data.products.map((item) => {
+          const variant = item.variants?.[0] || {};
+  
+          return {
+            _id: item._id,
+            title: item.title ,
+            name: item.name ,
+            sku: variant.sku,
+            status: item.status,
+            price: variant.price,
+            image: (
+              <img
+                src={variant.image || '/placeholder.png'}
+                alt='Product'
+                className='w-10 h-10 object-cover rounded'
+              />
+            ),
+            actions: (
+              <div className='flex items-center'>
+                <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
+                  <Link to={`view/${item._id}`}>
+                    <FiEye className='w-4 h-4' />
+                  </Link>
+                </div>
+              </div>
+            ),
+          };
+        });
+  
+        setData(transformedData);
+        // setTotalRows(response.data.result.totalDocs);
+      }
+    } catch (error) {
+      console.error('Error fetching Product data', error);
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchData();
+  },[])
+
   const handlePageChange = (page) => setPages(page)
 
   const handlelimitChange = (newPerPage) => {
@@ -69,11 +124,6 @@ const Products = () => {
     setPages(1)
   }
   const handleSearchChange = (e) => setSearchTerm(e.target.value)
-
-  const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
-
   return (
     <>
       {/* Button Section */}
@@ -130,13 +180,13 @@ const Products = () => {
 
         <DataTable
           columns={columns}
-          data={filteredData}
+          data={data  }
           pagination
           paginationServer
           paginationTotalRows={totalRows}
           paginationPerPage={limit}
           onChangePage={handlePageChange}
-          onChangelimit={handlelimitChange}
+          onChangeRowsPerPage={handlelimitChange}
         />
       </div>
     </>
