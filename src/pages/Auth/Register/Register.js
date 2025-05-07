@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useFormik, FormikProvider, Field } from 'formik';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import ZCADLogo from '../../../ZCADICON.png'
 import CustomInput from '../../../Components/common/CustomInput';
-import { useNavigate } from 'react-router-dom';
-import { setToken } from '../../../utils/cookies/Cookies'
+import { toast } from 'react-hot-toast';
+import axiosCommanInstance from '../../../utils/axios/axiosCommanInstance';
 import * as  Yup from 'yup';
 
 const validationSchema = Yup.object({
@@ -12,14 +13,13 @@ const validationSchema = Yup.object({
     email: Yup.string().required("Email is required"),
     password: Yup.string().required("Password is required"),
     confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], "Passwords must match")
-    .required("Confirm Password is required"),
+        .oneOf([Yup.ref('password'), null], "Passwords must match")
+        .required("Confirm Password is required"),
 })
 
 
 const Register = () => {
 
-    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,12 +35,17 @@ const Register = () => {
 
     const handleSubmit = async (values) => {
         setIsSubmitting(true);
-        try{
-            setToken("zcad"); 
-            console.log("Register Sucessfully", values)
-            navigate('/')
-        } catch(error) {
-            console.log(error);
+        try {
+            const response = await axiosCommanInstance.post('auth/create-author', {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                password: values.password,
+            });
+            toast.success(response.data?.message);
+            formik.resetForm();
+        } catch (error) {
+            toast.error(error.response?.data?.message)
         } finally {
             setIsSubmitting(false);
         }
@@ -58,37 +63,38 @@ const Register = () => {
         onSubmit: async (values, formikHelpers) => {
             const error = await formik.validateForm();
             if (Object.keys(error).length === 0) {
-              handleSubmit(values, formikHelpers);
+                handleSubmit(values, formikHelpers);
             } else {
-              formikHelpers.setTouched(error);
+                formikHelpers.setTouched(error);
             }
-          }
+        }
     });
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
+                <div className='flex flex-col items-center gap-6 mb-8'>
+                        <img className='h-[80px]' src={ZCADLogo} alt="ZCAD Logo" />
+                </div>
                 <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
                 <FormikProvider value={formik}>
                     <form onSubmit={formik.handleSubmit} className="space-y-4">
+                        <div className='flex gap-4'>
+                            <Field
+                                name="firstName"
+                                label="First Name"
+                                component={CustomInput}
+                                placeholder="Enter First Name"
 
+                            />
 
-                        <Field
-                            name="firstName"
-                            label="First Name"
-                            component={CustomInput}
-                            placeholder="Enter First Name"
-
-                        />
-
-
-                        <Field
-                            name="lastName"
-                            label="Last Name"
-                            component={CustomInput}
-                            placeholder="Enter Last Name"
-                        />
-
+                            <Field
+                                name="lastName"
+                                label="Last Name"
+                                component={CustomInput}
+                                placeholder="Enter Last Name"
+                            />
+                        </div>
 
                         <Field
                             name="email"
@@ -96,42 +102,39 @@ const Register = () => {
                             component={CustomInput}
                             placeholder="Enter Email"
                         />
+                        <div className='flex gap-4'>
+                            <div className="relative">
+                                <Field
+                                    name="password"
+                                    label="Password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    component={CustomInput}
+                                    placeholder="Enter Password"
+                                />
+                                <div
+                                    className="absolute inset-y-0 pt-5 right-4 flex items-center cursor-pointer"
+                                    onClick={togglePasswordVisibility}
+                                >
+                                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                                </div>
+                            </div>
 
-
-                        <div className="relative">
-                            <Field
-                                name="password"
-                                label="Password"
-                                type={showPassword ? 'text' : 'password'}
-                                component={CustomInput}
-                                placeholder="Enter Password"
-                            />
-                            <div
-                                className="absolute inset-y-0 pt-5 right-4 flex items-center cursor-pointer"
-                                onClick={togglePasswordVisibility}
-                            >
-                                {showPassword ? <FiEyeOff /> : <FiEye />}
+                            <div className="relative">
+                                <Field
+                                    name="confirmPassword"
+                                    label="Confirm Password"
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    component={CustomInput}
+                                    placeholder="Confirm Password"
+                                />
+                                <div
+                                    className="absolute inset-y-0 pt-5 right-4 flex items-center cursor-pointer"
+                                    onClick={toggleConfirmPasswordVisibility}
+                                >
+                                    {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+                                </div>
                             </div>
                         </div>
-
-
-                        <div className="relative">
-                            <Field
-                                name="confirmPassword"
-                                label="Confirm Password"
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                component={CustomInput}
-                                placeholder="Confirm Password"
-                            />
-                            <div
-                                className="absolute inset-y-0 pt-5 right-4 flex items-center cursor-pointer"
-                                onClick={toggleConfirmPasswordVisibility}
-                            >
-                                {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
-                            </div>
-                        </div>
-
-
                         <button
                             type="submit"
                             disabled={isSubmitting}

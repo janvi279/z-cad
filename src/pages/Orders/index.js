@@ -4,6 +4,7 @@ import Select from 'react-select'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FiMoreHorizontal } from 'react-icons/fi'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const columns = [
   {
@@ -41,6 +42,21 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
+
+  const fetchData = async () => {
+    try {
+      const response = axiosAuthInstance.get('shopify/order')
+      if (response && response.status === 200) {
+        setData(response.data.orders)
+      }
+    } catch (error) {
+      console.log('error :>> ', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [])
 
   const handlePageChange = (page) => setPages(page)
 

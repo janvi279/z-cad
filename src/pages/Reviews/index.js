@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import Select from 'react-select'
 import { FiMoreHorizontal } from 'react-icons/fi'
 import { CiImageOn } from 'react-icons/ci'
 import { FiBox } from 'react-icons/fi'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 
 const columns = [
   {
@@ -36,6 +37,20 @@ const Reviews = () => {
   const [limit, setLimit] = useState(10)
   const [totalRows, setTotalRows] = useState(data.length)
 
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/review')
+      if (response && response.status === 200) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.error('Error Fetching Review data', error)
+    }
+  }
+
+  useEffect(() => {
+    // fetchData();
+  }, [])
   const handlePageChange = (page) => setPages(page)
 
   const handleLimitChange = (newPerPage) => {

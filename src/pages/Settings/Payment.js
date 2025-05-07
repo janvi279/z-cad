@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { useFormik, FormikProvider, Field } from 'formik';
 import CustomInput from '../../Components/common/CustomInput';
 import CustomSelect from '../../Components/common/CustomSelect';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const Payment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const fetchData = async () => {
+      try {
+        const response = await axiosAuthInstance.get('setting-payment')
+        if (response && response.status === 200) {
+          const PaymentData = {
+            paymentMethod: response.data.result.paymentMethod,
+            paypalEmail: response.data.result.paypalEmail,
+            accountName: response.data.result.accountName,
+            accountNumber: response.data.result.accountNumber,
+            bankName: response.data.result.bankName,
+            bankAddress: response.data.result.bankAddress,
+            routingNumber: response.data.result.routingNumber,
+            iban: response.data.result.iban,
+            swiftCode: response.data.result.swiftCode,
+            ifscCode: response.data.result.ifscCode,
+          };
+          formik.setValues(PaymentData);
+        }
+      } catch (error) {
+        console.error('Fetching data error:', error);
+      }
+    }
   const formik = useFormik({
     initialValues: {
       paymentMethod: '',
@@ -22,7 +45,10 @@ const Payment = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
       try {
-        resetForm();
+        const response = await axiosAuthInstance.post('setting-payment/add', values);
+        if (response && response.status === 200) {
+          fetchData();
+        }
       } catch (error) {
         console.error('Submission error:', error);
       } finally {
@@ -31,6 +57,10 @@ const Payment = () => {
     },
   });
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+  
   const PaymentMethodOptions = [
     { value: 'paypal', label: 'PayPal' },
     { value: 'banktransfer', label: 'Bank Transfer' },

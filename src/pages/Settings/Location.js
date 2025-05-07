@@ -3,6 +3,7 @@ import { useFormik, FormikProvider, Field } from 'formik'
 import CustomInput from '../../Components/common/CustomInput'
 import CustomSelect from '../../Components/common/CustomSelect'
 import { Country, State } from 'country-state-city';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const Location = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -17,6 +18,26 @@ const Location = () => {
     setCountryOptions(countries);
   }, []);
 
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('setting-location')
+      if (response && response.status === 200) {
+        const LocationData = {
+          street: response.data.result.street,
+          street2: response.data.result.street2,
+          city: response.data.result.city,
+          zip: response.data.result.zip,
+          state: response.data.result.state,
+          country: response.data.result.country,
+          location: response.data.result.location,
+        };
+        formik.setValues(LocationData)
+      } 
+    } catch (error) {
+      console.error('Fetching data error:', error)
+    }
+  }
+
   const formik = useFormik({
     initialValues: {
       street: '',
@@ -30,7 +51,10 @@ const Location = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true)
       try {
-        resetForm()
+       const response = await axiosAuthInstance.post('setting-location/add', values);
+        if (response && response.status === 200) {
+          fetchData();
+        }
       } catch (error) {
         console.error('Submission error:', error)
       } finally {
@@ -38,6 +62,10 @@ const Location = () => {
       }
     },
   })
+
+  useEffect (() => {
+    fetchData();
+  },[])
 
   useEffect(() => {
     if (formik.values.country) {

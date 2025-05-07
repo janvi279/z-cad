@@ -1,9 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useFormik, FormikProvider, Field } from 'formik'
 import CustomInput from '../../Components/common/CustomInput'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 
 const Social = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const fetchData = async () => {
+        try {
+            const response = await axiosAuthInstance.get('personal-detail');
+            console.log(response);
+            if (response && response.status === 200) {
+                const SocialData = {
+                    twitter: response.data.result.twitter,
+                    facebook: response.data.result.facebook,
+                    instagram: response.data.result.instagram,
+                    youtube: response.data.result.youtube,
+                    linkedin: response.data.result.linkedin,
+                    googlePlus: response.data.result.googlePlus,
+                    snapchat: response.data.result.snapchat,
+                    pinterest: response.data.result.pinterest,
+                };
+                formik.setValues(SocialData);
+            }
+        } catch (error) {
+            console.error('Fetching data error:', error);
+        }
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -19,7 +42,12 @@ const Social = () => {
         onSubmit: async (values, { resetForm }) => {
             setIsSubmitting(true);
             try {
-                resetForm();
+                const response = await axiosAuthInstance.post('personal-detail/social-add', values)
+                console.log(response);
+                if (response && response.status === 200){
+                    fetchData();
+                }
+               
             } catch (error) {
                 console.error('Submission error:', error);
             } finally {
@@ -27,6 +55,10 @@ const Social = () => {
             }
         },
     });
+
+    useEffect(() => {
+        fetchData();
+    }, []);
     return (
         <div className="bg-gray-100 p-4 rounded-lg shadow">
             <FormikProvider value={formik}>

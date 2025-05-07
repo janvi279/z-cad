@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik, FormikProvider, Field } from 'formik';
 import CustomInput from '../../Components/common/CustomInput';
 import CustomFile from '../../Components/common/CustomFile';
@@ -6,9 +6,42 @@ import CustomSelect from '../../Components/common/CustomSelect';
 import CustomTextarea from '../../Components/common/CustomTextarea';
 import CustomCheckbox from '../../Components/common/CustomCheckbox';
 import CustomQuill from '../../Components/common/CustomQuill';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const Store = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('setting-store')
+      if (response && response.status === 200) {
+        const StoreData = {
+          email: response.data.result.email,
+          mobile: response.data.result.mobile,
+          logo: response.data.result.logo,
+          bannerType: response.data.result.bannerType,
+          storeBanner: response.data.result.storeBanner,
+          mobileBanner: response.data.result.mobileBanner,
+          videoBanner: response.data.result.videoBanner,
+          silderBannerLink: response.data.result.silderBannerLink,
+          storeListBannerType: response.data.result.storeListBannerType,
+          storeListBanner: response.data.result.storeListBanner,
+          storeListVideoBanner: response.data.result.storeListVideoBanner,
+          shopDiscription: response.data.result.shopDiscription,
+          autherNamePosition: response.data.result.autherNamePosition,
+          productPerPage: response.data.result.productPerPage,
+          hideEmail: response.data.result.hideEmail,
+          hideMobile: response.data.result.hideMobile,
+          hideAddress: response.data.result.hideAddress,
+          hideMap: response.data.result.hideMap,
+          hideAbout: response.data.result.hideAbout,
+        }
+        formik.setValues(StoreData);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -17,12 +50,12 @@ const Store = () => {
       logo: null,
       bannerType: '',
       storeBanner: '',
-      mobileBanner: '',
-      videoBanner: '',
+      mobileBanner: null,
+      videoBanner: null,
       silderBannerLink: '',
       storeListBannerType: '',
-      storeListBanner: '',
-      storeListVideoBanner: '',
+      storeListBanner: null,
+      storeListVideoBanner: null,
       shopDiscription: '',
       autherNamePosition: '',
       productPerPage: '',
@@ -32,11 +65,46 @@ const Store = () => {
       hideMap: false,
       hideAbout: false,
     },
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        resetForm();
+        const formData = new FormData();
+        formData.append('email', values.email)
+        formData.append('mobile', values.mobile)
+        if (values.logo) {
+          formData.append('logo', values.logo)
+        }
+        formData.append('bannerType', values.bannerType)
+        if (values.storeBanner) {
+          formData.append('storeBanner', values.storeBanner)
+        }
+        if (values.mobileBanner) {
+          formData.append('mobileBanner', values.mobileBanner)
+        }
+        if (values.videoBanner) {
+          formData.append('videoBanner', values.videoBanner)
+        }
+        formData.append('silderBannerLink', values.silderBannerLink)
+        formData.append('storeListBannerType', values.storeListBannerType)
+        if (values.storeListBanner) {
+          formData.append('storeListBanner', values.storeListBanner)
+        }
+        if (values.storeListVideoBanner) {
+          formData.append('storeListVideoBanner', values.storeListVideoBanner)
+        }
+        formData.append('shopDiscription', values.shopDiscription)
+        formData.append('autherNamePosition', values.autherNamePosition)
+        formData.append('productPerPage', values.productPerPage)
+        formData.append('hideEmail', values.hideEmail)
+        formData.append('hideMobile', values.hideMobile)
+        formData.append('hideAddress', values.hideAddress)
+        formData.append('hideMap', values.hideMap)
+        formData.append('hideAbout', values.hideAbout)
+
+        const response = await axiosAuthInstance.post('setting-store/add', formData)
+        if (response && response.status === 200) {
+          fetchData();
+        }
       } catch (error) {
         console.error('Submission error:', error);
       } finally {
@@ -44,6 +112,10 @@ const Store = () => {
       }
     },
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const BannerTypeOptions = [
     { value: 'staticImage', label: 'Static Image' },
@@ -78,22 +150,71 @@ const Store = () => {
           <div>
             <h3 className="text-xl text-primary-500 font-semibold">Store Brand Setup</h3>
             <div className="space-y-2 mt-2">
-              <Field name="logo" label="Logo" component={CustomFile} />
+              <Field name="logo" label="Logo" component={CustomFile}
+                url={formik.values.logo}
+              />
+              {formik.values.logo && typeof formik.values.logo === 'string' && (
+                <div className="mt-2">
+                  <img
+                    src={formik.values.logo}
+                    alt="Current Profile"
+                    className="w-32 h-32 object-contain rounded-md"
+                  />
+                </div>
+              )}
               <Field
                 name="bannerType"
                 label="Banner Type"
                 component={CustomSelect}
                 options={BannerTypeOptions}
               />
-              <Field name="mobileBanner" label="Mobile Banner" component={CustomFile} />
+              <Field
+                name="mobileBanner"
+                label="Mobile Banner"
+                component={CustomFile}
+                url={formik.values.mobileBanner}
+              />
+              {formik.values.mobileBanner && typeof formik.values.mobileBanner === 'string' && (
+                <div className="mt-2">
+                  <img
+                    src={formik.values.mobileBanner}
+                    alt="Current Profile"
+                    className="w-32 h-32 object-contain rounded-md"
+                  />
+                </div>
+              )}
               {formik.values.bannerType === 'staticImage' && (
-                <Field name="storeBanner" label="Store Banner" component={CustomFile} />
+                 <>
+                 <Field name="storeBanner" label="Store Banner" component={CustomFile} url={formik.values.storeBanner} />
+                 {formik.values.storeBanner && typeof formik.values.storeBanner === 'string' && (
+                   <div className="mt-2">
+                     <img
+                       src={formik.values.storeBanner}
+                       alt="Current Store Banner"
+                       className="w-32 h-32 object-contain rounded-md"
+                     />
+                   </div>
+                 )}
+               </>
               )}
               {formik.values.bannerType === 'slider' && (
                 <Field name="silderBannerLink" label="Slider Banner Link" component={CustomInput} />
               )}
               {formik.values.bannerType === 'video' && (
+                <>
                 <Field name="videoBanner" label="Video Banner" component={CustomFile} />
+                {formik.values.videoBanner && typeof formik.values.videoBanner === 'string' && (
+                  <div className="mt-2">
+                    <video
+                      src={formik.values.videoBanner}
+                      className="w-32 h-32 object-contain rounded-md"
+                      controls
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                )}
+              </>
               )}
               <Field
                 name="storeListBannerType"
@@ -102,10 +223,35 @@ const Store = () => {
                 options={StoreListOfBannerOptions}
               />
               {formik.values.storeListBannerType === 'staticImage' && (
-                <Field name="storeListBanner" label="Store List Banner" component={CustomFile} />
+            
+                <Field
+                  name="storeListBanner"
+                  label="Store List Banner"
+                  component={CustomFile}
+                  url={formik.values.storeListBanner}
+                />
+              
               )}
               {formik.values.storeListBannerType === 'video' && (
-                <Field name="storeListVideoBanner" label="Store List Video Banner" component={CustomFile} />
+                 <>
+                 <Field
+                   name="storeListVideoBanner"
+                   label="Store List Video Banner"
+                   component={CustomFile}
+                   url={formik.values.storeListVideoBanner}
+                 />
+                 {formik.values.storeListVideoBanner && typeof formik.values.storeListVideoBanner === 'string' && (
+                   <div className="mt-2">
+                     <video
+                       src={formik.values.storeListVideoBanner}
+                       className="w-32 h-32 object-contain rounded-md"
+                       controls
+                     >
+                       Your browser does not support the video tag.
+                     </video>
+                   </div>
+                 )}
+               </>
               )}
               <Field name="shopDiscription" label="Shop Description" component={CustomQuill} />
             </div>
