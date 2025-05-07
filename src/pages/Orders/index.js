@@ -44,22 +44,19 @@ const Orders = () => {
   const [startDate, endDate] = dateRange;
 
   const fetchData = async () => {
-    try{
+    try {
       const response = axiosAuthInstance.get('shopify/order')
-      if(response && response.status === 200) {
-        const transformedData = response.data.orders.map((item) => {
-          
-        })
-        setData(transformedData)
+      if (response && response.status === 200) {
+        setData(response.data.orders)
       }
-    }catch(error) {
-
+    } catch (error) {
+      console.log('error :>> ', error);
     }
   }
 
   useEffect(() => {
     fetchData();
-  },[])
+  }, [])
 
   const handlePageChange = (page) => setPages(page)
 

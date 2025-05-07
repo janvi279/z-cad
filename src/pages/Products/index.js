@@ -1,53 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import Select from 'react-select'
-import { FiBox,FiEye } from 'react-icons/fi'
-import { CiImageOn, CiSaveDown2 } from 'react-icons/ci'
-import { FaEye } from 'react-icons/fa'
+import { FiEye } from 'react-icons/fi'
+import { CiSaveDown2 } from 'react-icons/ci'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const columns = [
-  {
-    name: (
-      <>
-        <CiImageOn title='Image' className='h-5 w-5' />
-      </>
-    ),
-    selector: (row) => row.image,
-  },
-  {name: 'Title', selector: (row) => row.title},
-  // { name: 'Name', selector: (row) => row.name },
-  
+  { name: 'Title', selector: (row) => row.title },
   { name: 'SKU', selector: (row) => row.sku },
   { name: 'Status', selector: (row) => row.status },
-  // { name: 'Stock', selector: (row) => row.stock },
   { name: 'Price', selector: (row) => row.price },
-  // { name: 'Taxonomies', selector: (row) => row.taxonomies },
-  // {
-  //   name: (
-  //     <>
-  //       <FiBox title='Type' className='h-5 w-5' />
-  //     </>
-  //   ),
-  //   selector: (row) => row.type,
-  // },
-  // {
-  //   name: (
-  //     <>
-  //       <FaEye title='View' className='h-5 w-5' />
-  //     </>
-  //   ),
-  //   selector: (row) => row.views,
-  // },
-  // { name: 'Date', selector: (row) => row.date },
   { name: 'Actions', selector: (row) => row.actions },
 ]
-
-// const columns = [
-//   {name: 'Title', selector: (row) => row.title},
-//   {name: 'Handle', selector: (row) => row.handle}
-// ]
 
 const categoryOptions = []
 
@@ -77,25 +42,18 @@ const Products = () => {
       if (response && response.status === 200) {
         const transformedData = response.data.products.map((item) => {
           const variant = item.variants?.[0] || {};
-  
+
           return {
             _id: item._id,
-            title: item.title ,
-            name: item.name ,
+            title: item.title,
+            name: item.name,
             sku: variant.sku,
             status: item.status,
             price: variant.price,
-            image: (
-              <img
-                src={variant.image || '/placeholder.png'}
-                alt='Product'
-                className='w-10 h-10 object-cover rounded'
-              />
-            ),
             actions: (
               <div className='flex items-center'>
                 <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
-                  <Link to={`view/${item._id}`}>
+                  <Link to={`view/${item.id}`}>
                     <FiEye className='w-4 h-4' />
                   </Link>
                 </div>
@@ -103,19 +61,17 @@ const Products = () => {
             ),
           };
         });
-  
         setData(transformedData);
-        // setTotalRows(response.data.result.totalDocs);
       }
     } catch (error) {
       console.error('Error fetching Product data', error);
     }
   };
-  
+
 
   useEffect(() => {
     fetchData();
-  },[])
+  }, [])
 
   const handlePageChange = (page) => setPages(page)
 
@@ -155,7 +111,7 @@ const Products = () => {
 
       <div className='bg-white p-4 shadow rounded-lg'>
         <div className='flex justify-between items-center mb-4'>
-          <div className='flex gap-4'>
+          {/* <div className='flex gap-4'>
             <Select
               options={categoryOptions}
               placeholder='Filter By Category'
@@ -168,7 +124,7 @@ const Products = () => {
               value={selectedType}
               onChange={setSelectedType}
             />
-          </div>
+          </div> */}
           <input
             type='text'
             placeholder='Search...'
@@ -180,7 +136,7 @@ const Products = () => {
 
         <DataTable
           columns={columns}
-          data={data  }
+          data={data}
           pagination
           paginationServer
           paginationTotalRows={totalRows}

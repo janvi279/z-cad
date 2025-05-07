@@ -40,7 +40,7 @@ const Reviews = () => {
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('shopify/review')
-      if(response && response.status === 200) {
+      if (response && response.status === 200) {
         setData(response.data);
       }
     } catch (error) {
@@ -49,8 +49,8 @@ const Reviews = () => {
   }
 
   useEffect(() => {
-    fetchData();
-  },[])
+    // fetchData();
+  }, [])
   const handlePageChange = (page) => setPages(page)
 
   const handleLimitChange = (newPerPage) => {
