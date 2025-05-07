@@ -1,13 +1,11 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8015/api/',
+// const baseURL: 'http://localhost:8015/api/',
+const baseURL = "https://zcadgroup.alphabitinfoway.in/api/";
 
-/*   baseURL : '' */
-  headers: {
-    'Content-Type': 'application/json',
-  },
+const axiosInstance = axios.create({
+  baseURL,
 })
 
 const axiosCommonInstance = {
@@ -16,7 +14,6 @@ const axiosCommonInstance = {
       const response = await axiosInstance.get(url, { params })
       return response
     } catch (error) {
-      // Check if error.response exists before accessing error.response.data
       const errorMessage = error.response?.data?.message || 'An error occurred.'
       toast.error(errorMessage)
     }
@@ -26,7 +23,6 @@ const axiosCommonInstance = {
       const response = await axiosInstance.post(url, data)
       return response
     } catch (error) {
-      // Check if error.response exists before accessing error.response.data
       const errorMessage = error.response?.data?.message || 'An error occurred.'
       toast.error(errorMessage)
     }
@@ -36,7 +32,6 @@ const axiosCommonInstance = {
       const response = await axiosInstance.put(url, data)
       return response
     } catch (error) {
-      // Check if error.response exists before accessing error.response.data
       const errorMessage = error.response?.data?.message || 'An error occurred.'
       toast.error(errorMessage)
     }
@@ -46,7 +41,6 @@ const axiosCommonInstance = {
       const response = await axiosInstance.delete(url, data)
       return response
     } catch (error) {
-      // Check if error.response exists before accessing error.response.data
       const errorMessage = error.response?.data?.message || 'An error occurred.'
       toast.error(errorMessage)
     }
