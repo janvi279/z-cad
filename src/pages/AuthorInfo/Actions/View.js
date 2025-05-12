@@ -73,10 +73,10 @@ const View = () => {
                             <tr>
                                 <td className='border-b px-4 py-2 font-medium'>Author Status</td>
                                 <td
-                                    className={`border-b px-4 py-2 font-bold ${data.status === 1 ? 'text-red-500' : 'text-green-500'
+                                    className={`border-b px-4 py-2 font-bold ${data.status === "1" ? 'text-red-500' : 'text-green-500'
                                         }`}
                                 >
-                                    {data.status === 1 ? 'Not Approved' : 'Approved'}
+                                    {data.status === "1" ? 'Not Approved' : 'Approved'}
                                 </td>
                             </tr>
                             <tr>
