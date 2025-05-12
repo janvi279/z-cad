@@ -8,18 +8,13 @@ import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const columns = [
   {
-    name: (
-      <>
-        <FiMoreHorizontal title='Status' className='h-5 w-5' />
-      </>
-    ),
-    selector: (row) => row.status,
-  },
-  { name: 'Order', selector: (row) => row.order },
-  { name: 'Purchased', selector: (row) => row.purchased },
-  { name: 'Gross Sales', selector: (row) => row.grossSales },
-  { name: 'Date', selector: (row) => row.date },
-  { name: 'Actions', selector: (row) => row.actions },
+  name: 'Customer Name',
+  selector: (row) => `${row.customer?.first_name ?? ''} ${row.customer?.last_name ?? ''}`
+},
+  { name: 'Email', selector:(row) => row.contact_email },
+  {name: 'Order Confirm',   selector: (row) => (row.confirmed ? 'Yes' : 'No')},
+  { name: 'Total price', selector: (row) => row.current_total_price },
+  { name : 'Order no.', selector: (row) => row.order_number },
 ]
 
 const ProductOptions = []
@@ -45,9 +40,13 @@ const Orders = () => {
 
   const fetchData = async () => {
     try {
-      const response = axiosAuthInstance.get('shopify/order')
+      const response = await axiosAuthInstance.get('shopify/order')
       if (response && response.status === 200) {
-        setData(response.data.orders)
+         const transformedData = response.data.orders.map((item) => ({
+        ...item, 
+      }));
+
+      setData(transformedData);
       }
     } catch (error) {
       console.log('error :>> ', error);
@@ -75,7 +74,7 @@ const Orders = () => {
       </div>
 
       <div className='bg-white shadow p-4 rounded-lg'>
-        <div className='flex justify-between gap-4 items-center mb-4'>
+        {/* <div className='flex justify-between gap-4 items-center mb-4'>
           <button className='bg-primary-500 text-white py-2 px-4 rounded'>
             Print
           </button>
@@ -89,7 +88,7 @@ const Orders = () => {
             CSV
           </button>
 
-          {/* Date Input */}
+        
           <div className="inline-block">
             <DatePicker
               selected={startDate}
@@ -116,7 +115,7 @@ const Orders = () => {
             onChange={setSelectedOrder}
           />
 
-          {/* Search Bar Positioned to the Right */}
+          
           <input
             type='text'
             placeholder='Search...'
@@ -124,7 +123,7 @@ const Orders = () => {
             value={searchTerm}
             onChange={handleSearchChange}
           />
-        </div>
+        </div> */}
 
         <DataTable
           columns={columns}
@@ -134,7 +133,7 @@ const Orders = () => {
           paginationTotalRows={totalRows}
           paginationPerPage={limit}
           onChangePage={handlePageChange}
-          onChangelimit={handlelimitChange}
+          onChangeRowsPerPage={handlelimitChange}
         />
       </div>
     </>

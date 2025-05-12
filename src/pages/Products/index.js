@@ -11,7 +11,7 @@ const columns = [
   { name: 'SKU', selector: (row) => row.sku },
   { name: 'Status', selector: (row) => row.status },
   { name: 'Price', selector: (row) => row.price },
-  { name: 'Actions', selector: (row) => row.actions },
+  // { name: 'Actions', selector: (row) => row.actions },
 ]
 
 const categoryOptions = []
@@ -53,9 +53,9 @@ const Products = () => {
             actions: (
               <div className='flex items-center'>
                 <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
-                  <Link to={`view/${item.id}`}>
-                    <FiEye className='w-4 h-4' />
-                  </Link>
+                    <Link to={`view/${item.id}`}>
+                      <FiEye className='w-4 h-4' />
+                    </Link>
                 </div>
               </div>
             ),
