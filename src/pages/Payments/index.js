@@ -21,18 +21,18 @@ const columns = [
   {
     name: 'Amount', selector: (row) => row?.receipt.paid_amount
   },
- { 
-  name: 'Charges', 
-  selector: (row) => row.shop_money?.total_unsettled_set?.amount ?? '—' 
-},
+  {
+    name: 'Charges',
+    selector: (row) => row.shop_money?.total_unsettled_set?.amount ?? '—'
+  },
   { name: 'Payment', selector: (row) => row.gateway },
-  { name: 'Mode', selector: (row) => row.payment_details?.payment_method_name},
+  { name: 'Mode', selector: (row) => row.payment_details?.payment_method_name },
   { name: 'Note', selector: (row) => row.note },
   {
-  name: 'Date',
-  selector: (row) =>
-    row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN') : 'N/A',
-},
+    name: 'Date',
+    selector: (row) =>
+      row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN') : 'N/A',
+  },
 ]
 
 const RequestedOptions = [

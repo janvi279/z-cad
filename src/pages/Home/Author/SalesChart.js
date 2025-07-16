@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { Line } from 'react-chartjs-2'
@@ -16,40 +16,26 @@ import {
 } from 'chart.js'
 import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
 
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
-// Chart configuration
 const options = {
   responsive: true,
   maintainAspectRatio: false,
-  scales: {
-    x: {
-      grid: {
-        color: 'rgba(0, 0, 0, 0.1)',
-      },
-    },
-    y: {
-      min: 0,
-      ticks: {
-        stepSize: 1000,
-      },
-      grid: {
-        color: 'rgba(0, 0, 0, 0.1)',
+  plugins: {
+    legend: { position: 'bottom' },
+    tooltip: {
+      callbacks: {
+        label: (context) => `₹${context.raw.toFixed(2)}`,
       },
     },
   },
-  plugins: {
-    legend: {
-      position: 'bottom',
+  scales: {
+    x: {
+      grid: { color: 'rgba(0,0,0,0.05)' },
+    },
+    y: {
+      ticks: { beginAtZero: true },
+      grid: { color: 'rgba(0,0,0,0.05)' },
     },
   },
 }
@@ -64,206 +50,194 @@ const SalesChart = () => {
     ordersPlaced: 0,
     itemsPurchased: 0,
   })
-  console.log("🚀 ~ SalesChart ~ salesData:", salesData)
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [],
-  })
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] })
+  const [subtitle, setSubtitle] = useState('')
 
   const [startDate, endDate] = dateRange
 
-  // Fetch sales data from the API
   const fetchSalesData = async () => {
     try {
-      const response = await axiosAuthInstance.get('shopify/salesByDate');
-      console.log("API Response:", response.data);
+      const response = await axiosAuthInstance.get('shopify/salesByDate')
+      if (response.status !== 200) throw new Error('API failed')
 
-      if (response.status !== 200) throw new Error('Network response not ok');
+      const orders = response.data.orders
+      const now = new Date()
+      let fromDate, toDate
 
-      const orders = response.data.orders;
-      const currentDate = new Date(); // ✅ Use actual current date
-      let grossSales = 0;
-      let ordersPlaced = 0;
-      let itemsPurchased = 0;
-      const dailySales = {};
-
-      // Loop over all orders
-      orders.forEach((order) => {
-        const orderDate = new Date(order.created_at);
-        const orderValue = parseFloat(order.total_price);
-        if (isNaN(orderValue)) return;
-
-        let isInPeriod = false;
-
-        // Match based on selectedPeriod
-        if (selectedPeriod === 'this-month') {
-          isInPeriod =
-            orderDate.getMonth() === currentDate.getMonth() &&
-            orderDate.getFullYear() === currentDate.getFullYear();
-        } else if (selectedPeriod === 'last-month') {
-          const lastMonthDate = new Date(currentDate);
-          lastMonthDate.setMonth(currentDate.getMonth() - 1);
-          isInPeriod =
-            orderDate.getMonth() === lastMonthDate.getMonth() &&
-            orderDate.getFullYear() === lastMonthDate.getFullYear();
-        } else if (selectedPeriod === 'last-7-days') {
-          const sevenDaysAgo = new Date(currentDate);
-          sevenDaysAgo.setDate(currentDate.getDate() - 6); // includes today
-          isInPeriod = orderDate >= sevenDaysAgo && orderDate <= currentDate;
-        } else if (selectedPeriod === 'year') {
-          isInPeriod = orderDate.getFullYear() === currentDate.getFullYear();
-        }
-
-        if (isInPeriod) {
-          grossSales += orderValue;
-          ordersPlaced += 1;
-          itemsPurchased += order.line_items.reduce((sum, item) => sum + item.quantity, 0);
-
-          const dayKey = orderDate.toISOString().split('T')[0];
-          dailySales[dayKey] = (dailySales[dayKey] || 0) + orderValue;
-        }
-      });
-
-      // Generate chart data - last 7 days
-      const chartLabels = [];
-      const chartValues = [];
-
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date(currentDate);
-        date.setDate(currentDate.getDate() - i);
-        const dateKey = date.toISOString().split('T')[0];
-
-        chartLabels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-        chartValues.push(dailySales[dateKey] || 0);
+      if (selectedPeriod === 'this-month') {
+        fromDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        toDate = now
+      } else if (selectedPeriod === 'last-month') {
+        fromDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        toDate = new Date(now.getFullYear(), now.getMonth(), 0)
+      } else if (selectedPeriod === 'last-7-days') {
+        fromDate = new Date(now)
+        fromDate.setDate(now.getDate() - 6)
+        toDate = now
+      } else if (selectedPeriod === 'year') {
+        fromDate = new Date(now.getFullYear(), 0, 1)
+        toDate = now
+      } else if (startDate && endDate) {
+        fromDate = new Date(startDate)
+        toDate = new Date(endDate)
       }
+
+      // filter and process orders
+      const grossByDate = {}
+      let grossSales = 0, ordersPlaced = 0, itemsPurchased = 0
+
+      orders.forEach((order) => {
+        const orderDate = new Date(order.created_at)
+        const value = parseFloat(order.total_price)
+        if (isNaN(value)) return
+        if (orderDate < fromDate || orderDate > toDate) return
+
+        grossSales += value
+        ordersPlaced += 1
+        itemsPurchased += order.line_items.reduce((sum, item) => sum + item.quantity, 0)
+
+        const key = orderDate.toISOString().split('T')[0]
+        grossByDate[key] = (grossByDate[key] || 0) + value
+      })
+
+      // build dynamic label/value set
+   const chartLabels = []
+const chartValues = []
+
+const isYear = selectedPeriod === 'year'
+const isCustom = selectedPeriod === 'custom'
+const dayDiff = fromDate && toDate ? Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24)) : 0
+const useMonthly = isYear || (isCustom && dayDiff > 31)
+
+if (useMonthly) {
+  // --- Monthly Aggregation ---
+  const monthlySales = {}
+
+  // Initialize months based on range (current year for 'year', range months for 'custom')
+  const monthsToPlot = []
+
+  const from = new Date(fromDate)
+  const to = new Date(toDate)
+
+  // Push each month in range to monthsToPlot
+  while (from <= to) {
+    const label = from.toLocaleString('default', { month: 'short', year: 'numeric' })
+    if (!monthsToPlot.includes(label)) monthsToPlot.push(label)
+    from.setMonth(from.getMonth() + 1)
+  }
+
+  // Aggregate sales into months
+  for (const date in grossByDate) {
+    const d = new Date(date)
+    const label = d.toLocaleString('default', { month: 'short', year: 'numeric' })
+    monthlySales[label] = (monthlySales[label] || 0) + grossByDate[date]
+  }
+
+  // Final chart data
+  for (const label of monthsToPlot) {
+    chartLabels.push(label)
+    chartValues.push(monthlySales[label] || 0)
+  }
+} else {
+  // --- Daily Aggregation ---
+  const pointer = new Date(fromDate)
+  while (pointer <= toDate) {
+    const key = pointer.toISOString().split('T')[0]
+    chartLabels.push(pointer.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+    chartValues.push(grossByDate[key] || 0)
+    pointer.setDate(pointer.getDate() + 1)
+  }
+}
+
 
       setSalesData({
         grossSales,
-        totalWithdrawal: 0, // Update if needed
-        totalRefund: 0,     // Update if needed
+        totalWithdrawal: 0,
+        totalRefund: 0,
         ordersPlaced,
         itemsPurchased,
-      });
+      })
 
       setChartData({
         labels: chartLabels,
         datasets: [
           {
-            label: 'Daily Sales',
+            label: 'Sales',
             data: chartValues,
             borderColor: 'rgb(59, 130, 246)',
-            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            backgroundColor: 'rgba(59, 130, 246, 0.3)',
+            fill: true,
             tension: 0.4,
           },
         ],
-      });
-    } catch (error) {
-      console.error('Error fetching sales data:', error);
+      })
+
+      const subtitleText = `${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`
+      setSubtitle(`₹${grossSales.toFixed(2)} in Sales — ${subtitleText}`)
+    } catch (err) {
+      console.error('Sales chart fetch failed:', err)
     }
-  };
-
-
-
+  }
 
   useEffect(() => {
-    fetchSalesData();
-  }, [selectedPeriod]);
+    fetchSalesData()
+  }, [selectedPeriod, startDate, endDate])
 
   return (
-    <div className='p-6 bg-white rounded-lg shadow-sm'>
-      <div className='space-y-6'>
-        <div className='flex items-center justify-between'>
-          <div className='space-x-2'>
+    <div className='p-6 bg-white rounded-lg shadow-sm space-y-6'>
+      {/* Filter Buttons */}
+      <div className='flex items-center justify-between'>
+        <div className='space-x-2 flex flex-wrap items-center'>
+          {['year', 'last-month', 'this-month', 'last-7-days'].map((period) => (
             <button
-              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'year'
-                ? 'bg-sky-100 text-sky-600'
-                : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              onClick={() => setSelectedPeriod('year')}
+              key={period}
+              onClick={() => setSelectedPeriod(period)}
+              className={`px-4 py-2 text-sm rounded-md ${
+                selectedPeriod === period
+                  ? 'bg-sky-100 text-sky-600'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
             >
-              Year
+              {period.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </button>
-            <button
-              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'last-month'
-                ? 'bg-sky-100 text-sky-600'
-                : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              onClick={() => setSelectedPeriod('last-month')}
-            >
-              Last Month
-            </button>
-            <button
-              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'this-month'
-                ? 'bg-sky-100 text-sky-600'
-                : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              onClick={() => setSelectedPeriod('this-month')}
-            >
-              This Month
-            </button>
-            <button
-              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === 'last-7-days'
-                ? 'bg-sky-100 text-sky-600'
-                : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              onClick={() => setSelectedPeriod('last-7-days')}
-            >
-              Last 7 Days
-            </button>
-            <div className='inline-block'>
-              <DatePicker
-                selected={startDate}
-                onChange={(update) => setDateRange(update)}
-                startDate={startDate}
-                endDate={endDate}
-                selectsRange
-                isClearable
-                placeholderText='Choose Date Range'
-                className='px-4 py-2 text-sm border rounded-md text-gray-600'
-              />
-            </div>
-          </div>
-          <button className='px-4 py-2 text-sm bg-gray-800 text-white rounded-md flex items-center gap-2'>
-            <svg
-              className='w-4 h-4'
-              fill='none'
-              stroke='currentColor'
-              viewBox='0 0 24 24'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z'
-              />
-            </svg>
-            Print
-          </button>
-        </div>
+          ))}
 
-        <div className='grid grid-cols-5 gap-3 text-center'>
-          <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>₹{salesData.grossSales.toFixed(2)}</p>
-            <p className='text-sm text-gray-500'>gross sales in this period</p>
-          </div>
-          <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>₹{salesData.totalWithdrawal.toFixed(2)}</p>
-            <p className='text-sm text-gray-500'>total withdrawal</p>
-          </div>
-          <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>₹{salesData.totalRefund.toFixed(2)}</p>
-            <p className='text-sm text-gray-500'>total refund</p>
-          </div>
-          <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>{salesData.ordersPlaced}</p>
-            <p className='text-sm text-gray-500'>orders placed</p>
-          </div>
-          <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>{salesData.itemsPurchased}</p>
-            <p className='text-sm text-gray-500'>items purchased</p>
-          </div>
+          <DatePicker
+            selected={startDate}
+            onChange={(update) => {
+              setDateRange(update)
+              setSelectedPeriod('custom')
+            }}
+            startDate={startDate}
+            endDate={endDate}
+            selectsRange
+            isClearable
+            placeholderText='Custom Range'
+            className='px-4 py-2 text-sm border rounded-md text-gray-600'
+          />
         </div>
+        <button className='px-4 py-2 bg-gray-800 text-white rounded-md text-sm'>Print</button>
+      </div>
 
+      {/* Summary Cards */}
+      <div className='grid grid-cols-5 gap-3 text-center'>
+        {[
+          { label: 'Gross Sales', value: `₹${salesData.grossSales.toFixed(2)}` },
+          { label: 'Total Withdrawal', value: `₹${salesData.totalWithdrawal.toFixed(2)}` },
+          { label: 'Total Refund', value: `₹${salesData.totalRefund.toFixed(2)}` },
+          { label: 'Orders Placed', value: salesData.ordersPlaced },
+          { label: 'Items Purchased', value: salesData.itemsPurchased },
+        ].map((card, i) => (
+          <div key={i} className='p-3 border rounded-lg'>
+            <p className='text-lg font-medium'>{card.value}</p>
+            <p className='text-sm text-gray-500'>{card.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart Area */}
+      <div className='space-y-2'>
+        <p className='text-sm text-gray-500'>{subtitle}</p>
         <div className='h-[400px]'>
           <Line data={chartData} options={options} />
         </div>

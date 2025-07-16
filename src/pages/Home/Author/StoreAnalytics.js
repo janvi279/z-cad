@@ -1,4 +1,6 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { BsGraphUp } from 'react-icons/bs'
 import {
@@ -10,6 +12,7 @@ import {
   Title,
   Tooltip,
 } from 'chart.js'
+import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
 
 ChartJS.register(
   CategoryScale,
@@ -25,12 +28,7 @@ const options = {
   maintainAspectRatio: false,
   scales: {
     y: {
-      beginAtZero: false,
-      min: -1.0,
-      max: 1.0,
-      ticks: {
-        stepSize: 0.2,
-      },
+      beginAtZero: true,
       grid: {
         color: '#E5E5E5',
       },
@@ -43,33 +41,146 @@ const options = {
   },
   plugins: {
     legend: {
-      display: false,
+      display: true,
+      position: 'bottom',
+    },
+    tooltip: {
+      mode: 'index',
+      intersect: false,
     },
   },
 }
 
-const data = {
-  labels: [
-    'Dec 25, 24',
-    'Dec 26, 24',
-    'Dec 27, 24',
-    'Dec 28, 24',
-    'Dec 29, 24',
-    'Dec 30, 24',
-    'Dec 31, 24',
-  ],
-  datasets: [
-    {
-      data: [0, 0, 0, 0, 0, 0, 0],
-      borderColor: '#FFD700', // Yellow color
-      backgroundColor: '#FFD700',
-      tension: 0.1,
-      pointRadius: 3,
-    },
-  ],
-}
-
 const StoreAnalytics = () => {
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [],
+  })
+
+  const fetchSalesData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/salesByDate')
+      const orders = response.data.orders || []
+
+      const dailyMetrics = {}
+      orders.forEach((order) => {
+        const dateKey = new Date(order.created_at).toISOString().split('T')[0]
+        const grossSales = parseFloat(order.total_price) || 0
+        const refund = parseFloat(order.total_refund || 0)
+        const withdrawal = parseFloat(order.total_withdrawal || 0)
+        const orderPlaced = 1
+        const itemsPurchased = order.line_items.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        )
+
+        if (!dailyMetrics[dateKey]) {
+          dailyMetrics[dateKey] = {
+            grossSales: 0,
+            totalRefund: 0,
+            totalWithdrawal: 0,
+            ordersPlaced: 0,
+            itemsPurchased: 0,
+          }
+        }
+
+        dailyMetrics[dateKey].grossSales += grossSales
+        dailyMetrics[dateKey].totalRefund += refund
+        dailyMetrics[dateKey].totalWithdrawal += withdrawal
+        dailyMetrics[dateKey].ordersPlaced += orderPlaced
+        dailyMetrics[dateKey].itemsPurchased += itemsPurchased
+      })
+
+      // Generate past 30 days even if no data exists
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - 29)
+      const endDate = new Date()
+      const fullDates = []
+      const pointer = new Date(startDate)
+
+      while (pointer <= endDate) {
+        const key = pointer.toISOString().split('T')[0]
+        fullDates.push(key)
+        if (!dailyMetrics[key]) {
+          dailyMetrics[key] = {
+            grossSales: 0,
+            totalRefund: 0,
+            totalWithdrawal: 0,
+            ordersPlaced: 0,
+            itemsPurchased: 0,
+          }
+        }
+        pointer.setDate(pointer.getDate() + 1)
+      }
+
+      const sortedDates = fullDates
+      const labels = sortedDates.map((dateStr) =>
+        new Date(dateStr).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        })
+      )
+
+      const grossSalesData = sortedDates.map((d) => dailyMetrics[d].grossSales)
+      const refundData = sortedDates.map((d) => dailyMetrics[d].totalRefund)
+      const withdrawalData = sortedDates.map((d) => dailyMetrics[d].totalWithdrawal)
+      const ordersData = sortedDates.map((d) => dailyMetrics[d].ordersPlaced)
+      const itemsData = sortedDates.map((d) => dailyMetrics[d].itemsPurchased)
+
+      setChartData({
+        labels,
+        datasets: [
+          {
+            label: 'Gross Sales',
+            data: grossSalesData,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            tension: 0.4,
+            fill: true,
+          },
+          {
+            label: 'Total Refund',
+            data: refundData,
+            borderColor: '#EF4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+            tension: 0.4,
+            fill: true,
+          },
+          {
+            label: 'Total Withdrawal',
+            data: withdrawalData,
+            borderColor: '#F59E0B',
+            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+            tension: 0.4,
+            fill: true,
+          },
+          {
+            label: 'Orders Placed',
+            data: ordersData,
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+            tension: 0.4,
+            fill: true,
+          },
+          {
+            label: 'Items Purchased',
+            data: itemsData,
+            borderColor: '#8B5CF6',
+            backgroundColor: 'rgba(139, 92, 246, 0.2)',
+            tension: 0.4,
+            fill: true,
+          },
+        ],
+      })
+    } catch (err) {
+      console.error('Failed to fetch sales data:', err)
+    }
+  }
+
+  useEffect(() => {
+    fetchSalesData()
+  }, [])
+
   return (
     <div className="w-full">
       <div className="bg-primary-500 text-white p-3 flex items-center gap-2 rounded-t-lg">
@@ -77,7 +188,11 @@ const StoreAnalytics = () => {
         <h2 className="text-lg">Store Analytics</h2>
       </div>
       <div className="bg-white p-4 h-[372px] rounded-b-lg shadow-lg">
-        <Line data={data} options={options} />
+        {chartData.labels.length === 0 ? (
+          <p className="text-center text-gray-500 mt-16">No data available for this period.</p>
+        ) : (
+          <Line data={chartData} options={options} />
+        )}
       </div>
     </div>
   )

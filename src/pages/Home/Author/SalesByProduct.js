@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 import { BiDollar } from 'react-icons/bi'
 import {
@@ -7,6 +7,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
+import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -15,27 +16,98 @@ const options = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: false,
+      display: true,
+      position: 'right',
+      labels: {
+        boxWidth: 12,
+        padding: 15,
+        font: {
+          size: 12,
+          family: 'Inter, sans-serif',
+        },
+      },
     },
     tooltip: {
-      enabled: false,
+      callbacks: {
+        label: function (context) {
+          const label = context.label || ''
+          const value = context.raw || 0
+          return `${label}: ₹${value.toFixed(2)}`
+        },
+      },
     },
   },
-  cutout: '5%',
-}
-
-const data = {
-  labels: ['No Sales Yet'],
-  datasets: [
-    {
-      data: [10],
-      backgroundColor: ['rgb(45, 187, 199)'],
-      borderWidth: 0,
-    },
-  ],
+  cutout: '50%',
 }
 
 const SalesByProduct = () => {
+  const [chartData, setChartData] = useState({
+    labels: ['No Sales Yet'],
+    datasets: [
+      {
+        data: [10],
+        backgroundColor: ['rgb(45, 187, 199)'],
+        borderWidth: 0,
+      },
+    ],
+  });
+
+  const fetchSalesData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/salesByDate');
+      const orders = response.data.orders || [];
+
+      const productSales = {};
+
+      orders.forEach((order) => {
+        order.line_items.forEach((item) => {
+          const productName = item.title.includes(' - ')
+            ? item.title.split(' - ').pop().trim()
+            : item.title;
+          const productPrice = parseFloat(item.price) || 0;
+          const quantity = item.quantity || 0;
+
+          if (!productSales[productName]) {
+            productSales[productName] = 0;
+          }
+
+          productSales[productName] += productPrice * quantity;
+        });
+      });
+
+      const labels = Object.keys(productSales);
+      const data = Object.values(productSales);
+      const colors = [
+        'rgb(45, 187, 199)',
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 206, 86)',
+        'rgb(75, 192, 192)',
+        'rgb(153, 102, 255)',
+        'rgb(255, 159, 64)',
+      ];
+
+      if (labels.length > 0) {
+        setChartData({
+          labels,
+          datasets: [
+            {
+              data,
+              backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+              borderWidth: 0,
+            },
+          ],
+        });
+      }
+    } catch (err) {
+      console.error('Failed to fetch sales data:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSalesData();
+  }, []);
+
   return (
     <div className="w-full">
       <div className="bg-primary-500 text-white p-3 flex items-center justify-between rounded-t-lg">
@@ -45,17 +117,14 @@ const SalesByProduct = () => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-b-lg shadow-lg">
-        <div className="h-[300px] relative">
-          <Doughnut data={data} options={options} />
+      <div className="bg-white pr-2  p-4 rounded-b-lg shadow-lg">
+        <div className="h-[340px]  relative">
+          <Doughnut data={chartData} options={options} />
         </div>
-        <div className="mt-4 flex items-center gap-2 justify-center">
-          <div className="w-4 h-4 bg-[rgb(45,187,199)]"></div>
-          <span className="text-gray-600">No sales yet...!!!</span>
-        </div>
+
       </div>
     </div>
   )
 }
 
-export default SalesByProduct
+export default SalesByProduct;
