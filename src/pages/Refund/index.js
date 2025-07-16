@@ -3,6 +3,7 @@ import DataTable from 'react-data-table-component'
 import Select from 'react-select'
 import { CiImageOn } from 'react-icons/ci'
 import { FiMoreHorizontal } from 'react-icons/fi'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const columns = [
   {
@@ -11,14 +12,19 @@ const columns = [
         <FiMoreHorizontal title='Status' className='h-5 w-5' />
       </>
     ),
-    selector: (row) => row.status,
+     selector: (row) => `${row.transactions?.[0]?.status ?? ''}`,
   },
-  { name: 'Request Id', selector: (row) => row.requestId },
-  { name: 'Order Id', selector: (row) => row.orderId },
-  { name: 'Amount', selector: (row) => row.amount },
-  { name: 'Type', selector: (row) => row.type },
-  { name: 'Reason', selector: (row) => row.reason },
-  { name: 'Date', selector: (row) => row.date },
+  { name: 'Request Id', selector: (row) => row.id },
+  { name: 'Order Id', selector: (row) => row.order_id },
+  { name: 'Amount', selector: (row) => `${row.transactions?.[0]?.amount ?? ''}`, },
+  { name: 'Type', selector: (row) => `${row.transactions?.[0]?.kind ?? ''}`, },
+  { name: 'Reason', selector: (row) => `${row.order_adjustments?.[0]?.reason ?? ''}`, },
+{
+  name: 'Date',
+  selector: (row) =>
+    row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN') : 'N/A',
+}
+
 ]
 
 const RequestedOptions = [
@@ -35,6 +41,26 @@ const Refund = () => {
   const [limit, setLimit] = useState(10)
   const [totalRows, setTotalRows] = useState(0)
   const [selectedRequest, setSelectedRequest] = useState(null)
+
+ const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/refund')
+      if (response && response.status === 200) {
+        const transformedData = response.data.refunds.map((item) => ({
+          ...item,
+        }));
+        console.log("response",response)
+
+        setData(transformedData);
+      }
+    } catch (error) {
+      console.log('error :>> ', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [])
 
   const handlePageChange = (page) => setPages(page)
 

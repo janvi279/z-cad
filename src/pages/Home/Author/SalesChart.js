@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { Line } from 'react-chartjs-2'
@@ -14,6 +14,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
 
 // Register ChartJS components
 ChartJS.register(
@@ -37,10 +38,9 @@ const options = {
       },
     },
     y: {
-      min: -1,
-      max: 1,
+      min: 0,
       ticks: {
-        stepSize: 0.2,
+        stepSize: 1000,
       },
       grid: {
         color: 'rgba(0, 0, 0, 0.1)',
@@ -57,52 +57,117 @@ const options = {
 const SalesChart = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('this-month')
   const [dateRange, setDateRange] = useState([null, null])
-  const [startDate, endDate] = dateRange
-
-  // Generate dates for x-axis
-  const dates = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(2024, 11, 24 + i) // December 24-30, 2024
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    })
+  const [salesData, setSalesData] = useState({
+    grossSales: 0,
+    totalWithdrawal: 0,
+    totalRefund: 0,
+    ordersPlaced: 0,
+    itemsPurchased: 0,
+  })
+  console.log("🚀 ~ SalesChart ~ salesData:", salesData)
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [],
   })
 
-  const chartData = {
-    labels: dates,
-    datasets: [
-      {
-        label: 'Gross Sales',
-        data: Array(7).fill(0),
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-        tension: 0.4,
-      },
-      {
-        label: 'Withdrawal',
-        data: Array(7).fill(0),
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.5)',
-        tension: 0.4,
-      },
-      {
-        label: 'Refunds',
-        data: Array(7).fill(0),
-        borderColor: 'rgb(244, 63, 94)',
-        backgroundColor: 'rgba(244, 63, 94, 0.5)',
-        tension: 0.4,
-      },
-      {
-        label: 'Order Counts',
-        data: Array(7).fill(0),
-        borderColor: 'rgb(234, 179, 8)',
-        backgroundColor: 'rgba(234, 179, 8, 0.5)',
-        tension: 0.4,
-      },
-    ],
-  }
+  const [startDate, endDate] = dateRange
+
+  // Fetch sales data from the API
+  const fetchSalesData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/salesByDate');
+      console.log("API Response:", response.data);
+
+      if (response.status !== 200) throw new Error('Network response not ok');
+
+      const orders = response.data.orders;
+      const currentDate = new Date(); // ✅ Use actual current date
+      let grossSales = 0;
+      let ordersPlaced = 0;
+      let itemsPurchased = 0;
+      const dailySales = {};
+
+      // Loop over all orders
+      orders.forEach((order) => {
+        const orderDate = new Date(order.created_at);
+        const orderValue = parseFloat(order.total_price);
+        if (isNaN(orderValue)) return;
+
+        let isInPeriod = false;
+
+        // Match based on selectedPeriod
+        if (selectedPeriod === 'this-month') {
+          isInPeriod =
+            orderDate.getMonth() === currentDate.getMonth() &&
+            orderDate.getFullYear() === currentDate.getFullYear();
+        } else if (selectedPeriod === 'last-month') {
+          const lastMonthDate = new Date(currentDate);
+          lastMonthDate.setMonth(currentDate.getMonth() - 1);
+          isInPeriod =
+            orderDate.getMonth() === lastMonthDate.getMonth() &&
+            orderDate.getFullYear() === lastMonthDate.getFullYear();
+        } else if (selectedPeriod === 'last-7-days') {
+          const sevenDaysAgo = new Date(currentDate);
+          sevenDaysAgo.setDate(currentDate.getDate() - 6); // includes today
+          isInPeriod = orderDate >= sevenDaysAgo && orderDate <= currentDate;
+        } else if (selectedPeriod === 'year') {
+          isInPeriod = orderDate.getFullYear() === currentDate.getFullYear();
+        }
+
+        if (isInPeriod) {
+          grossSales += orderValue;
+          ordersPlaced += 1;
+          itemsPurchased += order.line_items.reduce((sum, item) => sum + item.quantity, 0);
+
+          const dayKey = orderDate.toISOString().split('T')[0];
+          dailySales[dayKey] = (dailySales[dayKey] || 0) + orderValue;
+        }
+      });
+
+      // Generate chart data - last 7 days
+      const chartLabels = [];
+      const chartValues = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(currentDate);
+        date.setDate(currentDate.getDate() - i);
+        const dateKey = date.toISOString().split('T')[0];
+
+        chartLabels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        chartValues.push(dailySales[dateKey] || 0);
+      }
+
+      setSalesData({
+        grossSales,
+        totalWithdrawal: 0, // Update if needed
+        totalRefund: 0,     // Update if needed
+        ordersPlaced,
+        itemsPurchased,
+      });
+
+      setChartData({
+        labels: chartLabels,
+        datasets: [
+          {
+            label: 'Daily Sales',
+            data: chartValues,
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            tension: 0.4,
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+    }
+  };
+
+
+
+
+  useEffect(() => {
+    fetchSalesData();
+  }, [selectedPeriod]);
 
   return (
     <div className='p-6 bg-white rounded-lg shadow-sm'>
@@ -178,23 +243,23 @@ const SalesChart = () => {
 
         <div className='grid grid-cols-5 gap-3 text-center'>
           <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>₹0.00</p>
+            <p className='text-lg font-medium'>₹{salesData.grossSales.toFixed(2)}</p>
             <p className='text-sm text-gray-500'>gross sales in this period</p>
           </div>
           <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>₹0.00</p>
+            <p className='text-lg font-medium'>₹{salesData.totalWithdrawal.toFixed(2)}</p>
             <p className='text-sm text-gray-500'>total withdrawal</p>
           </div>
           <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>₹0.00</p>
+            <p className='text-lg font-medium'>₹{salesData.totalRefund.toFixed(2)}</p>
             <p className='text-sm text-gray-500'>total refund</p>
           </div>
           <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>0</p>
+            <p className='text-lg font-medium'>{salesData.ordersPlaced}</p>
             <p className='text-sm text-gray-500'>orders placed</p>
           </div>
           <div className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>0</p>
+            <p className='text-lg font-medium'>{salesData.itemsPurchased}</p>
             <p className='text-sm text-gray-500'>items purchased</p>
           </div>
         </div>

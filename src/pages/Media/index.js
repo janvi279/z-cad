@@ -1,18 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
+import { FiEdit } from "react-icons/fi";
+import { MdOutlineDelete } from "react-icons/md";
 
 const columns = [
     {
         name: 'File',
-        selector: (row) => row.file,
+        selector: row => row.image?.src ?? '',
+        cell: row =>
+            row.image?.src ? (
+                <img src={row.image.src} alt="product" width={50} height={50} style={{ objectFit: 'contain' }} />
+            ) : (
+                'No image'
+            ),
     },
     {
         name: 'Associate',
-        selector: (row) => row.associate,
+        selector: (row) => row.vendor,
     },
     {
         name: 'Size',
-        selector: (row) => row.size,
+        selector: (row) => row.variants?.[0]?.option1,
     },
     {
         name: 'Actions',
@@ -26,6 +35,37 @@ const Media = () => {
     const [limit, setLimit] = useState(10)
     const [totalRows, setTotalRows] = useState(0)
 
+    const fetchData = async () => {
+        try {
+            const response = await axiosAuthInstance.get('shopify/product')
+            if (response && response.status === 200) {
+                const transformedData = response.data.products.map((item) => ({
+                    ...item,
+                    actions: (
+                        <div className='flex items-center'>
+                            <button
+                                onClick={() => console.log("log")}
+                                className='text-blue-500 text-lg px-4 py-2 rounded'
+                            >
+                           <FiEdit />
+                            </button>
+                            <button    onClick={() => console.log("log")}
+                                className='text-blue-500 text-lg px-4 py-2 rounded'><MdOutlineDelete/></button>
+                        </div>
+                    ),
+                }));
+                console.log("response", response)
+
+                setData(transformedData);
+            }
+        } catch (error) {
+            console.log('error :>> ', error);
+        }
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, [])
     const handlePageChange = (newPage) => {
         setPages(newPage)
     }

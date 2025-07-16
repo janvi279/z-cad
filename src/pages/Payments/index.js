@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import Select from 'react-select'
 import { FiMoreHorizontal } from 'react-icons/fi'
 import { MdOutlineCurrencyRupee } from 'react-icons/md'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 
 const columns = [
   {
@@ -15,14 +16,23 @@ const columns = [
     ),
     selector: (row) => row.status,
   },
-  { name: 'Invoice Id', selector: (row) => row.invoiceId },
-  { name: 'Order Ids', selector: (row) => row.orderIds },
-  { name: 'Amount', selector: (row) => row.amount },
-  { name: 'Charges', selector: (row) => row.charges },
-  { name: 'Payment', selector: (row) => row.payment },
-  { name: 'Mode', selector: (row) => row.mode },
+  { name: 'Invoice Id', selector: (row) => row.id },
+  { name: 'Order Ids', selector: (row) => row.order_id },
+  {
+    name: 'Amount', selector: (row) => row?.receipt.paid_amount
+  },
+ { 
+  name: 'Charges', 
+  selector: (row) => row.shop_money?.total_unsettled_set?.amount ?? '—' 
+},
+  { name: 'Payment', selector: (row) => row.gateway },
+  { name: 'Mode', selector: (row) => row.payment_details?.payment_method_name},
   { name: 'Note', selector: (row) => row.note },
-  { name: 'Date', selector: (row) => row.date },
+  {
+  name: 'Date',
+  selector: (row) =>
+    row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN') : 'N/A',
+},
 ]
 
 const RequestedOptions = [
@@ -46,7 +56,25 @@ const Payments = () => {
     month: 'long',
     year: 'numeric',
   })
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/transactions')
+      if (response && response.status === 200) {
+        const transformedData = response.data.transactions.map((item) => ({
+          ...item,
+        }));
+        console.log("response", response)
 
+        setData(transformedData);
+      }
+    } catch (error) {
+      console.log('error :>> ', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [])
   const handlePageChange = (page) => setPages(page)
 
   const handlelimitChange = (newPerPage) => {
