@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import DataTable from 'react-data-table-component';
-import { FiEye } from 'react-icons/fi';
-import { CiSaveDown2 } from 'react-icons/ci';
-import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import DataTable from 'react-data-table-component'
+import { FiEye } from 'react-icons/fi'
+import { CiSaveDown2 } from 'react-icons/ci'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
+import { Link } from 'react-router-dom'
 
 const columns = [
   { name: 'Title', selector: (row) => row.title },
@@ -22,70 +22,84 @@ const columns = [
       </div>
     ),
   },
-];
+]
 
 const Products = () => {
-  const [data, setData] = useState([]);
-  const [limit, setLimit] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [nextPageInfo, setNextPageInfo] = useState(null);
-  const [prevPageInfo, setPrevPageInfo] = useState(null);
-  const [currentPageInfo, setCurrentPageInfo] = useState(null);
+  const [data, setData] = useState([])
+  const [limit, setLimit] = useState(10)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [nextPageInfo, setNextPageInfo] = useState(null)
+  const [prevPageInfo, setPrevPageInfo] = useState(null)
+  const [currentPageInfo, setCurrentPageInfo] = useState(null)
 
   const fetchData = async (pageInfo = null) => {
     try {
-      let url = `shopify/product?limit=${limit}`;
-      if (pageInfo) {
-        url += `&page_info=${pageInfo}`;
-      }
+      let url = `shopify/product?limit=${limit}`
+      if (pageInfo) url += `&page_info=${pageInfo}`
 
-      const response = await axiosAuthInstance.get(url);
-      const { products, pagination } = response.data;
+      const response = await axiosAuthInstance.get(url)
+      const { products, pagination } = response.data
 
-      const transformedData = products.map((item) => {
-        const variant = item.variants?.[0] || {};
+      const author = JSON.parse(localStorage.getItem('_ur'))
+      const firstName = author?.firstName || ''
+      const lastName = author?.lastName || ''
+      const fullName = `${firstName} ${lastName}`.toLowerCase().trim()
+      console.log("fullname",fullName)
+
+      // ✅ Filter only products that belong to this author
+      const authorProducts = products.filter((product) =>
+        product.product_type?.toLowerCase().includes(fullName)
+      )
+
+      const transformedData = authorProducts.map((item) => {
+        const variant = item.variants?.[0] || {}
         return {
           _id: item.id,
           title: item.title,
           sku: variant.sku,
           status: item.status,
           price: variant.price,
-        };
-      });
+        }
+      })
 
-      setData(transformedData);
-      setNextPageInfo(pagination?.nextPageInfo || null);
-      setPrevPageInfo(pagination?.prevPageInfo || null);
+      setData(transformedData)
+      setNextPageInfo(pagination?.nextPageInfo || null)
+      setPrevPageInfo(pagination?.prevPageInfo || null)
     } catch (error) {
-      console.error('Error fetching product data', error.message);
+      console.error('Error fetching product data', error.message)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchData();
-  }, [limit]);
+    fetchData()
+  }, [limit])
 
   const handleNext = () => {
     if (nextPageInfo) {
-      setCurrentPageInfo(nextPageInfo);
-      fetchData(nextPageInfo);
+      setCurrentPageInfo(nextPageInfo)
+      fetchData(nextPageInfo)
     }
-  };
+  }
 
   const handlePrevious = () => {
     if (prevPageInfo) {
-      setCurrentPageInfo(prevPageInfo);
-      fetchData(prevPageInfo);
+      setCurrentPageInfo(prevPageInfo)
+      fetchData(prevPageInfo)
     }
-  };
+  }
 
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  const handleSearchChange = (e) => setSearchTerm(e.target.value)
 
   const handleLimitChange = (newPerPage) => {
-    setLimit(newPerPage);
-    setCurrentPageInfo(null); // Reset to first page on limit change
-    fetchData();
-  };
+    setLimit(newPerPage)
+    setCurrentPageInfo(null)
+    fetchData()
+  }
+
+  // 🔍 Filter visible rows by search term (optional)
+  const filteredData = data.filter((item) =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <>
@@ -96,7 +110,9 @@ const Products = () => {
             <div
               key={btn}
               className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${
-                btn === 'All' ? 'bg-primary-100 text-primary-600' : 'hover:text-primary-600'
+                btn === 'All'
+                  ? 'bg-primary-100 text-primary-600'
+                  : 'hover:text-primary-600'
               }`}
             >
               <button>{btn}</button>
@@ -125,11 +141,7 @@ const Products = () => {
           />
         </div>
 
-        <DataTable
-          columns={columns}
-          data={data}
-          pagination={false}
-        />
+        <DataTable columns={columns} data={filteredData} pagination={false} />
 
         <div className='flex justify-between items-center mt-4'>
           <div className='flex gap-2'>
@@ -163,7 +175,7 @@ const Products = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Products;
+export default Products
