@@ -43,12 +43,7 @@ const Media = () => {
                     ...item,
                     actions: (
                         <div className='flex items-center'>
-                            <button
-                                onClick={() => console.log("log")}
-                                className='text-blue-500 text-lg px-4 py-2 rounded'
-                            >
-                           <FiEdit />
-                            </button>
+                          
                             <button    onClick={() => console.log("log")}
                                 className='text-blue-500 text-lg px-4 py-2 rounded'><MdOutlineDelete/></button>
                         </div>
