@@ -58,47 +58,53 @@ const SalesChart = () => {
 
   const handlePrint = async () => {
     const element = chartRef.current;
-  if (!element) return;
+    if (!element) return;
 
-  const canvas = await html2canvas(element);
-  const imgData = canvas.toDataURL('image/png');
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL('image/png');
 
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>Print Sales Chart</title>
-        <style>
-          body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-          }
-          img {
-            width: 100%;
-            height: 100%;
-          }
-        </style>
-      </head>
-      <body>
-        <img src="${imgData}" />
-        <script>
-          window.onload = () => {
-            window.print();
-          };
-        </script>
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Sales Chart</title>
+          <style>
+            body, html {
+              margin: 0;
+              padding: 0;
+              height: 100%;
+            }
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          </style>
+        </head>
+        <body>
+          <img src="${imgData}" />
+          <script>
+            window.onload = () => {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 
   const fetchSalesData = async () => {
     try {
-      const response = await axiosAuthInstance.get('shopify/salesByDate')
-      if (response.status !== 200) throw new Error('API failed')
+      const [salesResponse, refundResponse] = await Promise.all([
+        axiosAuthInstance.get('shopify/salesByDate'),
+        axiosAuthInstance.get('shopify/refund'),
+      ])
 
-      const orders = response.data.orders
+      if (salesResponse.status !== 200 || refundResponse.status !== 200) throw new Error('API failed')
+
+      const orders = salesResponse.data.orders || []
+      const refunds = refundResponse.data.refunds || []
+
       const now = new Date()
       let fromDate, toDate
 
@@ -120,14 +126,28 @@ const SalesChart = () => {
         toDate = new Date(endDate)
       }
 
-      const grossByDate = {}
-      let grossSales = 0, ordersPlaced = 0, itemsPurchased = 0
+      const filteredOrders = orders.filter((order) => {
+        const orderDate = new Date(order.created_at)
+        return orderDate >= fromDate && orderDate <= toDate
+      })
 
-      orders.forEach((order) => {
+      const filteredRefunds = refunds.filter((refund) => {
+        const refundDate = new Date(refund.created_at)
+        return refundDate >= fromDate && refundDate <= toDate
+      })
+
+      let grossSales = 0,
+        ordersPlaced = 0,
+        itemsPurchased = 0,
+        totalRefund = 0,
+        totalWithdrawal = 0
+
+      const grossByDate = {}
+
+      filteredOrders.forEach((order) => {
         const orderDate = new Date(order.created_at)
         const value = parseFloat(order.total_price)
         if (isNaN(value)) return
-        if (orderDate < fromDate || orderDate > toDate) return
 
         grossSales += value
         ordersPlaced += 1
@@ -137,6 +157,19 @@ const SalesChart = () => {
         grossByDate[key] = (grossByDate[key] || 0) + value
       })
 
+      filteredRefunds.forEach((refund) => {
+        refund.transactions?.forEach((txn) => {
+          if (txn.kind === 'refund' && txn.status === 'success') {
+            const amount = parseFloat(txn.amount)
+            if (!isNaN(amount)) {
+              totalRefund += amount
+              totalWithdrawal += amount
+            }
+          }
+        })
+      })
+
+      // Chart preparation
       const chartLabels = []
       const chartValues = []
       const isYear = selectedPeriod === 'year'
@@ -176,21 +209,33 @@ const SalesChart = () => {
         }
       }
 
-      setSalesData({ grossSales, totalWithdrawal: 0, totalRefund: 0, ordersPlaced, itemsPurchased })
+      setSalesData({
+        grossSales,
+        totalWithdrawal,
+        totalRefund,
+        ordersPlaced,
+        itemsPurchased,
+      })
 
       setChartData({
         labels: chartLabels,
-        datasets: [{
-          label: 'Sales',
-          data: chartValues,
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: 'rgba(59, 130, 246, 0.3)',
-          fill: true,
-          tension: 0.4,
-        }],
+        datasets: [
+          {
+            label: 'Sales',
+            data: chartValues,
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.3)',
+            fill: true,
+            tension: 0.4,
+          },
+        ],
       })
 
-      const subtitleText = `${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`
+      const subtitleText =
+        fromDate && toDate
+          ? `${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`
+          : 'No date range selected'
+
       setSubtitle(`₹${grossSales.toFixed(2)} in Sales — ${subtitleText}`)
     } catch (err) {
       console.error('Sales chart fetch failed:', err)

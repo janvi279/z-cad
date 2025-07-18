@@ -155,7 +155,7 @@ const OutOfTheStock = () => {
         paginationServer
         paginationTotalRows={totalRows}
         paginationPerPage={limit}
-        paginationRowsPerPageOptions={[10, 25, 50, 100]}
+        paginationRowsPerPageOptions={[2, 25, 50, 100]}
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleLimitPerPageChange}
       />

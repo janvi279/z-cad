@@ -49,10 +49,7 @@ const Home = () => {
             <SalesByProduct />
           </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-10'>
-            <Notifications />
-            <LatestTopic />
-          </div>
+         
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
             <StoreStatus />

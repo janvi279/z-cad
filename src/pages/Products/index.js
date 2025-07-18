@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react'
-import DataTable from 'react-data-table-component'
-import { FiEye } from 'react-icons/fi'
-import { CiSaveDown2 } from 'react-icons/ci'
-import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import DataTable from 'react-data-table-component';
+import { CiSaveDown2 } from 'react-icons/ci';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -12,153 +10,170 @@ const columns = [
   { name: 'SKU', selector: (row) => row.sku },
   { name: 'Status', selector: (row) => row.status },
   { name: 'Price', selector: (row) => row.price },
-  {
-    name: 'Actions',
-    cell: (row) => (
-      <div className='flex items-center'>
-        <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
-          <Link to={`view/${row._id}`}>
-            <FiEye className='w-4 h-4' />
-          </Link>
-        </div>
-      </div>
-    ),
-  },
-]
+];
 
-const Products = () => {
-  const [data, setData] = useState([])
-  const [limit, setLimit] = useState(10)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [nextPageInfo, setNextPageInfo] = useState(null)
-  const [prevPageInfo, setPrevPageInfo] = useState(null)
-  const [currentPageInfo, setCurrentPageInfo] = useState(null)
-
-
-const handleExportExcel = () => {
-  const exportData = filteredData.map(({ title, sku, status, price }) => ({
-    Title: title || '-',
-    SKU: sku || '-',
-    Status: status || '-',
-    Price: price ?? '0',
-  }));
-
-  // Create worksheet
-  const worksheet = XLSX.utils.json_to_sheet(exportData);
-
-  // Set column widths
-  const columnWidths = [
-    { wch: 50 }, // Title column wide for long names
-    { wch: 20 }, // SKU
-    { wch: 15 }, // Status
-    { wch: 10 }, // Price
-  ];
-  worksheet['!cols'] = columnWidths;
-
-  // Create workbook and add the worksheet
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
-
-  // Write file
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: 'xlsx',
-    type: 'array',
-  });
-
-  const blob = new Blob([excelBuffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
-
-  saveAs(blob, 'products_export.xlsx');
+const statusMap = {
+  Published: 'active',
+  Draft: 'draft',
+  Archived: 'archived',
+  All: 'All',
 };
 
+const Products = () => {
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [limit, setLimit] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeStatus, setActiveStatus] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const fetchData = async (pageInfo = null) => {
+  const handleExportExcel = () => {
+    const exportData = filteredProducts.map(({ title, sku, status, price }) => ({
+      Title: title || '-',
+      SKU: sku || '-',
+      Status: status || '-',
+      Price: price ?? '0',
+    }));
+
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    // Set column widths
+    const columnWidths = [
+      { wch: 50 }, // Title column wide for long names
+      { wch: 20 }, // SKU
+      { wch: 15 }, // Status
+      { wch: 10 }, // Price
+    ];
+    worksheet['!cols'] = columnWidths;
+
+    // Create workbook and add the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+
+    // Write file
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    saveAs(blob, 'products_export.xlsx');
+  };
+
+  const fetchAllProducts = async () => {
     try {
-      let url = `shopify/product?limit=${limit}`
-      if (pageInfo) url += `&page_info=${pageInfo}`
+      setLoading(true);
+      let all = [];
+      let nextPageInfo = null;
+      let keepFetching = true;
 
-      const response = await axiosAuthInstance.get(url)
-      const { products, pagination } = response.data
+      while (keepFetching) {
+        const url = `shopify/product?limit=250${nextPageInfo ? `&page_info=${nextPageInfo}` : ''}`;
+        const response = await axiosAuthInstance.get(url);
+        //     const author = JSON.parse(localStorage.getItem('_ur'))
+        // const firstName = author?.firstName || ''
+        // const lastName = author?.lastName || ''
+        // const fullName = `${firstName} ${lastName}`.toLowerCase().trim()
+        // console.log("fullname", fullName)
 
-      // const author = JSON.parse(localStorage.getItem('_ur'))
-      // const firstName = author?.firstName || ''
-      // const lastName = author?.lastName || ''
-      // const fullName = `${firstName} ${lastName}`.toLowerCase().trim()
-      // console.log("fullname", fullName)
+        // ✅ Filter only products that belong to this author
+        // const authorProducts = allProducts.filter((product) =>
+        //   product.product_type?.toLowerCase().includes(fullName)
+        // )
+        all = [...all, ...response.data.products];
+        nextPageInfo = response.data.pagination?.nextPageInfo;
+        keepFetching = !!nextPageInfo;
+      }
 
-      // ✅ Filter only products that belong to this author
-      // const authorProducts = products.filter((product) =>
-      //   product.product_type?.toLowerCase().includes(fullName)
-      // )
-
-      const transformedData = products.map((item) => {
-        const variant = item.variants?.[0] || {}
+      const transformed = all.map((item) => {
+        const variant = item.variants?.[0] || {};
         return {
           _id: item.id,
           title: item.title,
           sku: variant.sku,
           status: item.status,
           price: variant.price,
-        }
-      })
+        };
+      });
 
-      setData(transformedData)
-
-
-      setNextPageInfo(pagination?.nextPageInfo || null)
-      setPrevPageInfo(pagination?.prevPageInfo || null)
+      setAllProducts(transformed);
+      setFilteredProducts(transformed);
     } catch (error) {
-      console.error('Error fetching product data', error.message)
+      console.error('Error fetching all products:', error.message);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [limit])
+    fetchAllProducts();
+  }, []);
 
-  const handleNext = () => {
-    if (nextPageInfo) {
-      setCurrentPageInfo(nextPageInfo)
-      fetchData(nextPageInfo)
+  useEffect(() => {
+    let filtered = allProducts;
+
+    if (searchTerm) {
+      filtered = filtered.filter((product) =>
+        product.title?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
-  }
+
+    const mappedStatus = statusMap[activeStatus];
+    if (mappedStatus !== 'All') {
+      filtered = filtered.filter((product) =>
+        product.status?.toLowerCase() === mappedStatus
+      );
+    }
+
+    setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to first page on filter
+  }, [searchTerm, activeStatus, allProducts]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilter = (statusLabel) => {
+    setActiveStatus(statusLabel);
+  };
+
+  const paginatedData = filteredProducts.slice((currentPage - 1) * limit, currentPage * limit);
+  const totalPages = Math.ceil(filteredProducts.length / limit);
 
   const handlePrevious = () => {
-    if (prevPageInfo) {
-      setCurrentPageInfo(prevPageInfo)
-      fetchData(prevPageInfo)
-    }
-  }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
-  const handleSearchChange = (e) => setSearchTerm(e.target.value)
-
-  const handleLimitChange = (newPerPage) => {
-    setLimit(newPerPage)
-    setCurrentPageInfo(null)
-    fetchData()
-  }
-
-  // 🔍 Filter visible rows by search term (optional)
-  const filteredData = data.filter((item) =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
   return (
     <>
       {/* Header Section */}
       <div className='bg-white py-2 px-4 flex justify-between items-center rounded-lg mb-6 shadow'>
         <div className='flex gap-4'>
-          {['All', 'Archived', 'Pending', 'Published', 'Draft'].map((btn) => (
-            <div
+          {['All', 'Archived', 'Published', 'Draft'].map((btn) => (
+            <button
               key={btn}
-              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${btn === 'All'
-                ? 'bg-primary-100 text-primary-600'
-                : 'hover:text-primary-600'
+              onClick={() => handleStatusFilter(btn)}
+              className={`border-1 p-2 rounded-lg text-sm ${activeStatus === btn
+                  ? 'bg-primary-100 text-primary-600'
+                  : 'text-gray-600 hover:bg-primary-100 hover:text-primary-600'
                 }`}
             >
-              <button>{btn}</button>
-            </div>
+              {btn}
+            </button>
           ))}
         </div>
         <div className='relative group'>
@@ -183,20 +198,26 @@ const handleExportExcel = () => {
           />
         </div>
 
-        <DataTable columns={columns} data={filteredData} pagination={false} />
+        <DataTable
+          columns={columns}
+          data={paginatedData}
+          pagination={false}
+          progressPending={loading}
+          noDataComponent="No products found"
+        />
 
         <div className='flex justify-between items-center mt-4'>
           <div className='flex gap-2'>
             <button
               onClick={handlePrevious}
-              disabled={!prevPageInfo}
-              className='px-4 py-2 bg-gray-400 rounded disabled:opacity-50'
+              disabled={currentPage === 1}
+              className='px-4 py-2 bg-gray-400 rounded disabled:opacity-50 text-black'
             >
               Previous
             </button>
             <button
               onClick={handleNext}
-              disabled={!nextPageInfo}
+              disabled={currentPage === totalPages}
               className='px-4 py-2 bg-primary-600 text-white rounded disabled:opacity-50'
             >
               Next
@@ -208,16 +229,14 @@ const handleExportExcel = () => {
             onChange={(e) => handleLimitChange(Number(e.target.value))}
             className='border p-2 rounded-lg'
           >
-            {[5, 10, 20, 50].map((size) => (
-              <option key={size} value={size}>
-                Show {size}
-              </option>
+            {[10, 25, 50, 100].map((size) => (
+              <option key={size} value={size}>{size}</option>
             ))}
           </select>
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Products
+export default Products;

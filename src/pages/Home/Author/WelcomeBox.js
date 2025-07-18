@@ -1,63 +1,64 @@
-import { FaRegUser, FaCartPlus } from 'react-icons/fa'
-import { FiBox } from 'react-icons/fi'
-import { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../../../Context/AuthContext'
-import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
+import { FaRegUser, FaCartPlus } from 'react-icons/fa';
+import { FiBox } from 'react-icons/fi';
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../../../Context/AuthContext';
+import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance';
 
 const WelcomeBox = () => {
-  const { profileData } = useContext(AuthContext)
+  const { profileData } = useContext(AuthContext);
   const [salesData, setSalesData] = useState({
     grossSales: 0,
     itemsSold: 0,
     ordersReceived: 0,
-  })
+  });
 
   const fetchSalesData = async () => {
     try {
-      const response = await axiosAuthInstance.get('shopify/salesByDate')
+      const response = await axiosAuthInstance.get('shopify/salesByDate');
+      if (response.status !== 200) throw new Error('Network response not ok');
 
-      // Check if the response is successful
-      if (response.status !== 200) {
-        throw new Error('Network response not ok')
-      }
+      const orders = response.data.orders || [];
 
-      const data = response.data // Use response.data directly
-      const orders = data.orders
+      // const author = JSON.parse(localStorage.getItem('_ur'));
+      // const authorFirstName = (author?.firstName || '').toLowerCase().trim();
+      // const authorLastName = (author?.lastName || '').toLowerCase().trim();
 
-      // Calculate gross sales, items sold, and orders received
-      let grossSales = 0
-      let itemsSold = 0
+      let grossSales = 0;
+      let itemsSold = 0;
+      let authorOrderCount = 0;
 
       orders.forEach((order) => {
-        const orderDate = new Date(order.created_at)
-        const currentDate = new Date()
+        const orderDate = new Date(order.created_at);
+        const currentDate = new Date();
 
-        // Check if the order was created in the current month
-        if (
-          orderDate.getMonth() === currentDate.getMonth() &&
-          orderDate.getFullYear() === currentDate.getFullYear()
-        ) {
-          grossSales += parseFloat(order.total_price)
-          itemsSold += order.line_items.reduce(
-            (total, item) => total + item.quantity,
-            0,
-          )
+        const isCurrentMonth =
+          orderDate.getMonth() === currentDate.getMonth()
+
+
+        // const isAuthorMatch =
+        //   order.first_name?.toLowerCase().trim() === authorFirstName &&
+        //   order.last_name?.toLowerCase().trim() === authorLastName;
+
+        if (isCurrentMonth) {
+          authorOrderCount += 1;
+          grossSales += parseFloat(order.total_price);
+          itemsSold += order.line_items.reduce((total, item) => total + item.quantity, 0);
         }
-      })
+      });
 
       setSalesData({
         grossSales,
         itemsSold,
-        ordersReceived: orders.length, // Total orders received
-      })
+        ordersReceived: authorOrderCount,
+      });
     } catch (error) {
-      console.error('Error fetching sales data:', error)
+      console.error('Error fetching sales data:', error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchSalesData()
-  }, [])
+    fetchSalesData();
+  }, []);
 
   return (
     <div className='p-6 space-y-6'>
@@ -99,9 +100,7 @@ const WelcomeBox = () => {
 
         <div className='flex shadow-md rounded-lg overflow-hidden'>
           <div className='bg-yellow-400 p-4 flex items-center justify-center'>
-            <span className='text-white text-xl'>
-              <FiBox />
-            </span>
+            <FiBox className='text-white text-xl' />
           </div>
           <div className='bg-white p-4 flex-1'>
             <p className='text-lg font-medium'>{salesData.itemsSold} items</p>
@@ -111,9 +110,7 @@ const WelcomeBox = () => {
 
         <div className='flex shadow-md rounded-lg overflow-hidden'>
           <div className='bg-teal-400 p-4 flex items-center justify-center'>
-            <span className='text-white text-xl'>
-              <FaCartPlus />
-            </span>
+            <FaCartPlus className='text-white text-xl' />
           </div>
           <div className='bg-white p-4 flex-1'>
             <p className='text-lg font-medium'>
@@ -124,7 +121,7 @@ const WelcomeBox = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WelcomeBox
+export default WelcomeBox;
