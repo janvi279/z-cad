@@ -11,7 +11,7 @@ const StoreStatus = () => {
     lowInStock: 0, // Placeholder, can be changed later
     outOfStock: 0, // Placeholder
   })
-const {setLoading}=useLoading();
+  const { setLoading } = useLoading();
   const fetchStoreStatus = async () => {
     setLoading(true)
     try {
@@ -27,9 +27,15 @@ const {setLoading}=useLoading();
       const processing = orders.length
 
       // 🔴 Orders awaiting fulfillment
-      const awaitingFulfillment = orders.filter(
-        (order) => order.fulfillment_status === null || order.fulfillment_status==='unfulfilled',
-      ).length
+     const awaitingFulfillment = orders.reduce((count, order) => {
+  if (Array.isArray(order.line_items)) {
+    return count + order.line_items.filter(item =>
+      item.fulfillment_status === null || item.fulfillment_status === 'unfulfilled'
+    ).length;
+  }
+  return count;
+}, 0);
+
 
       // 🟠 Low stock: inventory_quantity <= 5 but > 0
       const lowInStock = products.filter((product) => {
@@ -53,7 +59,7 @@ const {setLoading}=useLoading();
     } catch (error) {
       console.error('Error fetching store stats:', error)
     }
-    finally{
+    finally {
       setLoading(false)
     }
   }

@@ -28,22 +28,22 @@ const columns = [
     name: 'Size',
     selector: (row) => row.variants?.[0]?.option1 || 'N/A',
   },
-  {
-    name: 'Actions',
-    cell: (row) => (
-      <div className='flex items-center'>
-        <button
-          onClick={() => console.log("Delete", row.id)}
-          className='text-blue-500 text-lg px-4 py-2 rounded'
-        >
-          <MdOutlineDelete />
-        </button>
-      </div>
-    ),
-    ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
-  },
+  // {
+  //   name: 'Actions',
+  //   cell: (row) => (
+  //     <div className='flex items-center'>
+  //       <button
+  //         onClick={() => console.log("Delete", row.id)}
+  //         className='text-blue-500 text-lg px-4 py-2 rounded'
+  //       >
+  //         <MdOutlineDelete />
+  //       </button>
+  //     </div>
+  //   ),
+  //   ignoreRowClick: true,
+  //   allowOverflow: true,
+  //   button: true,
+  // },
 ];
 
 const Media = () => {
@@ -113,9 +113,9 @@ const Media = () => {
     <div>
       <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
         <h1 className='text-xl'>Media</h1>
-        <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-md flex items-center gap-2">
+        {/* <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-md flex items-center gap-2">
           Bulk Delete
-        </button>
+        </button> */}
       </div>
 
       <DataTable

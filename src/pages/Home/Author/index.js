@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import WelcomeBox from './WelcomeBox'
 import SalesChart from './SalesChart'
 import StoreAnalytics from './StoreAnalytics'
 import SalesByProduct from './SalesByProduct'
-import Notifications from './Notifications'
-import LatestTopic from './LatestTopic'
 import StoreStatus from './StoreStatus'
 import OutOfTheStock from './OutOfTheStock'
 
