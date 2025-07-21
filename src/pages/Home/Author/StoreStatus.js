@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { BiTime, BiMenu, BiDownArrow, BiX } from 'react-icons/bi'
 import { FaTruck } from 'react-icons/fa'
 import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
+import { useLoading } from '../../../Context/LoadingContext'
 
 const StoreStatus = () => {
   const [statusCounts, setStatusCounts] = useState({
@@ -10,8 +11,9 @@ const StoreStatus = () => {
     lowInStock: 0, // Placeholder, can be changed later
     outOfStock: 0, // Placeholder
   })
-
+const {setLoading}=useLoading();
   const fetchStoreStatus = async () => {
+    setLoading(true)
     try {
       // 1️⃣ Fetch orders
       const orderRes = await axiosAuthInstance.get('shopify/salesByDate') // Replace with actual endpoint
@@ -50,6 +52,9 @@ const StoreStatus = () => {
       })
     } catch (error) {
       console.error('Error fetching store stats:', error)
+    }
+    finally{
+      setLoading(false)
     }
   }
 

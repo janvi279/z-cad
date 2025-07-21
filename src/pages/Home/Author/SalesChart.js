@@ -16,7 +16,6 @@ import {
 } from 'chart.js'
 import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
 import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -247,7 +246,7 @@ const SalesChart = () => {
   }, [selectedPeriod, startDate, endDate])
 
   return (
-    <div ref={chartRef} className='p-6 bg-white rounded-lg shadow-sm space-y-6'>
+    <div  className='p-6 bg-white rounded-lg shadow-sm space-y-6'>
       <div className='flex items-center justify-between'>
         <div className='space-x-2 flex flex-wrap items-center'>
           {['year', 'last-month', 'this-month', 'last-7-days'].map((period) => (
@@ -274,7 +273,7 @@ const SalesChart = () => {
         <button onClick={handlePrint} className='px-4 py-2 bg-gray-800 text-white rounded-md text-sm'>Print</button>
       </div>
 
-      <div className='grid grid-cols-5 gap-3 text-center'>
+      <div  className='grid grid-cols-5 gap-3 text-center'>
         {[{ label: 'Gross Sales', value: `₹${salesData.grossSales.toFixed(2)}` },
           { label: 'Total Withdrawal', value: `₹${salesData.totalWithdrawal.toFixed(2)}` },
           { label: 'Total Refund', value: `₹${salesData.totalRefund.toFixed(2)}` },
@@ -287,7 +286,7 @@ const SalesChart = () => {
         ))}
       </div>
 
-      <div className='space-y-2'>
+      <div ref={chartRef} className='space-y-2'>
         <p className='text-sm text-gray-500'>{subtitle}</p>
         <div className='h-[400px]'>
           <Line data={chartData} options={options} />

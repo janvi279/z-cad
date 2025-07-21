@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { BsGraphUp } from 'react-icons/bs'
+import { useLoading } from '../../../Context/LoadingContext'
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -56,8 +58,10 @@ const StoreAnalytics = () => {
     labels: [],
     datasets: [],
   })
+  const {setLoading}=useLoading();
 
   const fetchSalesData = async () => {
+    setLoading(true)
     try {
       const response = await axiosAuthInstance.get('shopify/salesByDate')
       const orders = response.data.orders || []
@@ -174,6 +178,9 @@ const StoreAnalytics = () => {
       })
     } catch (err) {
       console.error('Failed to fetch sales data:', err)
+    }
+    finally{
+      setLoading(false)
     }
   }
 

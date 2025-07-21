@@ -3,9 +3,11 @@ import { FiBox } from 'react-icons/fi';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../Context/AuthContext';
 import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance';
+import { useLoading } from '../../../Context/LoadingContext';
 
 const WelcomeBox = () => {
   const { profileData } = useContext(AuthContext);
+  const {setLoading}=useLoading();
   const [salesData, setSalesData] = useState({
     grossSales: 0,
     itemsSold: 0,
@@ -13,6 +15,8 @@ const WelcomeBox = () => {
   });
 
   const fetchSalesData = async () => {
+    setLoading(true);
+
     try {
       const response = await axiosAuthInstance.get('shopify/salesByDate');
       if (response.status !== 200) throw new Error('Network response not ok');
@@ -53,6 +57,9 @@ const WelcomeBox = () => {
       });
     } catch (error) {
       console.error('Error fetching sales data:', error);
+    }
+    finally{
+      setLoading(false)
     }
   };
 

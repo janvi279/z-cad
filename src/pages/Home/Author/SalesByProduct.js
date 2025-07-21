@@ -8,6 +8,7 @@ import {
   Legend
 } from 'chart.js'
 import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
+import { useLoading} from '../../../Context/LoadingContext'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -40,6 +41,7 @@ const options = {
   cutout: '50%',
 }
 
+
 const SalesByProduct = () => {
   const [chartData, setChartData] = useState({
     labels: ['No Sales Yet'],
@@ -51,8 +53,9 @@ const SalesByProduct = () => {
       },
     ],
   });
-
+const {setLoading}=useLoading();
   const fetchSalesData = async () => {
+    setLoading(true)
     try {
       const response = await axiosAuthInstance.get('shopify/salesByDate');
       const orders = response.data.orders || [];
@@ -101,6 +104,9 @@ const SalesByProduct = () => {
       }
     } catch (err) {
       console.error('Failed to fetch sales data:', err);
+    }
+    finally{
+      setLoading(false)
     }
   };
 

@@ -4,6 +4,7 @@ import { CiSaveDown2 } from 'react-icons/ci';
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useLoading } from '../../Context/LoadingContext';
 
 const columns = [
   { name: 'Title', selector: (row) => row.title },
@@ -26,7 +27,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeStatus, setActiveStatus] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+ const {setLoading}=useLoading();
 
   const handleExportExcel = () => {
     const exportData = filteredProducts.map(({ title, sku, status, price }) => ({
@@ -65,50 +66,42 @@ const Products = () => {
     saveAs(blob, 'products_export.xlsx');
   };
 
-  const fetchAllProducts = async () => {
-    try {
-      setLoading(true);
-      let all = [];
-      let nextPageInfo = null;
-      let keepFetching = true;
+const fetchAllProducts = async () => {
+  setLoading(true); // ✅ ADD THIS LINE
 
-      while (keepFetching) {
-        const url = `shopify/product?limit=250${nextPageInfo ? `&page_info=${nextPageInfo}` : ''}`;
-        const response = await axiosAuthInstance.get(url);
-        //     const author = JSON.parse(localStorage.getItem('_ur'))
-        // const firstName = author?.firstName || ''
-        // const lastName = author?.lastName || ''
-        // const fullName = `${firstName} ${lastName}`.toLowerCase().trim()
-        // console.log("fullname", fullName)
+  try {
+    let all = [];
+    let nextPageInfo = null;
+    let keepFetching = true;
 
-        // ✅ Filter only products that belong to this author
-        // const authorProducts = allProducts.filter((product) =>
-        //   product.product_type?.toLowerCase().includes(fullName)
-        // )
-        all = [...all, ...response.data.products];
-        nextPageInfo = response.data.pagination?.nextPageInfo;
-        keepFetching = !!nextPageInfo;
-      }
-
-      const transformed = all.map((item) => {
-        const variant = item.variants?.[0] || {};
-        return {
-          _id: item.id,
-          title: item.title,
-          sku: variant.sku,
-          status: item.status,
-          price: variant.price,
-        };
-      });
-
-      setAllProducts(transformed);
-      setFilteredProducts(transformed);
-    } catch (error) {
-      console.error('Error fetching all products:', error.message);
-    } finally {
-      setLoading(false);
+    while (keepFetching) {
+      const url = `shopify/product?limit=250${nextPageInfo ? `&page_info=${nextPageInfo}` : ''}`;
+      const response = await axiosAuthInstance.get(url);
+      all = [...all, ...response.data.products];
+      nextPageInfo = response.data.pagination?.nextPageInfo;
+      keepFetching = !!nextPageInfo;
     }
-  };
+
+    const transformed = all.map((item) => {
+      const variant = item.variants?.[0] || {};
+      return {
+        _id: item.id,
+        title: item.title,
+        sku: variant.sku,
+        status: item.status,
+        price: variant.price,
+      };
+    });
+
+    setAllProducts(transformed);
+    setFilteredProducts(transformed);
+  } catch (error) {
+    console.error('Error fetching all products:', error.message);
+  } finally {
+    setLoading(false); // ✅ ALREADY GOOD
+  }
+};
+
 
   useEffect(() => {
     fetchAllProducts();
@@ -202,7 +195,6 @@ const Products = () => {
           columns={columns}
           data={paginatedData}
           pagination={false}
-          progressPending={loading}
           noDataComponent="No products found"
         />
 
