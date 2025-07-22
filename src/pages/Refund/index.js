@@ -6,6 +6,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
+import { useLoading } from '../../Context/LoadingContext'
 
 const columns = [
   {
@@ -41,8 +42,10 @@ const Refund = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [pages, setPages] = useState(1)
   const [limit, setLimit] = useState(10)
+  const {setLoading}=useLoading();
 
   const fetchData = async () => {
+    setLoading(true)
     try {
       const response = await axiosAuthInstance.get('shopify/refund')
       if (response && response.status === 200) {
@@ -54,6 +57,9 @@ const Refund = () => {
       }
     } catch (error) {
       console.log('error :>> ', error)
+    }
+    finally{
+      setLoading(false)
     }
   }
 

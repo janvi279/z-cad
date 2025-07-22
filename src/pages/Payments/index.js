@@ -10,6 +10,7 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Modal from 'react-modal';
+import { useLoading } from '../../Context/LoadingContext';
 
 Modal.setAppElement('#root');
 
@@ -26,11 +27,16 @@ const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
       body: transactions.map(txn => [
         txn.id || '-',
         txn.order_id || '-',
-        `₹${txn?.receipt?.paid_amount || '0.00'}`,
+        `${txn?.receipt?.paid_amount || '0.00'}`,
         txn?.payment_details?.payment_method_name || '-',
         txn.created_at ? new Date(txn.created_at).toLocaleDateString('en-IN') : '-',
       ]),
+      theme: 'grid',
     });
+    const finalY = doc.lastAutoTable.finalY || 30;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text(`Total Withdrawal: ${totalAmount.toFixed(2)}`, 14, finalY + 10);
     doc.save('withdrawal_receipt.pdf');
   };
 
@@ -39,16 +45,28 @@ const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto mt-20 outline-none"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50"
+      overlayClassName="fixed inset-0 bg-white bg-opacity-50 flex items-start justify-center z-50"
     >
       <h2 className="text-xl font-semibold text-primary-600 mb-4 text-center">Withdrawal Summary</h2>
       <div className="space-y-2 text-sm">
-        <p><strong>Total Withdrawal:</strong> ₹{totalAmount.toFixed(2)}</p>
-        <p><strong>Payment Method:</strong> {firstTxn?.payment_details?.payment_method_name || '-'}</p>
-        <p><strong>Charges:</strong> ₹{firstTxn?.shop_money?.total_unsettled_set?.amount || '0.00'}</p>
-        <p><strong>UPI / Bank Info:</strong> {firstTxn?.payment_details?.credit_card_name || '-'}</p>
-        <p><strong>Note:</strong> {firstTxn?.note || '—'}</p>
+        <p>
+          <span className="text-gray-700 font-semibold">Total Withdrawal: </span>
+          <span className="text-black font-medium">₹{totalAmount.toFixed(2)}</span>
+        </p>
+        <p>
+          <span className="text-gray-700 font-semibold">Payment Method: </span>
+          <span className="text-black font-medium">{firstTxn?.payment_details?.payment_method_name || '-'}</span>
+        </p>
+        <p>
+          <span className="text-gray-700 font-semibold">Charges: </span>
+          <span className="text-black font-medium">₹{firstTxn?.shop_money?.total_unsettled_set?.amount || '0.00'}</span>
+        </p>
+        <p>
+          <span className="text-gray-700 font-semibold">UPI / Bank Info: </span>
+          <span className="text-black font-medium">{firstTxn?.payment_details?.credit_card_name || '-'}</span>
+        </p>
       </div>
+
       <div className="flex justify-end gap-3 mt-6">
         <button onClick={onRequestClose} className="px-4 py-2 bg-gray-300 rounded text-sm hover:bg-gray-400">Close</button>
         <button onClick={downloadReceiptAsPDF} className="px-4 py-2 bg-primary-500 text-white text-sm rounded hover:bg-primary-600">Download Receipt</button>
@@ -64,7 +82,7 @@ const Payments = () => {
   const [limit, setLimit] = useState(10);
   const [dateRange, setDateRange] = useState([null, null]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+const {setLoading}=useLoading();
   const [startDate, endDate] = dateRange;
 
   const openWithdrawalModal = () => setIsModalOpen(true);
@@ -72,6 +90,7 @@ const Payments = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axiosAuthInstance.get('shopify/transactions');
         if (response?.status === 200) {
@@ -80,6 +99,9 @@ const Payments = () => {
         }
       } catch (error) {
         console.log('Error fetching data:', error);
+      }
+      finally{
+        setLoading(false)
       }
     };
     fetchData();
@@ -94,7 +116,7 @@ const Payments = () => {
       (item.created_at &&
         new Date(item.created_at) >= startDate &&
         new Date(item.created_at) <= endDate);
-    return matchesSearch && matchesDate;
+    return matchesSearch && matchesDate && item.kind === 'sale'; // Filter for kind 'sale'
   });
 
   const handleExport = (type) => {
@@ -106,7 +128,6 @@ const Payments = () => {
       Charges: item?.shop_money?.total_unsettled_set?.amount?.toString() || '-',
       Payment: item.gateway || '-',
       Mode: item.payment_details?.payment_method_name || '-',
-      Note: item.note || '-',
       Date: item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A',
     }));
 
@@ -143,7 +164,7 @@ const Payments = () => {
     }
 
     if (type === 'PRINT') {
-      const tableHeaders = ['Status', 'Invoice Id', 'Order Id', 'Amount', 'Charges', 'Payment', 'Mode', 'Note', 'Date'];
+      const tableHeaders = ['Status', 'Invoice Id', 'Order Id', 'Amount', 'Charges', 'Payment', 'Mode', 'Date'];
       const tableRows = exportData.map(row => `
         <tr>${Object.values(row).map(cell => `<td>${cell}</td>`).join('')}</tr>
       `).join('');
@@ -186,7 +207,6 @@ const Payments = () => {
     { name: 'Charges', selector: row => row.shop_money?.total_unsettled_set?.amount ?? '—' },
     { name: 'Payment', selector: row => row.gateway },
     { name: 'Mode', selector: row => row.payment_details?.payment_method_name },
-    { name: 'Note', selector: row => row.note },
     { name: 'Date', selector: row => row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN') : 'N/A' },
   ];
 

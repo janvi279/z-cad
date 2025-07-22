@@ -75,7 +75,7 @@ const SalesChart = () => {
             }
             img {
               width: 100%;
-              height: 100%;
+              height: auto;
             }
           </style>
         </head>
@@ -94,19 +94,23 @@ const SalesChart = () => {
 
   const fetchSalesData = async () => {
     try {
-      const [salesResponse, refundResponse] = await Promise.all([
+      const [salesResponse, refundResponse, withdrawalResponse] = await Promise.all([
         axiosAuthInstance.get('shopify/salesByDate'),
         axiosAuthInstance.get('shopify/refund'),
+        axiosAuthInstance.get('shopify/transactions')
       ])
 
-      if (salesResponse.status !== 200 || refundResponse.status !== 200) throw new Error('API failed')
+      if (salesResponse.status !== 200 || refundResponse.status !== 200 || withdrawalResponse.status !== 200) {
+        throw new Error('API failed')
+      }
 
       const orders = salesResponse.data.orders || []
       const refunds = refundResponse.data.refunds || []
-
+      const withdrawals = withdrawalResponse.data.transactions || []
       const now = new Date()
       let fromDate, toDate
 
+      // Determine date range based on selected period
       if (selectedPeriod === 'this-month') {
         fromDate = new Date(now.getFullYear(), now.getMonth(), 1)
         toDate = now
@@ -125,16 +129,23 @@ const SalesChart = () => {
         toDate = new Date(endDate)
       }
 
-      const filteredOrders = orders.filter((order) => {
+      // Filter orders, refunds, and withdrawals based on date range
+      const filteredOrders = orders.filter(order => {
         const orderDate = new Date(order.created_at)
         return orderDate >= fromDate && orderDate <= toDate
       })
 
-      const filteredRefunds = refunds.filter((refund) => {
+      const filteredRefunds = refunds.filter(refund => {
         const refundDate = new Date(refund.created_at)
         return refundDate >= fromDate && refundDate <= toDate
       })
 
+      const filteredWithdrawals = withdrawals.filter(transaction => {
+        const withdrawalDate = new Date(transaction.created_at)
+        return withdrawalDate >= fromDate && withdrawalDate <= toDate
+      })
+
+      // Initialize totals
       let grossSales = 0,
         ordersPlaced = 0,
         itemsPurchased = 0,
@@ -143,32 +154,35 @@ const SalesChart = () => {
 
       const grossByDate = {}
 
-      filteredOrders.forEach((order) => {
+      // Calculate gross sales and other metrics
+      filteredOrders.forEach(order => {
         const orderDate = new Date(order.created_at)
         const value = parseFloat(order.total_price)
-        if (isNaN(value)) return
+        if (!isNaN(value)) {
+          grossSales += value
+          ordersPlaced += 1
+          itemsPurchased += order.line_items.reduce((sum, item) => sum + item.quantity, 0)
 
-        grossSales += value
-        ordersPlaced += 1
-        itemsPurchased += order.line_items.reduce((sum, item) => sum + item.quantity, 0)
-
-        const key = orderDate.toISOString().split('T')[0]
-        grossByDate[key] = (grossByDate[key] || 0) + value
+          const key = orderDate.toISOString().split('T')[0]
+          grossByDate[key] = (grossByDate[key] || 0) + value
+        }
       })
 
-      filteredRefunds.forEach((refund) => {
-        refund.transactions?.forEach((txn) => {
-          if (txn.kind === 'refund' && txn.status === 'success') {
-            const amount = parseFloat(txn.amount)
-            if (!isNaN(amount)) {
-              totalRefund += amount
-              totalWithdrawal += amount
-            }
-          }
-        })
+      // Calculate total refunds
+      filteredRefunds.forEach(refund => {
+        refund.transactions.forEach(transaction => {
+          totalRefund += parseFloat(transaction.receipt.paid_amount) || 0;
+        });
       })
 
-      // Chart preparation
+      // Calculate total withdrawals
+      filteredWithdrawals.forEach(transaction => {
+        if (transaction.kind === "sale") {
+          totalWithdrawal += parseFloat(transaction.receipt.paid_amount) || 0;
+        }
+      })
+
+      // Prepare chart data
       const chartLabels = []
       const chartValues = []
       const isYear = selectedPeriod === 'year'
@@ -208,6 +222,7 @@ const SalesChart = () => {
         }
       }
 
+      // Update state with sales data and chart data
       setSalesData({
         grossSales,
         totalWithdrawal,
@@ -238,6 +253,7 @@ const SalesChart = () => {
       setSubtitle(`₹${grossSales.toFixed(2)} in Sales — ${subtitleText}`)
     } catch (err) {
       console.error('Sales chart fetch failed:', err)
+      // Optionally, you can set an error state here to display an error message to the user
     }
   }
 
@@ -246,7 +262,7 @@ const SalesChart = () => {
   }, [selectedPeriod, startDate, endDate])
 
   return (
-    <div  className='p-6 bg-white rounded-lg shadow-sm space-y-6'>
+    <div className='p-6 bg-white rounded-lg shadow-sm space-y-6'>
       <div className='flex items-center justify-between'>
         <div className='space-x-2 flex flex-wrap items-center'>
           {['year', 'last-month', 'this-month', 'last-7-days'].map((period) => (
@@ -273,16 +289,16 @@ const SalesChart = () => {
         <button onClick={handlePrint} className='px-4 py-2 bg-gray-800 text-white rounded-md text-sm'>Print</button>
       </div>
 
-      <div  className='grid grid-cols-5 gap-3 text-center'>
+      <div className='grid grid-cols-5 gap-3 text-center'>
         {[{ label: 'Gross Sales', value: `₹${salesData.grossSales.toFixed(2)}` },
-          { label: 'Total Withdrawal', value: `₹${salesData.totalWithdrawal.toFixed(2)}` },
-          { label: 'Total Refund', value: `₹${salesData.totalRefund.toFixed(2)}` },
-          { label: 'Orders Placed', value: salesData.ordersPlaced },
-          { label: 'Items Purchased', value: salesData.itemsPurchased }].map((card, i) => (
-            <div key={i} className='p-3 border rounded-lg'>
-              <p className='text-lg font-medium'>{card.value}</p>
-              <p className='text-sm text-gray-500'>{card.label}</p>
-            </div>
+        { label: 'Total Withdrawal', value: `₹${salesData.totalWithdrawal.toFixed(2)}` },
+        { label: 'Total Refund', value: `₹${salesData.totalRefund.toFixed(2)}` },
+        { label: 'Orders Placed', value: salesData.ordersPlaced },
+        { label: 'Items Purchased', value: salesData.itemsPurchased }].map((card, i) => (
+          <div key={i} className='p-3 border rounded-lg'>
+            <p className='text-lg font-medium'>{card.value}</p>
+            <p className='text-sm text-gray-500'>{card.label}</p>
+          </div>
         ))}
       </div>
 

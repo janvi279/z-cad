@@ -1,74 +1,109 @@
-import React, { useState } from 'react'
-import { LuRepeat2 } from 'react-icons/lu'
-import { PiMoney } from 'react-icons/pi'
-import Select from 'react-select'
-import DataTable from 'react-data-table-component'
-import { FiMoreHorizontal } from 'react-icons/fi'
-
-const columns = [
-  {
-    name: (
-      <>
-        <FiMoreHorizontal title='Status' className='h-5 w-5' />
-      </>
-    ),
-    selector: (row) => row.status,
-  },
-  { name: 'Type', selector: (row) => row.type },
-  { name: 'Details', selector: (row) => row.details },
-  { name: 'Credit', selector: (row) => row.credit },
-  { name: 'Debit', selector: (row) => row.debit },
-  { name: 'Date', selector: (row) => row.date },
-]
+import { useState, useEffect } from 'react';
+import { LuRepeat2 } from 'react-icons/lu';
+import { PiMoney } from 'react-icons/pi';
+import DataTable from 'react-data-table-component';
+import { FiMoreHorizontal } from 'react-icons/fi';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
+import { useLoading } from '../../Context/LoadingContext';
 
 const LedgerBook = () => {
-  const [selectedOption1, setSelectedOption1] = useState(null)
-  const [selectedOption2, setSelectedOption2] = useState(null)
-  const [data, setData] = useState([])
-  const [pages, setPages] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [totalRows, setTotalRows] = useState(0)
 
-  const handlePageChange = (page) => setPages(page)
+  const [data, setData] = useState([]);
+  const [pages, setPages] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [totalWithdrawals, setTotalWithdrawals] = useState(0);
+  const [totalRefunds, setTotalRefunds] = useState(0);
+  const {setLoading}=useLoading();
+  
 
-  const handlelimitChange = (newPerPage) => {
-    setLimit(newPerPage)
-    setPages(1)
-  }
+  const columns = [
+    {
+      name: <FiMoreHorizontal title="Status" className="h-5 w-5" />,
+      selector: (row) => row.status || '-',
+    },
+    { name: 'Type', selector: (row) => row.kind || '-' },
+    { name: 'Details', selector: (row) => row.message || '-' },
+    { name: 'Credit', selector: (row) => row.credit },
+    { name: 'Debit', selector: (row) => row.debit },
+    { name: 'Date', selector: (row) => row.date },
+  ];
 
-  const options1 = [
-    { value: 'completed', label: 'Completed' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'refunded', label: 'Refunded' },
-    { value: 'cancelled', label: 'Cancelled' },
-  ]
+  const handlePageChange = (page) => setPages(page);
+  const handleLimitChange = (newPerPage) => {
+    setLimit(newPerPage);
+    setPages(1);
+  };
 
-  const options2 = [
-    { value: 'order', label: 'Order' },
-    { value: 'withdrawal', label: 'Withdrawal' },
-    { value: 'refunded', label: 'Refunded' },
-    { value: 'partialRefunded', label: 'Partial Refunded' },
-    { value: 'charges', label: 'Charges' },
-  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const [transactionsRes, ordersRes, refundsRes] = await Promise.all([
+          axiosAuthInstance.get('shopify/transactions'),
+          axiosAuthInstance.get('shopify/order'),
+          axiosAuthInstance.get('shopify/refund'),
+        ]);
+
+        // Process orders (total earnings)
+        if (ordersRes?.status === 200) {
+          const orders = ordersRes.data.orders || [];
+          const earnings = orders.reduce((sum, order) => sum + parseFloat(order.current_total_price || '0'), 0);
+          setTotalEarnings(earnings);
+        }
+
+        // Process refunds
+        if (refundsRes?.status === 200) {
+          const refunds = refundsRes.data.refunds || [];
+          const totalRefund = refunds.reduce((sum, refund) => {
+            return sum + refund.transactions.reduce((txnSum, txn) => txnSum + parseFloat(txn.receipt?.paid_amount || '0'), 0);
+          }, 0);
+          setTotalRefunds(totalRefund);
+        }
+
+        // Process transactions
+        if (transactionsRes?.status === 200) {
+          const transactions = transactionsRes.data.transactions || [];
+
+          const transformed = transactions.map((txn) => {
+            const amount = parseFloat(txn?.receipt?.paid_amount || '0').toFixed(2);
+            const isSale = txn.kind === 'sale';
+            const isRefund = txn.kind === 'refund';
+
+            return {
+              status: txn.status || '-',
+              kind: txn.kind || '-',
+              message: txn.message || '-',
+              credit: isSale ? `₹${amount}` : '—',
+              debit: isRefund ? `₹${amount}` : '—',
+              date: txn.created_at ? new Date(txn.created_at).toLocaleDateString('en-IN') : '-',
+            };
+          });
+
+          const totalWithdrawal = transactions.reduce((sum, txn) => {
+            return sum + (txn.kind === 'sale' ? parseFloat(txn.receipt?.paid_amount || 0) : 0);
+          }, 0);
+
+          setData(transformed);
+          setTotalRows(transformed.length);
+          setTotalWithdrawals(totalWithdrawal);
+        }
+      } catch (error) {
+        console.error('Error fetching ledger data:', error);
+      }
+      finally{
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
       <div className='bg-white shadow rounded-lg py-2 px-4 flex justify-between items-center mb-6'>
         <h1 className='text-xl text-primary-500'>Ledger Book</h1>
-        <div className='flex gap-2'>
-          <Select
-            options={options1}
-            placeholder='Show all...'
-            value={selectedOption1}
-            onChange={setSelectedOption1}
-          />
-          <Select
-            options={options2}
-            placeholder='Show all...'
-            value={selectedOption2}
-            onChange={setSelectedOption2}
-          />
-        </div>
       </div>
 
       <div className='grid gap-4 md:grid-cols-3 py-10 px-28'>
@@ -77,31 +112,27 @@ const LedgerBook = () => {
             <span className='text-white text-xl'>₹</span>
           </div>
           <div className='bg-white p-4 flex-1'>
-            <p className='text-lg font-medium'>₹0.00</p>
+            <p className='text-lg font-medium'>₹{totalEarnings.toFixed(2)}</p>
             <p className='text-sm text-gray-500'>Total Earning</p>
           </div>
         </div>
 
         <div className='flex shadow-md rounded-lg overflow-hidden'>
           <div className='bg-green-400 p-4 flex items-center justify-center'>
-            <span className='text-white text-xl'>
-              <PiMoney />
-            </span>
+            <span className='text-white text-xl'><PiMoney /></span>
           </div>
           <div className='bg-white p-4 flex-1'>
-            <p className='text-lg font-medium'>₹0.00</p>
+            <p className='text-lg font-medium'>₹{totalWithdrawals.toFixed(2)}</p>
             <p className='text-sm text-gray-500'>Total Withdrawal</p>
           </div>
         </div>
 
         <div className='flex shadow-md rounded-lg overflow-hidden'>
           <div className='bg-pink-500 p-4 flex items-center justify-center'>
-            <span className='text-white text-xl'>
-              <LuRepeat2 />
-            </span>
+            <span className='text-white text-xl'><LuRepeat2 /></span>
           </div>
           <div className='bg-white p-4 flex-1'>
-            <p className='text-lg font-medium'>₹0.00</p>
+            <p className='text-lg font-medium'>₹{totalRefunds.toFixed(2)}</p>
             <p className='text-sm text-gray-500'>Total Refund</p>
           </div>
         </div>
@@ -110,17 +141,17 @@ const LedgerBook = () => {
       <div className='bg-white p-4 rounded-lg shadow'>
         <DataTable
           columns={columns}
-          data={data}
+          data={data.slice((pages - 1) * limit, pages * limit)}
           pagination
           paginationServer
           paginationTotalRows={totalRows}
           paginationPerPage={limit}
           onChangePage={handlePageChange}
-          onChangelimit={handlelimitChange}
+          onChangeRowsPerPage={handleLimitChange}
         />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default LedgerBook
+export default LedgerBook;

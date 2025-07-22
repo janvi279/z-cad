@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 import { MdOutlineDelete } from "react-icons/md";
+import { useLoading } from '../../Context/LoadingContext';
 
 const columns = [
   {
@@ -51,8 +52,10 @@ const Media = () => {
   const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+const {setLoading}=useLoading();
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       let all = [];
       let nextPageInfo = null;
@@ -89,6 +92,9 @@ const Media = () => {
       setTotalRows(transformedData.length);
     } catch (error) {
       console.error('Fetch error:', error);
+    }
+    finally{
+      setLoading(false);
     }
   };
 
