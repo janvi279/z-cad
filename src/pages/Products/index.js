@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import { CiSaveDown2 } from 'react-icons/ci';
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
@@ -31,7 +31,10 @@ const Products = () => {
   const [showSkuModal, setShowSkuModal] = useState(false);
   const [skuInput, setSkuInput] = useState('');
   const [skuNotFound, setSkuNotFound] = useState(false);
+  const data = JSON.parse(localStorage.getItem("_ur") || '{}');
+  const authorId = data?._id;
 
+  console.log("authorId", authorId);
   const handleExportExcel = () => {
     const exportData = filteredProducts.map(({ title, sku, status, price }) => ({
       Title: title || '-',
@@ -55,57 +58,55 @@ const Products = () => {
 
     saveAs(blob, 'products_export.xlsx');
   };
+  useEffect(() => {
+    const fetchAuthorProducts = async () => {
+      setLoading(true);
 
+
+      try {
+        const res = await axiosAuthInstance.get(`shopify/product/${authorId}`);
+        setFilteredProducts(res.data);
+      } catch (err) {
+        console.error("Failed to load saved products", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAuthorProducts();
+  }, []);
   const handleSkuSearch = async () => {
     if (!skuInput.trim()) return;
-
     setLoading(true);
+
     try {
-      let nextPageInfo = null;
-      let matchedProduct = null;
-      let keepFetching = true;
+      const res = await axiosAuthInstance.post("shopify/product", {
+        sku: skuInput.trim(),
+        authorId: authorId
+      });
+ // ✅ Re-fetch from backend to update full list
+    const updatedList = await axiosAuthInstance.get(`shopify/product/${authorId}`);
+    setFilteredProducts(updatedList.data);
+    
+      const productData = {
+        title: res.data.title,
+        sku: res.data.sku,
+        status: res.data.status,
+        price: res.data.price,
+      };
 
-      while (keepFetching && !matchedProduct) {
-        const url = `shopify/product?limit=250${nextPageInfo ? `&page_info=${nextPageInfo}` : ''}`;
-        const res = await axiosAuthInstance.get(url);
-
-        const allProducts = res.data.products || [];
-        nextPageInfo = res.data.pagination?.nextPageInfo;
-        keepFetching = !!nextPageInfo;
-
-        matchedProduct = allProducts.find(item => {
-          const variant = item.variants?.[0];
-          return variant?.sku?.toLowerCase() === skuInput.trim().toLowerCase();
-        });
-      }
-
-      if (matchedProduct) {
-        const variant = matchedProduct.variants?.[0] || {};
-        const productData = {
-          title: matchedProduct.title,
-          sku: variant.sku,
-          status: matchedProduct.status,
-          price: variant.price,
-        };
-
-        const alreadyExists = filteredProducts.some(p => p.sku === productData.sku);
-        if (!alreadyExists) {
-          setFilteredProducts(prev => [...prev, productData]);
-        }
-
-        setSkuNotFound(false);
-      } else {
-        setSkuNotFound(true);
-      }
-    } catch (error) {
-      console.error('Error fetching product:', error.message);
+      setFilteredProducts(prev => [...prev, productData]);
+      setSkuNotFound(false);
+    } catch (err) {
+      console.error(err.message);
       setSkuNotFound(true);
     } finally {
-      setLoading(false);
       setSkuInput('');
       setShowSkuModal(false);
+      setLoading(false);
     }
   };
+
 
   const handleStatusFilter = (statusLabel) => {
     setActiveStatus(statusLabel);
@@ -138,6 +139,7 @@ const Products = () => {
 
   const paginatedData = filteredData.slice((currentPage - 1) * limit, currentPage * limit);
 
+
   return (
     <>
       {/* Header */}
@@ -150,7 +152,7 @@ const Products = () => {
               className={`border-1 p-2 rounded-lg text-sm ${activeStatus === btn
                 ? 'bg-primary-100 text-primary-600'
                 : 'text-gray-600 hover:bg-primary-100 hover:text-primary-600'
-              }`}
+                }`}
             >
               {btn}
             </button>

@@ -7,12 +7,12 @@ import { useLoading } from '../../Context/LoadingContext';
 const columns = [
   {
     name: 'Customer Name',
-    selector: (row) => `${row.customer?.first_name ?? ''} ${row.customer?.last_name ?? ''}`,
+    selector: (row) => `${row.customer_name}`,
   },
-  { name: 'Email', selector: (row) => row.contact_email },
+  { name: 'Email', selector: (row) => row.email },
   { name: 'Order Confirm', selector: (row) => (row.confirmed ? 'Yes' : 'No') },
-  { name: 'Total Price', selector: (row) => row.current_total_price },
-  { name: 'Order No.', selector: (row) => row.order_number },
+  { name: 'Total Price', selector: (row) => row.TotalPrice },
+  { name: 'Order No.', selector: (row) => row.orderNo },
 ];
 
 const Orders = () => {
@@ -31,6 +31,7 @@ const Orders = () => {
         const transformedData = response.data.orders.map((item) => ({
           ...item,
         }));
+        console.log("transformdata", transformedData)
         setData(transformedData);
         setTotalRows(transformedData.length); // Set total rows for pagination
       }
