@@ -15,7 +15,7 @@ import { useLoading } from '../../Context/LoadingContext';
 Modal.setAppElement('#root');
 
 const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
-  const totalAmount = transactions.reduce((sum, tx) => sum + parseFloat(tx?.receipt?.paid_amount || '0'), 0);
+  const totalAmount = transactions.reduce((sum, tx) => sum + parseFloat(tx?.amount || '0'), 0);
   const firstTxn = transactions[0] || {};
 
   const downloadReceiptAsPDF = () => {
@@ -25,11 +25,11 @@ const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
       startY: 20,
       head: [['Invoice ID', 'Order ID', 'Amount', 'Payment Method', 'Date']],
       body: transactions.map(txn => [
-        txn.id || '-',
-        txn.order_id || '-',
-        `${txn?.receipt?.paid_amount || '0.00'}`,
-        txn?.payment_details?.payment_method_name || '-',
-        txn.created_at ? new Date(txn.created_at).toLocaleDateString('en-IN') : '-',
+        txn.invoiceId  || '-',
+        txn.orderId  || '-',
+        `${txn.amount || '0.00'}`,
+        txn?.mode || '-',
+        txn.date ? new Date(txn.date).toLocaleDateString('en-IN') : '-',
       ]),
       theme: 'grid',
     });
@@ -55,15 +55,11 @@ const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
         </p>
         <p>
           <span className="text-gray-700 font-semibold">Payment Method: </span>
-          <span className="text-black font-medium">{firstTxn?.payment_details?.payment_method_name || '-'}</span>
+          <span className="text-black font-medium">{firstTxn?.mode || '-'}</span>
         </p>
         <p>
           <span className="text-gray-700 font-semibold">Charges: </span>
-          <span className="text-black font-medium">₹{firstTxn?.shop_money?.total_unsettled_set?.amount || '0.00'}</span>
-        </p>
-        <p>
-          <span className="text-gray-700 font-semibold">UPI / Bank Info: </span>
-          <span className="text-black font-medium">{firstTxn?.payment_details?.credit_card_name || '-'}</span>
+          <span className="text-black font-medium">₹{firstTxn?.charges || '0.00'}</span>
         </p>
       </div>
 
@@ -107,17 +103,18 @@ const {setLoading}=useLoading();
     fetchData();
   }, []);
 
-  const filteredData = data.filter((item) => {
-    const matchesSearch = Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    const matchesDate =
-      (!startDate && !endDate) ||
-      (item.created_at &&
-        new Date(item.created_at) >= startDate &&
-        new Date(item.created_at) <= endDate);
-    return matchesSearch && matchesDate && item.kind === 'sale'; // Filter for kind 'sale'
-  });
+ const filteredData = data.filter((item) => {
+  const matchesSearch = Object.values(item).some((val) =>
+    String(val).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const matchesDate =
+    (!startDate && !endDate) ||
+    (item.date &&
+      new Date(item.date) >= startDate &&
+      new Date(item.date) <= endDate);
+       return matchesSearch && matchesDate && item.kind === 'sale'; // Filter for kind 'sale'
+});
+
 
   const handleExport = (type) => {
     const exportData = filteredData.map((item) => ({
@@ -199,16 +196,17 @@ const {setLoading}=useLoading();
     year: 'numeric',
   });
 
-  const columns = [
-    { name: <FiMoreHorizontal title='Status' className='h-5 w-5' />, selector: row => row.status },
-    { name: 'Invoice Id', selector: row => row.id },
-    { name: 'Order Ids', selector: row => row.order_id },
-    { name: 'Amount', selector: row => row?.receipt?.paid_amount },
-    { name: 'Charges', selector: row => row.shop_money?.total_unsettled_set?.amount ?? '—' },
-    { name: 'Payment', selector: row => row.gateway },
-    { name: 'Mode', selector: row => row.payment_details?.payment_method_name },
-    { name: 'Date', selector: row => row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN') : 'N/A' },
-  ];
+const columns = [
+  { name: <FiMoreHorizontal title="Status" className="h-5 w-5" />, selector: row => row.status },
+  { name: 'Invoice Id', selector: row => row.invoiceId },
+  { name: 'Order Id', selector: row => row.orderId },
+  { name: 'Amount', selector: row => `₹${row.amount}` },
+  { name: 'Charges', selector: row => `₹${row.charges ?? '—'}` },
+  { name: 'Payment', selector: row => row.payment },
+  { name: 'Mode', selector: row => row.mode },
+  { name: 'Date', selector: row => row.date ? new Date(row.date).toLocaleDateString('en-IN') : 'N/A' },
+];
+
 
   return (
     <>

@@ -10,31 +10,32 @@ import { useLoading } from '../../Context/LoadingContext'
 
 const columns = [
   {
-    name: <FiMoreHorizontal title='Status' className='h-5 w-5' />,
-    selector: (row) => `${row.transactions?.[0]?.status ?? ''}`,
+    name: <FiMoreHorizontal title="Status" className="h-5 w-5" />,
+    selector: (row) => row.transactions[0]?.status ?? '',
   },
-  { name: 'Request Id', selector: (row) => row.id },
-  { name: 'Order Id', selector: (row) => row.order_id },
+  { name: 'Request Id', selector: (row) => row.refundId },
+  { name: 'Order Id', selector: (row) => row.orderId },
   {
     name: 'Amount',
-    selector: (row) => `${row.transactions?.[0]?.amount ?? ''}`,
+    selector: (row) => row.transactions?.[0]?.amount ?? '',
   },
   {
     name: 'Type',
-    selector: (row) => `${row.transactions?.[0]?.kind ?? ''}`,
+    selector: (row) => row.transactions?.[0]?.kind ?? '',
   },
   {
     name: 'Reason',
-    selector: (row) => `${row.order_adjustments?.[0]?.reason ?? ''}`,
+    selector: (row) => row.orderAdjustments?.[0]?.reason ?? '',
   },
   {
     name: 'Date',
     selector: (row) =>
-      row.created_at
-        ? new Date(row.created_at).toLocaleDateString('en-IN')
+      row.createdAtShopify
+        ? new Date(row.createdAtShopify).toLocaleDateString('en-IN')
         : 'N/A',
   },
-]
+];
+
 
 const Refund = () => {
   const [data, setData] = useState([])
@@ -42,7 +43,7 @@ const Refund = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [pages, setPages] = useState(1)
   const [limit, setLimit] = useState(10)
-  const {setLoading}=useLoading();
+  const { setLoading } = useLoading();
 
   const fetchData = async () => {
     setLoading(true)
@@ -58,7 +59,7 @@ const Refund = () => {
     } catch (error) {
       console.log('error :>> ', error)
     }
-    finally{
+    finally {
       setLoading(false)
     }
   }
@@ -71,17 +72,18 @@ const Refund = () => {
     if (searchTerm) {
       const term = searchTerm.toLowerCase()
       const filtered = data.filter((item) => {
-  const transaction = item.transactions?.[0];
-  const reason = item.order_adjustments?.[0]?.reason || "";
+        const tx = item.transactions?.[0];
+        const reason = item.orderAdjustments?.[0]?.reason || '';
 
-  return (
-    item.id?.toString().toLowerCase().includes(term) ||
-    item.order_id?.toString().toLowerCase().includes(term) ||
-    transaction?.status?.toLowerCase().includes(term) ||
-    transaction?.kind?.toLowerCase().includes(term) ||
-    reason.toLowerCase().includes(term)
-  );
-});
+        return (
+          item.refundId?.toString().toLowerCase().includes(term) ||
+          item.orderId?.toString().toLowerCase().includes(term) ||
+          tx?.status?.toLowerCase().includes(term) ||
+          tx?.kind?.toLowerCase().includes(term) ||
+          reason.toLowerCase().includes(term)
+        );
+      });
+
 
       setFilteredData(filtered)
     } else {
@@ -127,7 +129,7 @@ const Refund = () => {
       }))
     )
     const wb = XLSX.utils.book_new()
-     const columnWidths = [{ wch: 10}, { wch: 20 }, { wch:20}, { wch: 10 },{ wch: 10},{ wch: 30},{ wch: 15 }]
+    const columnWidths = [{ wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 10 }, { wch: 10 }, { wch: 30 }, { wch: 15 }]
     ws['!cols'] = columnWidths
     XLSX.utils.book_append_sheet(wb, ws, 'Refunds')
     saveAs(new Blob([XLSX.write(wb, { type: 'array', bookType: 'xlsx' })]), 'refund_requests.xlsx')

@@ -1,34 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
-import { MdOutlineDelete } from "react-icons/md";
+import { MdOutlineDelete } from 'react-icons/md';
 import { useLoading } from '../../Context/LoadingContext';
 
 const columns = [
   {
     name: 'File',
-    selector: row => row.image?.src ?? '',
-    cell: row =>
-      row.image?.src ? (
-        <img
-          src={row.image.src}
-          alt="product"
-          width={50}
-          height={50}
-          style={{ objectFit: 'contain' ,padding:"3px"}}
-        />
+    selector: row => row.images?.[0]?.src || 'N/A',
+    cell: row => {
+      return row.images?.[0]?.src ? (
+        <img src={row.images[0].src} alt="product" width={50} height={50} />
       ) : (
         'No image'
-      ),
+      );
+    }
   },
   {
     name: 'Associate',
-    selector: (row) => row.vendor || 'N/A',
+    selector: row => row.images?.[0]?.associate || 'N/A',
   },
   {
     name: 'Size',
-    selector: (row) => row.variants?.[0]?.option1 || 'N/A',
+    selector: row =>
+      row.images?.[0]?.size?.width && row.images?.[0]?.size?.height
+        ? `${row.images[0].size.width}x${row.images[0].size.height}`
+        : 'N/A',
   },
+  // You can uncomment and update this if delete functionality is needed later.
   // {
   //   name: 'Actions',
   //   cell: (row) => (
@@ -52,7 +51,7 @@ const Media = () => {
   const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
-const {setLoading}=useLoading();
+  const { setLoading } = useLoading();
 
   const fetchData = async () => {
     setLoading(true);
@@ -60,40 +59,39 @@ const {setLoading}=useLoading();
       let all = [];
       let nextPageInfo = null;
       let keepFetching = true;
+      const localData = JSON.parse(localStorage.getItem('_ur') || '{}');
+      const authorId = localData?._id;
 
       while (keepFetching) {
-        const url = `shopify/product?limit=250${nextPageInfo ? `&page_info=${nextPageInfo}` : ''}`;
+        const url = `/shopify/product/${authorId}?limit=250${nextPageInfo ? `&page_info=${nextPageInfo}` : ''}`;
         const response = await axiosAuthInstance.get(url);
 
-        if (response?.status === 200) {
-          all = [...all, ...response.data.products];
-          nextPageInfo = response.data.pagination?.nextPageInfo;
-          keepFetching = !!nextPageInfo;
+        console.log('Shopify Response:', response.data);
+
+        const products = response?.data;
+
+        if (!Array.isArray(products)) {
+          console.error('Expected products to be an array, got:', products);
+          break;
+        }
+
+        all = [...all, ...products];
+
+        // Handle pagination from Shopify 'link' header
+        const linkHeader = response.headers?.link;
+        if (linkHeader && linkHeader.includes('rel="next"')) {
+          const match = linkHeader.match(/page_info=([^&>]+)/);
+          nextPageInfo = match ? match[1] : null;
         } else {
           keepFetching = false;
         }
       }
 
-      const transformedData = all.map((item) => ({
-        ...item,
-        actions: (
-          <div className='flex items-center'>
-            <button
-              onClick={() => console.log("Delete", item.id)}
-              className='text-blue-500 text-lg px-4 py-2 rounded'
-            >
-              <MdOutlineDelete />
-            </button>
-          </div>
-        ),
-      }));
-
-      setData(transformedData);
-      setTotalRows(transformedData.length);
+      setData(all);
+      setTotalRows(all.length);
     } catch (error) {
-      console.error('Fetch error:', error);
-    }
-    finally{
+      console.error('Fetch Error:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -112,14 +110,15 @@ const {setLoading}=useLoading();
   };
 
   const onSelectRow = (state) => {
-    console.log("Selected rows:", state.selectedRows);
+    console.log('Selected rows:', state.selectedRows);
   };
 
   return (
     <div>
       <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
         <h1 className='text-xl'>Media</h1>
-        {/* <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-md flex items-center gap-2">
+        {/* Uncomment for future bulk delete
+        <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-md flex items-center gap-2">
           Bulk Delete
         </button> */}
       </div>
