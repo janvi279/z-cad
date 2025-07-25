@@ -7,7 +7,7 @@ import { useLoading } from '../../Context/LoadingContext';
 const columns = [
   {
     name: 'Customer Name',
-    selector: (row) => `${row.customer_name}`,
+    selector: (row) => row.customer_name,
   },
   { name: 'Email', selector: (row) => row.email },
   { name: 'Order Confirm', selector: (row) => (row.confirmed ? 'Yes' : 'No') },
@@ -28,15 +28,12 @@ const Orders = () => {
     try {
       const response = await axiosAuthInstance.get('shopify/order');
       if (response && response.status === 200) {
-        const transformedData = response.data.orders.map((item) => ({
-          ...item,
-        }));
-        console.log("transformdata", transformedData)
-        setData(transformedData);
-        setTotalRows(transformedData.length); // Set total rows for pagination
+        const orders = response.data.orders;
+        setData(orders);
+        setTotalRows(orders.length);
       }
     } catch (error) {
-      console.log('error :>> ', error);
+      console.error('Fetch error:', error);
     } finally {
       setLoading(false);
     }
@@ -47,23 +44,23 @@ const Orders = () => {
   }, []);
 
   const handlePageChange = (page) => setPages(page);
-
   const handleLimitChange = (newPerPage) => {
     setLimit(newPerPage);
     setPages(1);
   };
-
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
-  // Filtered data based on search term
-  const filteredData = data.filter((item) => {
-    const customerName = `${item.customer?.first_name ?? ''} ${item.customer?.last_name ?? ''}`.toLowerCase();
-    return customerName.includes(searchTerm.toLowerCase());
-  });
+  const filteredData = data.filter((item) =>
+    item.customer_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Pagination calculation (client-side since no backend pagination)
+  const startIndex = (pages - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedData = filteredData.slice(startIndex, endIndex);
 
   return (
     <>
-      {/* Button Section */}
       <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
         Orders
       </div>
@@ -81,11 +78,12 @@ const Orders = () => {
 
         <DataTable
           columns={columns}
-          data={filteredData}
+          data={paginatedData}
           pagination
-          paginationServer
-          paginationTotalRows={filteredData.length} // Update total rows based on filtered data
+          paginationServer={false}
+          paginationTotalRows={filteredData.length}
           paginationPerPage={limit}
+          paginationDefaultPage={pages}
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handleLimitChange}
         />

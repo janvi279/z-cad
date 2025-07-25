@@ -70,14 +70,19 @@ const Refund = () => {
   useEffect(() => {
     if (searchTerm) {
       const term = searchTerm.toLowerCase()
-      const filtered = data.filter(
-        (item) =>
-          item.id?.toString().toLowerCase().includes(term) ||
-          item.order_id?.toString().toLowerCase().includes(term) ||
-          item.transactions?.[0]?.status?.toLowerCase().includes(term) ||
-          item.transactions?.[0]?.kind?.toLowerCase().includes(term) ||
-          item.order_adjustments?.[0]?.reason?.toLowerCase().includes(term)
-      )
+      const filtered = data.filter((item) => {
+  const transaction = item.transactions?.[0];
+  const reason = item.order_adjustments?.[0]?.reason || "";
+
+  return (
+    item.id?.toString().toLowerCase().includes(term) ||
+    item.order_id?.toString().toLowerCase().includes(term) ||
+    transaction?.status?.toLowerCase().includes(term) ||
+    transaction?.kind?.toLowerCase().includes(term) ||
+    reason.toLowerCase().includes(term)
+  );
+});
+
       setFilteredData(filtered)
     } else {
       setFilteredData(data)
