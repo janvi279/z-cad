@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
-import { MdOutlineDelete } from 'react-icons/md';
 import { useLoading } from '../../Context/LoadingContext';
 
 const columns = [
@@ -10,7 +9,7 @@ const columns = [
     selector: row => row.images?.[0]?.src || 'N/A',
     cell: row => {
       return row.images?.[0]?.src ? (
-        <img src={row.images[0].src} alt="product" style={{"padding":"4px"}} width={70} height={70} />
+        <img src={row.images[0].src} alt="product" style={{ "padding": "4px" }} width={70} height={70} />
       ) : (
         'No image'
       );
@@ -27,23 +26,7 @@ const columns = [
         ? `${row.images[0].size.width}x${row.images[0].size.height}`
         : 'N/A',
   },
-  // You can uncomment and update this if delete functionality is needed later.
-  // {
-  //   name: 'Actions',
-  //   cell: (row) => (
-  //     <div className='flex items-center'>
-  //       <button
-  //         onClick={() => console.log("Delete", row.id)}
-  //         className='text-blue-500 text-lg px-4 py-2 rounded'
-  //       >
-  //         <MdOutlineDelete />
-  //       </button>
-  //     </div>
-  //   ),
-  //   ignoreRowClick: true,
-  //   allowOverflow: true,
-  //   button: true,
-  // },
+
 ];
 
 const Media = () => {
@@ -109,18 +92,11 @@ const Media = () => {
     setCurrentPage(1);
   };
 
-  const onSelectRow = (state) => {
-    console.log('Selected rows:', state.selectedRows);
-  };
 
   return (
     <div>
       <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
         <h1 className='text-xl'>Media</h1>
-        {/* Uncomment for future bulk delete
-        <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-md flex items-center gap-2">
-          Bulk Delete
-        </button> */}
       </div>
 
       <DataTable
@@ -133,8 +109,6 @@ const Media = () => {
         paginationRowsPerPageOptions={[10, 25, 50, 100]}
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleLimitPerPageChange}
-        selectableRows
-        onSelectedRowsChange={onSelectRow}
         highlightOnHover
         responsive
       />

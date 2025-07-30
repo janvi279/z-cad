@@ -62,12 +62,12 @@ const SalesByProduct = () => {
 
       const productSales = {};
 
-     // Calculate total sales for each product from the orders
+      // Calculate total sales for each product from the orders
       orders.forEach((order) => {
         order.products.forEach((item) => {
-          const productName = item.productName; // Use productName from the order
-          const productPrice = item.productPrice; // Use productPrice from the order
-          const quantity = item.quantity; // Use quantity from the order
+          const productName = item.productName;
+          const productPrice = item.productPrice;
+          const quantity = item.quantity;
           if (!productSales[productName]) {
             productSales[productName] = 0;
           }

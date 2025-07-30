@@ -128,13 +128,13 @@ const {setLoading}=useLoading();
   const handleExport = (type) => {
     const exportData = filteredData.map((item) => ({
       Status: item.status,
-      InvoiceId: item.id?.toString() || '-',
-      OrderId: item.order_id?.toString() || '-',
-      Amount: item?.receipt?.paid_amount?.toString() || '-',
-      Charges: item?.shop_money?.total_unsettled_set?.amount?.toString() || '-',
-      Payment: item.gateway || '-',
-      Mode: item.payment_details?.payment_method_name || '-',
-      Date: item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A',
+      InvoiceId: item.invoiceId?.toString() || '-',
+      OrderId: item.orderId?.toString() || '-',
+      Amount: item?.amount?.toString() || '-',
+      Charges: item?.charges?.toString() || '-',
+      Payment: item.payment || '-',
+      Mode: item.mode || '-',
+      Date: item.date ? new Date(item.date).toLocaleDateString('en-IN') : 'N/A',
     }));
 
     if (type === 'PDF') {

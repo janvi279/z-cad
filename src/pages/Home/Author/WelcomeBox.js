@@ -1,4 +1,4 @@
-import { FaRegUser , FaCartPlus } from 'react-icons/fa';
+import { FaRegUser, FaCartPlus } from 'react-icons/fa';
 import { FiBox } from 'react-icons/fi';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../Context/AuthContext';
@@ -22,13 +22,8 @@ const WelcomeBox = () => {
 
       const orders = response.data.orders || [];
       let grossSales = 0;
-      console.log("🚀 ~ fetchSalesData ~ grossSales:", grossSales)
       let itemsSold = 0;
-      console.log("🚀 ~ fetchSalesData ~ itemsSold:", itemsSold)
       let authorOrderCount = 0;
-      console.log("🚀 ~ fetchSalesData ~ authorOrderCount:", authorOrderCount)
-
- 
 
       const currentDate = new Date();
 
@@ -70,7 +65,7 @@ const WelcomeBox = () => {
               className='h-24 w-24 rounded-full object-cover'
             />
           ) : (
-            <FaRegUser  className='h-8 w-8 text-gray-500' />
+            <FaRegUser className='h-8 w-8 text-gray-500' />
           )}
         </div>
 

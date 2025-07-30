@@ -26,6 +26,8 @@ const columns = [
   {
     name: 'Reason',
     selector: (row) => row.orderAdjustments?.[0]?.reason ?? '',
+    wrap:true,
+    grow:2
   },
   {
     name: 'Date',
@@ -104,12 +106,12 @@ const Refund = () => {
       head: [['Status', 'Request Id', 'Order Id', 'Amount', 'Type', 'Reason', 'Date']],
       body: filteredData.map((item) => [
         item.transactions?.[0]?.status || '-',
-        item.id,
-        item.order_id,
+        item.refundId,
+        item.orderId,
         item.transactions?.[0]?.amount || '-',
         item.transactions?.[0]?.kind || '-',
-        item.order_adjustments?.[0]?.reason || '-',
-        item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A',
+        item.orderAdjustments?.[0]?.reason || '-',
+        item.createdAtShopify ? new Date(item.createdAtShopify).toLocaleDateString('en-IN') : 'N/A',
       ]),
     })
 
@@ -120,12 +122,12 @@ const Refund = () => {
     const ws = XLSX.utils.json_to_sheet(
       filteredData.map((item) => ({
         Status: item.transactions?.[0]?.status || '-',
-        RequestId: item.id?.toString() || '-',
-        OrderId: item.order_id?.toString() || '-',
+        RequestId: item.refundId?.toString() || '-',
+        OrderId: item.orderId?.toString() || '-',
         Amount: item.transactions?.[0]?.amount || '-',
         Type: item.transactions?.[0]?.kind || '-',
-        Reason: item.order_adjustments?.[0]?.reason || '-',
-        Date: item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A',
+        Reason: item.orderAdjustments?.[0]?.reason || '-',
+        Date: item.createdAtShopify ? new Date(item.createdAtShopify).toLocaleDateString('en-IN') : 'N/A',
       }))
     )
     const wb = XLSX.utils.book_new()
@@ -139,12 +141,12 @@ const Refund = () => {
     const ws = XLSX.utils.json_to_sheet(
       filteredData.map((item) => ({
         Status: item.transactions?.[0]?.status || '-',
-        RequestId: item.id?.toString() || '-',
-        OrderId: item.order_id?.toString() || '-',
+        RequestId: item.refundId?.toString() || '-',
+        OrderId: item.orderId?.toString() || '-',
         Amount: item.transactions?.[0]?.amount || '-',
         Type: item.transactions?.[0]?.kind || '-',
-        Reason: item.order_adjustments?.[0]?.reason || '-',
-        Date: item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A',
+        Reason: item.orderAdjustments?.[0]?.reason || '-',
+        Date: item.createdAtShopify ? new Date(item.createdAtShopify).toLocaleDateString('en-IN') : 'N/A',
       }))
     )
     const csv = XLSX.utils.sheet_to_csv(ws)
@@ -158,12 +160,12 @@ const Refund = () => {
         return `
         <tr>
           <td>${item.transactions?.[0]?.status || '-'}</td>
-          <td>${item.id}</td>
-          <td>${item.order_id}</td>
+          <td>${item.refundId}</td>
+          <td>${item.orderId}</td>
           <td>${item.transactions?.[0]?.amount || '-'}</td>
           <td>${item.transactions?.[0]?.kind || '-'}</td>
-          <td>${item.order_adjustments?.[0]?.reason || '-'}</td>
-          <td>${item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A'}</td>
+          <td>${item.orderAdjustments?.[0]?.reason || '-'}</td>
+          <td>${item.createdAtShopify ? new Date(item.createdAtShopify).toLocaleDateString('en-IN') : 'N/A'}</td>
         </tr>`
       })
       .join('')

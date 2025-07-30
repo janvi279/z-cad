@@ -12,25 +12,24 @@ const columns = [
   { name: 'Email', selector: (row) => row.email },
   { name: 'Order Confirm', selector: (row) => (row.orderConfirm ? 'Yes' : 'No') },
   { name: 'Total Price', selector: (row) => row.TotalPrice },
-  { name: 'Order No.', selector: (row) => row.orderNo },
+{ name: 'Order No.', selector: (row) => row.orderNo?.replace('#', '') },
+
 ];
 
 const Orders = () => {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [pages, setPages] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [totalRows, setTotalRows] = useState(0);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const { setLoading } = useLoading();
 
+  // Fetch from backend (commented now for dummy)
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axiosAuthInstance.get('shopify/order');
-      if (response && response.status === 200) {
-        const orders = response.data.orders;
-        setData(orders);
-        setTotalRows(orders.length);
+      if (response?.status === 200) {
+        setData(response.data.orders);
       }
     } catch (error) {
       console.error('Fetch error:', error);
@@ -41,23 +40,20 @@ const Orders = () => {
 
   useEffect(() => {
     fetchData();
+   
   }, []);
 
-  const handlePageChange = (page) => setPages(page);
-  const handleLimitChange = (newPerPage) => {
-    setLimit(newPerPage);
-    setPages(1);
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setPage(1); // Reset to first page on search
   };
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
   const filteredData = data.filter((item) =>
     item.customer_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination calculation (client-side since no backend pagination)
-  const startIndex = (pages - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
+  const startIndex = (page - 1) * perPage;
+  const paginatedData = filteredData.slice(startIndex, startIndex + perPage);
 
   return (
     <>
@@ -80,12 +76,15 @@ const Orders = () => {
           columns={columns}
           data={paginatedData}
           pagination
-          paginationServer={false}
+          paginationServer={true} // important for manual pagination
           paginationTotalRows={filteredData.length}
-          paginationPerPage={limit}
-          paginationDefaultPage={pages}
-          onChangePage={handlePageChange}
-          onChangeRowsPerPage={handleLimitChange}
+          paginationPerPage={perPage}
+          paginationDefaultPage={page}
+          onChangePage={(newPage) => setPage(newPage)}
+          onChangeRowsPerPage={(newPerPage) => {
+            setPerPage(newPerPage);
+            setPage(1);
+          }}
         />
       </div>
     </>

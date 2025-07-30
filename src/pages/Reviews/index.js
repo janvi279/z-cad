@@ -1,64 +1,97 @@
-import React, { useEffect, useState } from 'react'
-import DataTable from 'react-data-table-component'
-import Select from 'react-select'
-import { FiMoreHorizontal } from 'react-icons/fi'
-import { CiImageOn } from 'react-icons/ci'
-import { FiBox } from 'react-icons/fi'
-import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { FaStar, FaRegStar, FaStarHalfAlt } from 'react-icons/fa';
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { FiBox } from 'react-icons/fi';
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
+
+
 
 const columns = [
   {
-    name: (
-      <>
-        <FiMoreHorizontal title='Status' className='h-5 w-5' />
-      </>
-    ),
-    selector: (row) => row.status,
+    name: 'Rating',
+    cell: (row) => renderStars(row.rating)
   },
   {
-    name: (
-      <>
-        <CiImageOn title='Image' className='h-5 w-5' />
-      </>
-    ),
-    selector: (row) => row.image,
+    name: 'Reviewer',
+    selector: (row) => row.reviewer?.name || "N/A",
   },
-  { name: 'Author', selector: (row) => row.author },
-  { name: 'Comment', selector: (row) => row.comment },
-  { name: 'Dated', selector: (row) => row.date },
-  { name: 'Actions', selector: (row) => row.actions },
-]
+  {
+    name: "Review Title",
+    selector: (row) => row.title || "N/A",
+  },
+  {
+    name: 'Comment',
+    selector: (row) => row.body,
+    wrap: true, // ✅ enables multiline wrapping
+    grow: 2     // ✅ optional: makes this column wider
+  },
+  {
+    name: 'Product Title',
+    selector: (row) => row.product_title.replace(/\s*\(અંગ્રેજી\)/gi, ''),
+    wrap: true, // ✅ enables multiline wrapping
+    grow: 2     // ✅ optional: makes this column wider
+  },
+  {
+    name: 'Date',
+    selector: (row) => new Date(row.created_at).toLocaleDateString(),
+  }
+];
+;
+const renderStars = (rating) => {
+  const stars = [];
+  const parsedRating = parseFloat(rating) || 0;
 
-const Reviews = () => {
-  const [activeButton, setActiveButton] = useState('All')
-  const [data, setData] = useState([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [pages, setPages] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [totalRows, setTotalRows] = useState(data.length)
-
-  const fetchData = async () => {
-    try {
-      const response = await axiosAuthInstance.get('shopify/review')
-      if (response && response.status === 200) {
-        setData(response.data);
-      }
-    } catch (error) {
-      console.error('Error Fetching Review data', error)
+  for (let i = 1; i <= 5; i++) {
+    if (parsedRating >= i) {
+      stars.push(<FaStar key={i} color="#f5c518" />);
+    } else if (parsedRating >= i - 0.5) {
+      stars.push(<FaStarHalfAlt key={i} color="#f5c518" />);
+    } else {
+      stars.push(<FaRegStar key={i} color="#f5c518" />);
     }
   }
 
+  return <div style={{ display: 'flex', gap: '2px' }}>{stars}</div>;
+};
+const Reviews = () => {
+  const [activeButton, setActiveButton] = useState('All');
+  const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [pages, setPages] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosAuthInstance.get('shopify/review', {
+        params: {
+          page: pages,
+          per_page: limit,
+        },
+      });
+      if (response && response.status === 200) {
+        setData(response.data);
+        setTotalRows(response.data.length); // Update total rows based on the response
+      }
+    } catch (error) {
+      console.error('Error Fetching Review data', error);
+    }
+  };
+
   useEffect(() => {
-    // fetchData();
-  }, [])
-  const handlePageChange = (page) => setPages(page)
+    fetchData();
+  }, [pages, limit]); // Fetch data when pages or limit changes
+
+  const handlePageChange = (page) => setPages(page);
 
   const handleLimitChange = (newPerPage) => {
-    setLimit(newPerPage)
-    setPages(1)
-  }
+    setLimit(newPerPage);
+    setPages(1); // Reset to first page
+  };
 
-  const handleSearchChange = (e) => setSearchTerm(e.target.value)
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
   const filteredData = data
     .filter((item) => activeButton === 'All' || item.status === activeButton)
@@ -67,30 +100,38 @@ const Reviews = () => {
         .join(' ')
         .toLowerCase()
         .includes(searchTerm.toLowerCase()),
-    )
+    );
+  const handleExportPdf = () => {
+    const doc = new jsPDF()
+    doc.text('Product Reviews', 14, 10)
 
+    autoTable(doc, {
+      startY: 20,
+      head: [['Rating', 'Reviewer', 'Review Tiltle', 'Comment', 'Product Title', 'Date']],
+      body: filteredData.map((item) => [
+        item.rating || '-',
+        item.reviewer?.name,
+        item.title,
+        item.body || '-',
+        item.product_title || '-',
+        item.orderAdjustments?.[0]?.reason || '-',
+        item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A',
+      ]),
+    })
+
+    doc.save('product_reviews.pdf')
+
+  }
   return (
     <>
       <div className='bg-white text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6 rounded-lg shadow'>
-        {/* Filter Buttons */}
-        <div className='flex gap-4'>
-          {['All', 'Approved', 'Pending'].map((btn) => (
-            <button
-              key={btn}
-              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${activeButton === btn
-                ? 'bg-primary-100 text-primary-600'
-                : 'hover:text-primary-600'
-                }`}
-              onClick={() => setActiveButton(btn)}
-            >
-              {btn}
-            </button>
-          ))}
-        </div>
-          
+
+        Reviews
+
+
         {/* Product Reviews Button */}
         <div className='relative group'>
-          <button className='bg-primary-500 text-white px-3 py-1.5 rounded-lg hover:bg-primary-600 flex items-center gap-1'>
+          <button className='bg-primary-500 text-white px-3 py-1.5 rounded-lg hover:bg-primary-600 flex items-center gap-1' onClick={handleExportPdf}>
             <FiBox className='w-4 h-4' />
             <span className='text-sm'>Product Reviews</span>
           </button>
@@ -111,10 +152,20 @@ const Reviews = () => {
           paginationPerPage={limit}
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handleLimitChange}
+          subHeader
+          subHeaderComponent={
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="border p-2 rounded"
+            />
+          }
         />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Reviews
+export default Reviews;

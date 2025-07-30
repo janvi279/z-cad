@@ -8,19 +8,19 @@ const StoreStatus = () => {
   const [statusCounts, setStatusCounts] = useState({
     processing: 0,
     awaitingFulfillment: 0,
-    lowInStock: 0, // Placeholder, can be changed later
-    outOfStock: 0, // Placeholder
+    lowInStock: 0,
+    outOfStock: 0,
   })
   const { setLoading } = useLoading();
   const fetchStoreStatus = async () => {
     setLoading(true)
     try {
       // 1️⃣ Fetch orders
-      const orderRes = await axiosAuthInstance.get('shopify/order') // Replace with actual endpoint
+      const orderRes = await axiosAuthInstance.get('shopify/order')
       const orders = orderRes.data.orders || []
 
       // 2️⃣ Fetch products (for inventory)
-      const productRes = await axiosAuthInstance.get('shopify/outOfStock') // Adjust if needed
+      const productRes = await axiosAuthInstance.get('shopify/outOfStock')
       const products = productRes.data.products || []
 
       // 🟡 Count processing orders
@@ -28,21 +28,16 @@ const StoreStatus = () => {
 
       // 🔴 Orders awaiting fulfillment
       const awaitingFulfillment = orders.reduce((count, order) => {
-  const unfulfilledItems = order.line_items?.filter(
-    (item) =>
-      item.fulfillment_status === null ||
-      item.fulfillment_status === "unfulfilled"
-  );
+        const unfulfilledItems = order.line_items?.filter(
+          (item) =>
+            item.fulfillment_status === null ||
+            item.fulfillment_status === "unfulfilled"
+        );
 
-  return count + (unfulfilledItems?.length || 0);
-}, 0);
+        return count + (unfulfilledItems?.length || 0);
+      }, 0);
 
-console.log("totalUnfulfilledItems", awaitingFulfillment);
-
-
- 
-
-
+      console.log("totalUnfulfilledItems", awaitingFulfillment);
 
       // 🟠 Low stock: inventory_quantity <= 5 but > 0
       const lowInStock = products.filter((product) => {

@@ -71,7 +71,7 @@ const OutOfTheStock = () => {
       startY: 20,
       head: [['Product', 'Parent', 'Unit In Stock', 'Stock Status']],
       body: data.map((item) => [
-        item.product || '-',
+        (item.product?.split('-')[0].trim()) || '-',
         item.parent || '-',
         item.unitInStock?.toString() || '0',
         item.stockStatus || '-',
