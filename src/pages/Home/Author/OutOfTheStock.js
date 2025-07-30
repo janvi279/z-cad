@@ -10,19 +10,19 @@ import { useLoading } from '../../../Context/LoadingContext'
 const columns = [
   {
     name: 'Product',
-    selector: (row) => row.product,
+    selector: (row) => row.product || '-',
   },
   {
     name: 'Parent',
-    selector: (row) => row.parent,
+    selector: (row) => row.parent || '-',
   },
   {
     name: 'Unit In Stock',
-    selector: (row) => row.unitInStock || '',
+    selector: (row) => row.unitInStock?.toString() || '0',
   },
   {
     name: 'Stock Status',
-    selector: (row) => row.stockStatus || '',
+    selector: (row) => row.stockStatus || '-',
   },
 ]
 
@@ -37,29 +37,22 @@ const OutOfTheStock = () => {
     setLoading(true)
     try {
       const response = await axiosAuthInstance.get('shopify/outOfStock')
-      if (response && response.status === 200) {
-        const products = response.data.products || []
-        const outOfStockItems = []
+      if (response?.status === 200) {
+        const products = response.data?.products || []
 
-        products.forEach((item) => {
-          item.variants.forEach((variant) => {
-            if (variant.inventory_quantity <= 20) {
-              outOfStockItems.push({
-                product: item.title,
-                parent: item.product_type || '-',
-                unitInStock: variant.inventory_quantity,
-                stockStatus: 'Out of Stock',
-              })
-            }
-          })
-        })
+        const outOfStockItems = products.map((item) => ({
+          product: item.title,
+          parent: item.parent || '-',
+          unitInStock: item.unitInStock ?? '0',
+          stockStatus: item.stockStatus || 'Out of Stock',
+        }))
 
         setTotalRows(outOfStockItems.length)
         const startIndex = (pages - 1) * limit
         setData(outOfStockItems.slice(startIndex, startIndex + limit))
       }
     } catch (error) {
-      console.log('Error fetching data:', error)
+      console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
     }
@@ -71,28 +64,16 @@ const OutOfTheStock = () => {
 
   const exportToPDF = () => {
     const doc = new jsPDF()
-
-    doc.setFont('Altone Trial-Regular.ttf') // Use custom font
     doc.setFontSize(12)
     doc.text('Out Of Stock Products', 14, 10)
 
     autoTable(doc, {
       startY: 20,
-      styles: {
-        font: 'Altone Trial-Regular.ttf', // Apply font to all table content
-        fontSize: 10,
-      },
-      headStyles: {
-        fontStyle: 'bold',
-      },
       head: [['Product', 'Parent', 'Unit In Stock', 'Stock Status']],
       body: data.map((item) => [
-        item.product?.includes(' - ')
-          ? item.product.split(' - ')[0].trim()
-          : 'hghg',
-
+        item.product || '-',
         item.parent || '-',
-        item.unitInStock?.toString() ?? '0',
+        item.unitInStock?.toString() || '0',
         item.stockStatus || '-',
       ]),
     })
@@ -103,13 +84,15 @@ const OutOfTheStock = () => {
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(data)
     const wb = XLSX.utils.book_new()
-    const columnWidths = [{ wch: 50 }, { wch: 20 }, { wch: 15}, { wch: 15 }]
-    ws['!cols'] = columnWidths
+    ws['!cols'] = [
+      { wch: 50 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+    ]
     XLSX.utils.book_append_sheet(wb, ws, 'OutOfStock')
-    saveAs(
-      new Blob([XLSX.write(wb, { type: 'array', bookType: 'xlsx' })]),
-      'out_of_stock.xlsx',
-    )
+    const excelBuffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' })
+    saveAs(new Blob([excelBuffer]), 'out_of_stock.xlsx')
   }
 
   const exportToCSV = () => {
@@ -120,62 +103,38 @@ const OutOfTheStock = () => {
 
   const printData = () => {
     const tableHeaders = ['Product', 'Parent', 'Unit In Stock', 'Stock Status']
-
-    const tableRows = data
-      .map((d) => {
-        const product = d.product?.includes(' - ')
-          ? d.product.split(' - ')[0].trim()
-          : d.product || '-'
-        return `
-        <tr>
-          <td>${product}</td>
-          <td>${d.parent || '-'}</td>
-          <td>${d.unitInStock ?? '0'}</td>
-          <td>${d.stockStatus || '-'}</td>
-        </tr>`
-      })
-      .join('')
+    const tableRows = data.map((item) => `
+      <tr>
+        <td>${item.product || '-'}</td>
+        <td>${item.parent || '-'}</td>
+        <td>${item.unitInStock ?? '0'}</td>
+        <td>${item.stockStatus || '-'}</td>
+      </tr>
+    `).join('')
 
     const printableContent = `
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-          }
-          h2 {
-            text-align: center;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-          }
-          th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: left;
-          }
-          th {
-            font-weight: bold;
-            background-color: #f0f0f0;
-          }
-        </style>
-      </head>
-      <body>
-        <h2>Out Of Stock Products</h2>
-        <table>
-          <thead>
-            <tr>${tableHeaders.map((h) => `<th>${h}</th>`).join('')}</tr>
-          </thead>
-          <tbody>
-            ${tableRows}
-          </tbody>
-        </table>
-      </body>
-    </html>`
+      <html>
+        <head>
+          <title>Print</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h2 { text-align: center; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+            th { background-color: #f0f0f0; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h2>Out Of Stock Products</h2>
+          <table>
+            <thead>
+              <tr>${tableHeaders.map(h => `<th>${h}</th>`).join('')}</tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </body>
+      </html>
+    `
 
     const win = window.open('', '')
     win.document.write(printableContent)
@@ -202,8 +161,8 @@ const OutOfTheStock = () => {
     }
   }
 
-  const handlePageChange = (newPage) => {
-    setPages(newPage)
+  const handlePageChange = (page) => {
+    setPages(page)
   }
 
   const handleLimitPerPageChange = (newLimit) => {
@@ -213,14 +172,15 @@ const OutOfTheStock = () => {
 
   return (
     <div>
-      <div className='bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6'>
+      <div className="bg-white shadow rounded-lg text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6">
         Out Of Stock
       </div>
-      <div className='mt-4 mb-4 flex gap-4'>
+
+      <div className="mt-4 mb-4 flex gap-4">
         {['PRINT', 'PDF', 'EXCEL', 'CSV'].map((type) => (
           <button
             key={type}
-            className='px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600'
+            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
             onClick={() => handleExport(type)}
           >
             {type}

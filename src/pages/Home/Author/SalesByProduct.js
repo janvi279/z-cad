@@ -8,7 +8,7 @@ import {
   Legend
 } from 'chart.js'
 import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
-import { useLoading} from '../../../Context/LoadingContext'
+import { useLoading } from '../../../Context/LoadingContext'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -41,7 +41,6 @@ const options = {
   cutout: '50%',
 }
 
-
 const SalesByProduct = () => {
   const [chartData, setChartData] = useState({
     labels: ['No Sales Yet'],
@@ -53,27 +52,25 @@ const SalesByProduct = () => {
       },
     ],
   });
-const {setLoading}=useLoading();
+  const { setLoading } = useLoading();
+
   const fetchSalesData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await axiosAuthInstance.get('shopify/salesByDate');
+      const response = await axiosAuthInstance.get('shopify/order');
       const orders = response.data.orders || [];
 
       const productSales = {};
 
+     // Calculate total sales for each product from the orders
       orders.forEach((order) => {
-        order.line_items.forEach((item) => {
-          const productName = item.title.includes(' - ')
-            ? item.title.split(' - ').pop().trim()
-            : item.title;
-          const productPrice = parseFloat(item.price) || 0;
-          const quantity = item.quantity || 0;
-
+        order.products.forEach((item) => {
+          const productName = item.productName; // Use productName from the order
+          const productPrice = item.productPrice; // Use productPrice from the order
+          const quantity = item.quantity; // Use quantity from the order
           if (!productSales[productName]) {
             productSales[productName] = 0;
           }
-
           productSales[productName] += productPrice * quantity;
         });
       });
@@ -101,12 +98,23 @@ const {setLoading}=useLoading();
             },
           ],
         });
+      } else {
+        // Handle case with no sales
+        setChartData({
+          labels: ['No Sales Yet'],
+          datasets: [
+            {
+              data: [10],
+              backgroundColor: ['rgb(45, 187, 199)'],
+              borderWidth: 0,
+            },
+          ],
+        });
       }
     } catch (err) {
       console.error('Failed to fetch sales data:', err);
-    }
-    finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,11 +131,10 @@ const {setLoading}=useLoading();
         </div>
       </div>
 
-      <div className="bg-white pr-2  p-4 rounded-b-lg shadow-lg">
-        <div className="h-[340px]  relative">
+      <div className="bg-white pr-2 p-4 rounded-b-lg shadow-lg">
+        <div className="h-[340px] relative">
           <Doughnut data={chartData} options={options} />
         </div>
-
       </div>
     </div>
   )

@@ -10,7 +10,7 @@ const columns = [
     selector: (row) => row.customer_name,
   },
   { name: 'Email', selector: (row) => row.email },
-  { name: 'Order Confirm', selector: (row) => (row.confirmed ? 'Yes' : 'No') },
+  { name: 'Order Confirm', selector: (row) => (row.orderConfirm ? 'Yes' : 'No') },
   { name: 'Total Price', selector: (row) => row.TotalPrice },
   { name: 'Order No.', selector: (row) => row.orderNo },
 ];

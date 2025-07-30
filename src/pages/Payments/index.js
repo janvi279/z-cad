@@ -45,7 +45,7 @@ const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto mt-20 outline-none"
-      overlayClassName="fixed inset-0 bg-white bg-opacity-50 flex items-start justify-center z-50"
+      overlayClassName="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50"
     >
       <h2 className="text-xl font-semibold text-primary-600 mb-4 text-center">Withdrawal Summary</h2>
       <div className="space-y-2 text-sm">
@@ -53,6 +53,15 @@ const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
           <span className="text-gray-700 font-semibold">Total Withdrawal: </span>
           <span className="text-black font-medium">₹{totalAmount.toFixed(2)}</span>
         </p>
+          <p>
+          <span className="text-gray-700 font-semibold">Invoice Id: </span>
+          <span className="text-black font-medium">{firstTxn?.invoiceId || '0.00'}</span>
+        </p>
+        <p>
+          <span className="text-gray-700 font-semibold">Order Id: </span>
+          <span className="text-black font-medium">{firstTxn?.orderId || '0.00'}</span>
+        </p>
+          
         <p>
           <span className="text-gray-700 font-semibold">Payment Method: </span>
           <span className="text-black font-medium">{firstTxn?.mode || '-'}</span>

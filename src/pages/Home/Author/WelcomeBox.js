@@ -1,4 +1,4 @@
-import { FaRegUser, FaCartPlus } from 'react-icons/fa';
+import { FaRegUser , FaCartPlus } from 'react-icons/fa';
 import { FiBox } from 'react-icons/fi';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../Context/AuthContext';
@@ -7,7 +7,7 @@ import { useLoading } from '../../../Context/LoadingContext';
 
 const WelcomeBox = () => {
   const { profileData } = useContext(AuthContext);
-  const {setLoading}=useLoading();
+  const { setLoading } = useLoading();
   const [salesData, setSalesData] = useState({
     grossSales: 0,
     itemsSold: 0,
@@ -16,37 +16,30 @@ const WelcomeBox = () => {
 
   const fetchSalesData = async () => {
     setLoading(true);
-
     try {
-      const response = await axiosAuthInstance.get('shopify/salesByDate');
+      const response = await axiosAuthInstance.get('shopify/order');
       if (response.status !== 200) throw new Error('Network response not ok');
 
       const orders = response.data.orders || [];
-
-      // const author = JSON.parse(localStorage.getItem('_ur'));
-      // const authorFirstName = (author?.firstName || '').toLowerCase().trim();
-      // const authorLastName = (author?.lastName || '').toLowerCase().trim();
-
       let grossSales = 0;
+      console.log("🚀 ~ fetchSalesData ~ grossSales:", grossSales)
       let itemsSold = 0;
+      console.log("🚀 ~ fetchSalesData ~ itemsSold:", itemsSold)
       let authorOrderCount = 0;
+      console.log("🚀 ~ fetchSalesData ~ authorOrderCount:", authorOrderCount)
+
+ 
+
+      const currentDate = new Date();
 
       orders.forEach((order) => {
-        const orderDate = new Date(order.created_at);
-        const currentDate = new Date();
-
-        const isCurrentMonth =
-          orderDate.getMonth() === currentDate.getMonth()
-
-
-        // const isAuthorMatch =
-        //   order.first_name?.toLowerCase().trim() === authorFirstName &&
-        //   order.last_name?.toLowerCase().trim() === authorLastName;
+        const orderDate = new Date(order.orderCreate);
+        const isCurrentMonth = orderDate.getMonth() === currentDate.getMonth() && orderDate.getFullYear() === currentDate.getFullYear();
 
         if (isCurrentMonth) {
           authorOrderCount += 1;
-          grossSales += parseFloat(order.total_price);
-          itemsSold += order.line_items.reduce((total, item) => total + item.quantity, 0);
+          grossSales += parseFloat(order.TotalPrice);
+          itemsSold += order.itemsSold; // Assuming itemsSold is already calculated in the order
         }
       });
 
@@ -57,9 +50,8 @@ const WelcomeBox = () => {
       });
     } catch (error) {
       console.error('Error fetching sales data:', error);
-    }
-    finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,7 +70,7 @@ const WelcomeBox = () => {
               className='h-24 w-24 rounded-full object-cover'
             />
           ) : (
-            <FaRegUser className='h-8 w-8 text-gray-500' />
+            <FaRegUser  className='h-8 w-8 text-gray-500' />
           )}
         </div>
 

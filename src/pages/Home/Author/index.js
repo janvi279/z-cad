@@ -61,7 +61,7 @@ const Home = () => {
     <>
       <div className="w-full bg-white p-4 flex gap-5">
         <div
-          className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${activeButton === 'salesByDate'
+          className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${activeButton === ''
               ? 'bg-primary-100 text-primary-600'
               : 'hover:text-primary-600'
             }`}

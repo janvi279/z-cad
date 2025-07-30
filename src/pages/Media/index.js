@@ -10,7 +10,7 @@ const columns = [
     selector: row => row.images?.[0]?.src || 'N/A',
     cell: row => {
       return row.images?.[0]?.src ? (
-        <img src={row.images[0].src} alt="product" width={50} height={50} />
+        <img src={row.images[0].src} alt="product" style={{"padding":"4px"}} width={70} height={70} />
       ) : (
         'No image'
       );

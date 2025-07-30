@@ -16,7 +16,7 @@ const StoreStatus = () => {
     setLoading(true)
     try {
       // 1️⃣ Fetch orders
-      const orderRes = await axiosAuthInstance.get('shopify/salesByDate') // Replace with actual endpoint
+      const orderRes = await axiosAuthInstance.get('shopify/order') // Replace with actual endpoint
       const orders = orderRes.data.orders || []
 
       // 2️⃣ Fetch products (for inventory)
@@ -27,26 +27,33 @@ const StoreStatus = () => {
       const processing = orders.length
 
       // 🔴 Orders awaiting fulfillment
-     const awaitingFulfillment = orders.reduce((count, order) => {
-  if (Array.isArray(order.line_items)) {
-    return count + order.line_items.filter(item =>
-      item.fulfillment_status === null || item.fulfillment_status === 'unfulfilled'
-    ).length;
-  }
-  return count;
+      const awaitingFulfillment = orders.reduce((count, order) => {
+  const unfulfilledItems = order.line_items?.filter(
+    (item) =>
+      item.fulfillment_status === null ||
+      item.fulfillment_status === "unfulfilled"
+  );
+
+  return count + (unfulfilledItems?.length || 0);
 }, 0);
+
+console.log("totalUnfulfilledItems", awaitingFulfillment);
+
+
+ 
+
 
 
       // 🟠 Low stock: inventory_quantity <= 5 but > 0
       const lowInStock = products.filter((product) => {
-        const qty = product.variants[0]?.inventory_quantity ?? 0
-        return qty <= 5
+        const qty = product.unitInStock ?? 0
+        return qty <= 100
       }).length
 
       // 🔴 Out of stock: inventory_quantity == 0
       const outOfStock = products.filter((product) => {
-        const qty = product.variants[0]?.inventory_quantity ?? 0
-        return qty === 0
+        const qty = product.unitInStock ?? 0
+        return qty <= 100
       }).length
 
       // ✅ Update state
@@ -57,7 +64,7 @@ const StoreStatus = () => {
         outOfStock,
       })
     } catch (error) {
-      console.error('Error fetching store stats:', error)
+      console.error('Error fetching store status:', error)
     }
     finally {
       setLoading(false)

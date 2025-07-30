@@ -49,7 +49,7 @@ const LedgerBook = () => {
         // Process orders (total earnings)
         if (ordersRes?.status === 200) {
           const orders = ordersRes.data.orders || [];
-          const earnings = orders.reduce((sum, order) => sum + parseFloat(order.current_total_price || '0'), 0);
+          const earnings = orders.reduce((sum, order) => sum + parseFloat(order.TotalPrice || '0'), 0);
           setTotalEarnings(earnings);
         }
 
@@ -57,7 +57,7 @@ const LedgerBook = () => {
         if (refundsRes?.status === 200) {
           const refunds = refundsRes.data.refunds || [];
           const totalRefund = refunds.reduce((sum, refund) => {
-            return sum + refund.transactions.reduce((txnSum, txn) => txnSum + parseFloat(txn.receipt?.paid_amount || '0'), 0);
+            return sum + refund.transactions.reduce((txnSum, txn) => txnSum + parseFloat(txn.amount || '0'), 0);
           }, 0);
           setTotalRefunds(totalRefund);
         }
@@ -67,7 +67,7 @@ const LedgerBook = () => {
           const transactions = transactionsRes.data.transactions || [];
 
           const transformed = transactions.map((txn) => {
-            const amount = parseFloat(txn?.receipt?.paid_amount || '0').toFixed(2);
+            const amount = parseFloat(txn?.amount || '0').toFixed(2);
             const isSale = txn.kind === 'sale';
             const isRefund = txn.kind === 'refund';
 
@@ -77,12 +77,12 @@ const LedgerBook = () => {
               message: txn.message || '-',
               credit: isSale ? `₹${amount}` : '—',
               debit: isRefund ? `₹${amount}` : '—',
-              date: txn.created_at ? new Date(txn.created_at).toLocaleDateString('en-IN') : '-',
+              date: txn.date ? new Date(txn.date).toLocaleDateString('en-IN') : '-',
             };
           });
 
           const totalWithdrawal = transactions.reduce((sum, txn) => {
-            return sum + (txn.kind === 'sale' ? parseFloat(txn.receipt?.paid_amount || 0) : 0);
+            return sum + (txn.kind === 'sale' ? parseFloat(txn.amount || 0) : 0);
           }, 0);
 
           setData(transformed);

@@ -58,25 +58,60 @@ const StoreAnalytics = () => {
     labels: [],
     datasets: [],
   })
-  const {setLoading}=useLoading();
+  const { setLoading } = useLoading();
 
   const fetchSalesData = async () => {
     setLoading(true)
     try {
-      const response = await axiosAuthInstance.get('shopify/salesByDate')
+      const response = await axiosAuthInstance.get('shopify/order')
+      const refundResponse = await axiosAuthInstance.get("shopify/refund")
+      const transactionResponse = await axiosAuthInstance.get("shopify/transactions")
       const orders = response.data.orders || []
+      const refunds = refundResponse.data.refunds || []
+      const transactions = transactionResponse.data.transactions || []
 
       const dailyMetrics = {}
-      orders.forEach((order) => {
-        const dateKey = new Date(order.created_at).toISOString().split('T')[0]
-        const grossSales = parseFloat(order.total_price) || 0
-        const refund = parseFloat(order.total_refund || 0)
-        const withdrawal = parseFloat(order.total_withdrawal || 0)
+
+      // Calculate total refunds
+      refunds.forEach(refund => {
+        const dateKey = new Date(refund.createdAtShopify).toISOString().split('T')[0]
+        const refundAmount = parseFloat(refund.amount || 0)
+
+        if (!dailyMetrics[dateKey]) {
+          dailyMetrics[dateKey] = {
+            grossSales: 0,
+            totalRefund: 0,
+            totalWithdrawal: 0,
+            ordersPlaced: 0,
+            itemsPurchased: 0,
+          }
+        }
+        dailyMetrics[dateKey].totalRefund += refundAmount
+      })
+
+      // Calculate total withdrawals
+      transactions.forEach(t => {
+        const dateKey = new Date(t.date).toISOString().split('T')[0]
+        const withdrawalAmount = parseFloat(t.amount || 0)
+
+        if (!dailyMetrics[dateKey]) {
+          dailyMetrics[dateKey] = {
+            grossSales: 0,
+            totalRefund: 0,
+            totalWithdrawal: 0,
+            ordersPlaced: 0,
+            itemsPurchased: 0,
+          }
+        }
+        dailyMetrics[dateKey].totalWithdrawal += withdrawalAmount
+      })
+
+      // Calculate sales data from orders
+      orders.forEach(order => {
+        const dateKey = new Date(order.orderCreate).toISOString().split('T')[0]
+        const grossSales = parseFloat(order.TotalPrice) || 0
         const orderPlaced = 1
-        const itemsPurchased = order.line_items.reduce(
-          (sum, item) => sum + item.quantity,
-          0
-        )
+        const itemsPurchased = order.itemsSold
 
         if (!dailyMetrics[dateKey]) {
           dailyMetrics[dateKey] = {
@@ -89,8 +124,6 @@ const StoreAnalytics = () => {
         }
 
         dailyMetrics[dateKey].grossSales += grossSales
-        dailyMetrics[dateKey].totalRefund += refund
-        dailyMetrics[dateKey].totalWithdrawal += withdrawal
         dailyMetrics[dateKey].ordersPlaced += orderPlaced
         dailyMetrics[dateKey].itemsPurchased += itemsPurchased
       })
@@ -117,19 +150,18 @@ const StoreAnalytics = () => {
         pointer.setDate(pointer.getDate() + 1)
       }
 
-      const sortedDates = fullDates
-      const labels = sortedDates.map((dateStr) =>
+      const labels = fullDates.map((dateStr) =>
         new Date(dateStr).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
         })
       )
 
-      const grossSalesData = sortedDates.map((d) => dailyMetrics[d].grossSales)
-      const refundData = sortedDates.map((d) => dailyMetrics[d].totalRefund)
-      const withdrawalData = sortedDates.map((d) => dailyMetrics[d].totalWithdrawal)
-      const ordersData = sortedDates.map((d) => dailyMetrics[d].ordersPlaced)
-      const itemsData = sortedDates.map((d) => dailyMetrics[d].itemsPurchased)
+      const grossSalesData = fullDates.map((d) => dailyMetrics[d].grossSales)
+      const refundData = fullDates.map((d) => dailyMetrics[d].totalRefund)
+      const withdrawalData = fullDates.map((d) => dailyMetrics[d].totalWithdrawal)
+      const ordersData = fullDates.map((d) => dailyMetrics[d].ordersPlaced)
+      const itemsData = fullDates.map((d) => dailyMetrics[d].itemsPurchased)
 
       setChartData({
         labels,
@@ -178,8 +210,7 @@ const StoreAnalytics = () => {
       })
     } catch (err) {
       console.error('Failed to fetch sales data:', err)
-    }
-    finally{
+    } finally {
       setLoading(false)
     }
   }

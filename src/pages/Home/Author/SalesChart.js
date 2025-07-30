@@ -1,315 +1,135 @@
-'use client'
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { FiMoreHorizontal } from 'react-icons/fi';
+import { CiImageOn } from 'react-icons/ci';
+import { FiBox } from 'react-icons/fi';
+import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance';
 
-import { useState, useEffect, useRef } from 'react'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import { Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js'
-import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
-import html2canvas from 'html2canvas'
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
-
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { position: 'bottom' },
-    tooltip: {
-      callbacks: {
-        label: (context) => `₹${context.raw.toFixed(2)}`,
-      },
-    },
+const columns = [
+  {
+    name: (
+      <>
+        <FiMoreHorizontal title='Status' className='h-5 w-5' />
+      </>
+    ),
+    selector: (row) => row.status,
   },
-  scales: {
-    x: { grid: { color: 'rgba(0,0,0,0.05)' } },
-    y: {
-      ticks: { beginAtZero: true },
-      grid: { color: 'rgba(0,0,0,0.05)' },
-    },
+  {
+    name: (
+      <>
+        <CiImageOn title='Image' className='h-5 w-5' />
+      </>
+    ),
+    selector: (row) => row.image,
   },
-}
+  { name: 'Author', selector: (row) => row.reviewer.name },
+  { name: 'Comment', selector: (row) => row.body },
+  { name: 'Date', selector: (row) => new Date(row.created_at).toLocaleDateString() },
+];
 
-const SalesChart = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState('this-month')
-  const [dateRange, setDateRange] = useState([null, null])
-  const [salesData, setSalesData] = useState({
-    grossSales: 0,
-    totalWithdrawal: 0,
-    totalRefund: 0,
-    ordersPlaced: 0,
-    itemsPurchased: 0,
-  })
-  const [chartData, setChartData] = useState({ labels: [], datasets: [] })
-  const [subtitle, setSubtitle] = useState('')
-  const [startDate, endDate] = dateRange
+const Reviews = () => {
+  const [activeButton, setActiveButton] = useState('All');
+  const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [pages, setPages] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
 
-  const chartRef = useRef()
-
-  const handlePrint = async () => {
-    const element = chartRef.current;
-    if (!element) return;
-
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL('image/png');
-
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Print Sales Chart</title>
-          <style>
-            body, html {
-              margin: 0;
-              padding: 0;
-              height: 100%;
-            }
-            img {
-              width: 100%;
-              height: auto;
-            }
-          </style>
-        </head>
-        <body>
-          <img src="${imgData}" />
-          <script>
-            window.onload = () => {
-              window.print();
-            };
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-  }
-
-  const fetchSalesData = async () => {
+  const fetchData = async () => {
     try {
-      const [salesResponse, refundResponse, withdrawalResponse] = await Promise.all([
-        axiosAuthInstance.get('shopify/salesByDate'),
-        axiosAuthInstance.get('shopify/refund'),
-        axiosAuthInstance.get('shopify/transactions')
-      ])
-
-      if (salesResponse.status !== 200 || refundResponse.status !== 200 || withdrawalResponse.status !== 200) {
-        throw new Error('API failed')
+      const response = await axiosAuthInstance.get('shopify/review', {
+        params: {
+          page: pages,
+          per_page: limit,
+        },
+      });
+      if (response && response.status === 200) {
+        setData(response.data);
+        setTotalRows(response.data.length); // Update total rows based on the response
       }
-
-      const orders = salesResponse.data.orders || []
-      const refunds = refundResponse.data.refunds || []
-      const withdrawals = withdrawalResponse.data.transactions || []
-      const now = new Date()
-      let fromDate, toDate
-
-      // Determine date range based on selected period
-      if (selectedPeriod === 'this-month') {
-        fromDate = new Date(now.getFullYear(), now.getMonth(), 1)
-        toDate = now
-      } else if (selectedPeriod === 'last-month') {
-        fromDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-        toDate = new Date(now.getFullYear(), now.getMonth(), 0)
-      } else if (selectedPeriod === 'last-7-days') {
-        fromDate = new Date(now)
-        fromDate.setDate(now.getDate() - 6)
-        toDate = now
-      } else if (selectedPeriod === 'year') {
-        fromDate = new Date(now.getFullYear(), 0, 1)
-        toDate = now
-      } else if (startDate && endDate) {
-        fromDate = new Date(startDate)
-        toDate = new Date(endDate)
-      }
-
-      // Filter orders, refunds, and withdrawals based on date range
-      const filteredOrders = orders.filter(order => {
-        const orderDate = new Date(order.created_at)
-        return orderDate >= fromDate && orderDate <= toDate
-      })
-
-      const filteredRefunds = refunds.filter(refund => {
-        const refundDate = new Date(refund.created_at)
-        return refundDate >= fromDate && refundDate <= toDate
-      })
-
-      const filteredWithdrawals = withdrawals.filter(transaction => {
-        const withdrawalDate = new Date(transaction.created_at)
-        return withdrawalDate >= fromDate && withdrawalDate <= toDate
-      })
-
-      // Initialize totals
-      let grossSales = 0,
-        ordersPlaced = 0,
-        itemsPurchased = 0,
-        totalRefund = 0,
-        totalWithdrawal = 0
-
-      const grossByDate = {}
-
-      // Calculate gross sales and other metrics
-      filteredOrders.forEach(order => {
-        const orderDate = new Date(order.created_at)
-        const value = parseFloat(order.total_price)
-        if (!isNaN(value)) {
-          grossSales += value
-          ordersPlaced += 1
-          itemsPurchased += order.line_items.reduce((sum, item) => sum + item.quantity, 0)
-
-          const key = orderDate.toISOString().split('T')[0]
-          grossByDate[key] = (grossByDate[key] || 0) + value
-        }
-      })
-
-      // Calculate total refunds
-      filteredRefunds.forEach(refund => {
-        refund.transactions.forEach(transaction => {
-          totalRefund += parseFloat(transaction.receipt.paid_amount) || 0;
-        });
-      })
-
-      // Calculate total withdrawals
-      filteredWithdrawals.forEach(transaction => {
-        if (transaction.kind === "sale") {
-          totalWithdrawal += parseFloat(transaction.receipt.paid_amount) || 0;
-        }
-      })
-
-      // Prepare chart data
-      const chartLabels = []
-      const chartValues = []
-      const isYear = selectedPeriod === 'year'
-      const isCustom = selectedPeriod === 'custom'
-      const dayDiff = fromDate && toDate ? Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24)) : 0
-      const useMonthly = isYear || (isCustom && dayDiff > 31)
-
-      if (useMonthly) {
-        const monthlySales = {}
-        const monthsToPlot = []
-        const from = new Date(fromDate)
-        const to = new Date(toDate)
-
-        while (from <= to) {
-          const label = from.toLocaleString('default', { month: 'short', year: 'numeric' })
-          if (!monthsToPlot.includes(label)) monthsToPlot.push(label)
-          from.setMonth(from.getMonth() + 1)
-        }
-
-        for (const date in grossByDate) {
-          const d = new Date(date)
-          const label = d.toLocaleString('default', { month: 'short', year: 'numeric' })
-          monthlySales[label] = (monthlySales[label] || 0) + grossByDate[date]
-        }
-
-        for (const label of monthsToPlot) {
-          chartLabels.push(label)
-          chartValues.push(monthlySales[label] || 0)
-        }
-      } else {
-        const pointer = new Date(fromDate)
-        while (pointer <= toDate) {
-          const key = pointer.toISOString().split('T')[0]
-          chartLabels.push(pointer.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
-          chartValues.push(grossByDate[key] || 0)
-          pointer.setDate(pointer.getDate() + 1)
-        }
-      }
-
-      // Update state with sales data and chart data
-      setSalesData({
-        grossSales,
-        totalWithdrawal,
-        totalRefund,
-        ordersPlaced,
-        itemsPurchased,
-      })
-
-      setChartData({
-        labels: chartLabels,
-        datasets: [
-          {
-            label: 'Sales',
-            data: chartValues,
-            borderColor: 'rgb(59, 130, 246)',
-            backgroundColor: 'rgba(59, 130, 246, 0.3)',
-            fill: true,
-            tension: 0.4,
-          },
-        ],
-      })
-
-      const subtitleText =
-        fromDate && toDate
-          ? `${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`
-          : 'No date range selected'
-
-      setSubtitle(`₹${grossSales.toFixed(2)} in Sales — ${subtitleText}`)
-    } catch (err) {
-      console.error('Sales chart fetch failed:', err)
-      // Optionally, you can set an error state here to display an error message to the user
+    } catch (error) {
+      console.error('Error Fetching Review data', error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchSalesData()
-  }, [selectedPeriod, startDate, endDate])
+    fetchData();
+  }, [pages, limit]); // Fetch data when pages or limit changes
+
+  const handlePageChange = (page) => setPages(page);
+
+  const handleLimitChange = (newPerPage) => {
+    setLimit(newPerPage);
+    setPages(1); // Reset to first page
+  };
+
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+
+  const filteredData = data
+    .filter((item) => activeButton === 'All' || item.status === activeButton)
+    .filter((item) =>
+      Object.values(item)
+        .join(' ')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
+    );
 
   return (
-    <div className='p-6 bg-white rounded-lg shadow-sm space-y-6'>
-      <div className='flex items-center justify-between'>
-        <div className='space-x-2 flex flex-wrap items-center'>
-          {['year', 'last-month', 'this-month', 'last-7-days'].map((period) => (
-            <button key={period} onClick={() => setSelectedPeriod(period)}
-              className={`px-4 py-2 text-sm rounded-md ${selectedPeriod === period ? 'bg-sky-100 text-sky-600' : 'text-gray-600 hover:bg-gray-100'}`}>
-              {period.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+    <>
+      <div className='bg-white text-primary-500 text-xl py-2 px-4 flex justify-between items-center mb-6 rounded-lg shadow'>
+        {/* Filter Buttons */}
+        <div className='flex gap-4'>
+          {['All', 'Approved', 'Pending'].map((btn) => (
+            <button
+              key={btn}
+              className={`border-1 p-2 rounded-lg text-sm text-gray-600 hover:bg-primary-100 ${activeButton === btn
+                ? 'bg-primary-100 text-primary-600'
+                : 'hover:text-primary-600'
+                }`}
+              onClick={() => setActiveButton(btn)}
+            >
+              {btn}
             </button>
           ))}
-
-          <DatePicker
-            selected={startDate}
-            onChange={(update) => {
-              setDateRange(update)
-              setSelectedPeriod('custom')
-            }}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            isClearable
-            placeholderText='Custom Range'
-            className='px-4 py-2 text-sm border rounded-md text-gray-600'
-          />
         </div>
-        <button onClick={handlePrint} className='px-4 py-2 bg-gray-800 text-white rounded-md text-sm'>Print</button>
-      </div>
-
-      <div className='grid grid-cols-5 gap-3 text-center'>
-        {[{ label: 'Gross Sales', value: `₹${salesData.grossSales.toFixed(2)}` },
-        { label: 'Total Withdrawal', value: `₹${salesData.totalWithdrawal.toFixed(2)}` },
-        { label: 'Total Refund', value: `₹${salesData.totalRefund.toFixed(2)}` },
-        { label: 'Orders Placed', value: salesData.ordersPlaced },
-        { label: 'Items Purchased', value: salesData.itemsPurchased }].map((card, i) => (
-          <div key={i} className='p-3 border rounded-lg'>
-            <p className='text-lg font-medium'>{card.value}</p>
-            <p className='text-sm text-gray-500'>{card.label}</p>
-          </div>
-        ))}
-      </div>
-
-      <div ref={chartRef} className='space-y-2'>
-        <p className='text-sm text-gray-500'>{subtitle}</p>
-        <div className='h-[400px]'>
-          <Line data={chartData} options={options} />
+          
+        {/* Product Reviews Button */}
+        <div className='relative group'>
+          <button className='bg-primary-500 text-white px-3 py-1.5 rounded-lg hover:bg-primary-600 flex items-center gap-1'>
+            <FiBox className='w-4 h-4' />
+            <span className='text-sm'>Product Reviews</span>
+          </button>
+          <span className='absolute z-50 top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg'>
+            Product Reviews
+          </span>
         </div>
       </div>
-    </div>
-  )
-}
 
-export default SalesChart
+      {/* DataTable */}
+      <div className='bg-white p-4 rounded-lg shadow'>
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          pagination
+          paginationServer
+          paginationTotalRows={totalRows}
+          paginationPerPage={limit}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handleLimitChange}
+          subHeader
+          subHeaderComponent={
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="border p-2 rounded"
+            />
+          }
+        />
+      </div>
+    </>
+  );
+};
+
+export default Reviews;
