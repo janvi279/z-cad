@@ -65,12 +65,7 @@ const Reviews = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axiosAuthInstance.get('shopify/review', {
-        params: {
-          page: pages,
-          per_page: limit,
-        },
-      });
+      const response = await axiosAuthInstance.get('shopify/review');
       if (response && response.status === 200) {
         setData(response.data);
         setTotalRows(response.data.length); // Update total rows based on the response
