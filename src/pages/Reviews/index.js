@@ -108,8 +108,11 @@ const Reviews = () => {
         item.reviewer?.name,
         item.title,
         item.body || '-',
-        item.product_title || '-',
-        item.orderAdjustments?.[0]?.reason || '-',
+        item.product_title
+          .replace(/[^\x00-\x7F]/g, '')  // Remove non-English characters
+          .replace(/[-()]+/g, '')        // Remove leftover dashes, brackets
+          .trim() || '-',
+
         item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN') : 'N/A',
       ]),
     })
