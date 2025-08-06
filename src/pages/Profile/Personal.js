@@ -64,7 +64,6 @@ const Personal = () => {
                 formData.append('about', values.about)
 
                 const response = await axiosAuthInstance.post('personal-detail/add', formData);
-                console.log(response);
                 if (response && response.status === 200) {
                     fetchData(); 
                 }

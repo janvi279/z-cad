@@ -14,6 +14,7 @@ const Store = () => {
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('setting-store')
+      
       if (response && response.status === 200) {
         const StoreData = {
           email: response.data.result.email,

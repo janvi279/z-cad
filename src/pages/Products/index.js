@@ -10,7 +10,10 @@ const columns = [
   { name: 'Title', selector: (row) => row.title },
   { name: 'SKU', selector: (row) => row.sku },
   { name: 'Status', selector: (row) => row.status },
+   {name:'Unit In Stock',selector:(row)=>row.unitInStock},
+  {name:"Product Type",selector:(row)=>row.product_type},
   { name: 'Price', selector: (row) => row.price },
+ 
 ];
 
 const statusMap = {
@@ -34,12 +37,12 @@ const Products = () => {
   const data = JSON.parse(localStorage.getItem("_ur") || '{}');
   const authorId = data?._id;
 
-  console.log("authorId", authorId);
   const handleExportExcel = () => {
-    const exportData = filteredProducts.map(({ title, sku, status, price }) => ({
+    const exportData = filteredProducts.map(({ title, sku, status, price,unitInStock }) => ({
       Title: title || '-',
       SKU: sku || '-',
       Status: status || '-',
+      UnitInStock: unitInStock||'-',
       Price: price ?? '0',
     }));
 
@@ -93,6 +96,8 @@ const Products = () => {
         sku: res.data.sku,
         status: res.data.status,
         price: res.data.price,
+        unitInStock:res.data.variant.unitInStock,
+        product_type:res.data.product_type,
       };
 
       setFilteredProducts(prev => [...prev, productData]);

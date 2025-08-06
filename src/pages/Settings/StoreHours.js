@@ -10,7 +10,6 @@ const StoreHours = () => {
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('setting-storehours')
-      console.log(response);
       if (response && response.status === 200) {
         const StoreHoursData = {
           enableStore: response.data.result.enableStore,

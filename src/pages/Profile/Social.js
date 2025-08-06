@@ -9,7 +9,6 @@ const Social = () => {
     const fetchData = async () => {
         try {
             const response = await axiosAuthInstance.get('personal-detail');
-            console.log(response);
             if (response && response.status === 200) {
                 const SocialData = {
                     twitter: response.data.result.twitter,
@@ -43,7 +42,7 @@ const Social = () => {
             setIsSubmitting(true);
             try {
                 const response = await axiosAuthInstance.post('personal-detail/social-add', values)
-                console.log(response);
+            
                 if (response && response.status === 200){
                     fetchData();
                 }

@@ -37,18 +37,16 @@ const StoreStatus = () => {
         return count + (unfulfilledItems?.length || 0);
       }, 0);
 
-      console.log("totalUnfulfilledItems", awaitingFulfillment);
-
       // 🟠 Low stock: inventory_quantity <= 5 but > 0
       const lowInStock = products.filter((product) => {
         const qty = product.unitInStock ?? 0
-        return qty <= 100
+        return qty <= 20
       }).length
 
       // 🔴 Out of stock: inventory_quantity == 0
       const outOfStock = products.filter((product) => {
         const qty = product.unitInStock ?? 0
-        return qty <= 100
+        return qty === 0
       }).length
 
       // ✅ Update state
@@ -105,7 +103,7 @@ const StoreStatus = () => {
     <div className='w-full'>
       <div className='bg-primary-500 text-white p-3 flex items-center gap-2 rounded-t-lg'>
         <BiMenu className='text-lg' />
-        <h2 className='text-lg'>Store Stats</h2>
+        <h2 className='text-lg'>Store Stats</h2>  
       </div>
       <div className='bg-white h-[372px] p-4 rounded-b-lg shadow-lg'>
         <div className='space-y-4'>
