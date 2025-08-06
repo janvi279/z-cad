@@ -7,7 +7,6 @@ import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
 import { useLoading } from '../../Context/LoadingContext';
 
 const LedgerBook = () => {
-
   const [data, setData] = useState([]);
   const [pages, setPages] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -15,8 +14,7 @@ const LedgerBook = () => {
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [totalWithdrawals, setTotalWithdrawals] = useState(0);
   const [totalRefunds, setTotalRefunds] = useState(0);
-  const {setLoading}=useLoading();
-  
+  const { setLoading } = useLoading();
 
   const columns = [
     {
@@ -25,9 +23,9 @@ const LedgerBook = () => {
     },
     { name: 'Type', selector: (row) => row.kind || '-' },
     { name: 'Details', selector: (row) => row.message || '-' },
-    { name: 'Credit', selector: (row) => row.credit },
-    { name: 'Debit', selector: (row) => row.debit },
-    { name: 'Date', selector: (row) => row.date },
+    { name: 'Credit', selector: (row) => row.credit || '-' },
+    { name: 'Debit', selector: (row) => row.debit || '-' },
+    { name: 'Date', selector: (row) => row.date || '-' },
   ];
 
   const handlePageChange = (page) => setPages(page);
@@ -38,7 +36,7 @@ const LedgerBook = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const [transactionsRes, ordersRes, refundsRes] = await Promise.all([
           axiosAuthInstance.get('shopify/transactions'),
@@ -46,53 +44,63 @@ const LedgerBook = () => {
           axiosAuthInstance.get('shopify/refund'),
         ]);
 
-        // Process orders (total earnings)
+        // Total Earnings from orders
         if (ordersRes?.status === 200) {
           const orders = ordersRes.data.orders || [];
           const earnings = orders.reduce((sum, order) => sum + parseFloat(order.TotalPrice || '0'), 0);
           setTotalEarnings(earnings);
         }
 
-        // Process refunds
-        if (refundsRes?.status === 200) {
-          const refunds = refundsRes.data.refunds || [];
-          const totalRefund = refunds.reduce((sum, refund) => {
-            return sum + refund.transactions.reduce((txnSum, txn) => txnSum + parseFloat(txn.amount || '0'), 0);
-          }, 0);
-          setTotalRefunds(totalRefund);
-        }
+        const allData = [];
+        let withdrawalTotal = 0;
+        let refundTotal = 0;
 
-        // Process transactions
+        // Sale Transactions
         if (transactionsRes?.status === 200) {
           const transactions = transactionsRes.data.transactions || [];
-
-          const transformed = transactions.map((txn) => {
-            const amount = parseFloat(txn?.amount || '0').toFixed(2);
-            const isSale = txn.kind === 'sale';
-            const isRefund = txn.kind === 'refund';
-
-            return {
-              status: txn.status || '-',
-              kind: txn.kind || '-',
-              message: txn.message || '-',
-              credit: isSale ? `₹${amount}` : '—',
-              debit: isRefund ? `₹${amount}` : '—',
-              date: txn.date ? new Date(txn.date).toLocaleDateString('en-IN') : '-',
-            };
+          transactions.forEach((txn) => {
+            const amount = parseFloat(txn.amount || '0');
+            if (txn.kind === 'sale') {
+              withdrawalTotal += amount;
+              allData.push({
+                status: txn.status || 'completed',
+                kind: txn.kind || 'sale',
+                message: txn.message || 'Sale transaction',
+                credit: `₹${amount.toFixed(2)}`,
+                debit: '-',
+                date: txn.date ? new Date(txn.date).toLocaleDateString('en-IN') : '-',
+              });
+            }
           });
-
-          const totalWithdrawal = transactions.reduce((sum, txn) => {
-            return sum + (txn.kind === 'sale' ? parseFloat(txn.amount || 0) : 0);
-          }, 0);
-
-          setData(transformed);
-          setTotalRows(transformed.length);
-          setTotalWithdrawals(totalWithdrawal);
         }
+
+        // Refund Transactions
+        if (refundsRes?.status === 200) {
+          const refunds = refundsRes.data.refunds || [];
+          refunds.forEach((refund) => {
+            const refundDate = refund.created_at || refund.date || null;
+            refund.transactions.forEach((txn) => {
+              const amount = parseFloat(txn.amount || '0');
+              refundTotal += amount;
+              allData.push({
+                status: txn.status || 'refunded',
+                kind: txn.kind || 'refund',
+                message: txn.message || 'Refund issued',
+                credit: '-',
+                debit: `₹${amount.toFixed(2)}`,
+                date: refundDate ? new Date(refundDate).toLocaleDateString('en-IN') : '-',
+              });
+            });
+          });
+        }
+
+        setData(allData);
+        setTotalRows(allData.length);
+        setTotalWithdrawals(withdrawalTotal);
+        setTotalRefunds(refundTotal);
       } catch (error) {
         console.error('Error fetching ledger data:', error);
-      }
-      finally{
+      } finally {
         setLoading(false);
       }
     };

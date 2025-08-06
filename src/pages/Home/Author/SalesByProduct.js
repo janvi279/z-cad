@@ -57,22 +57,25 @@ const SalesByProduct = () => {
   const fetchSalesData = async () => {
     setLoading(true);
     try {
-      const response = await axiosAuthInstance.get('shopify/order');
-      const orders = response.data.orders || [];
+      const localData = JSON.parse(localStorage.getItem('_ur') || '{}');
+      const authorId = localData?._id;
+
+      const response = await axiosAuthInstance.get(`/shopify/product/${authorId}?limit=250`);
+
+      const products = Array.isArray(response.data) ? response.data : [];
 
       const productSales = {};
 
-      // Calculate total sales for each product from the orders
-      orders.forEach((order) => {
-        order.products.forEach((item) => {
-          const productName = item.productName;
-          const productPrice = item.productPrice;
-          const quantity = item.quantity;
-          if (!productSales[productName]) {
-            productSales[productName] = 0;
-          }
-          productSales[productName] += productPrice * quantity;
-        });
+      products.forEach((product) => {
+        const productName = product.title?.split(' - ')[1] || 'Untitled';
+        const productPrice = parseFloat(product.price) || 0;
+
+        if (!productSales[productName]) {
+          productSales[productName] = 0;
+        }
+
+        // Assuming 1 unit sold per product for demo purpose
+        productSales[productName] += productPrice;
       });
 
       const labels = Object.keys(productSales);
@@ -99,7 +102,6 @@ const SalesByProduct = () => {
           ],
         });
       } else {
-        // Handle case with no sales
         setChartData({
           labels: ['No Sales Yet'],
           datasets: [
@@ -117,6 +119,7 @@ const SalesByProduct = () => {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchSalesData();
