@@ -10,10 +10,10 @@ const columns = [
   { name: 'Title', selector: (row) => row.title },
   { name: 'SKU', selector: (row) => row.sku },
   { name: 'Status', selector: (row) => row.status },
-   {name:'Unit In Stock',selector:(row)=>row.unitInStock},
-  {name:"Product Type",selector:(row)=>row.product_type},
+  { name: 'Unit In Stock', selector: (row) => row.unitInStock },
+  { name: "Product Type", selector: (row) => row.product_type },
   { name: 'Price', selector: (row) => row.price },
- 
+
 ];
 
 const statusMap = {
@@ -38,11 +38,11 @@ const Products = () => {
   const authorId = data?._id;
 
   const handleExportExcel = () => {
-    const exportData = filteredProducts.map(({ title, sku, status, price,unitInStock }) => ({
+    const exportData = filteredProducts.map(({ title, sku, status, price, unitInStock }) => ({
       Title: title || '-',
       SKU: sku || '-',
       Status: status || '-',
-      UnitInStock: unitInStock||'-',
+      UnitInStock: unitInStock || '-',
       Price: price ?? '0',
     }));
 
@@ -87,17 +87,17 @@ const Products = () => {
         sku: skuInput.trim(),
         authorId: authorId
       });
- // ✅ Re-fetch from backend to update full list
-    const updatedList = await axiosAuthInstance.get(`shopify/product/${authorId}`);
-    setFilteredProducts(updatedList.data);
-    
+      // ✅ Re-fetch from backend to update full list
+      const updatedList = await axiosAuthInstance.get(`shopify/product/${authorId}`);
+      setFilteredProducts(updatedList.data);
+
       const productData = {
         title: res.data.title,
         sku: res.data.sku,
         status: res.data.status,
         price: res.data.price,
-        unitInStock:res.data.variant.unitInStock,
-        product_type:res.data.product_type,
+        unitInStock: res.data.variant.unitInStock,
+        product_type: res.data.product_type,
       };
 
       setFilteredProducts(prev => [...prev, productData]);
@@ -109,6 +109,7 @@ const Products = () => {
       setSkuInput('');
       setShowSkuModal(false);
       setLoading(false);
+
     }
   };
 
@@ -237,9 +238,7 @@ const Products = () => {
                 Submit
               </button>
             </div>
-            {skuNotFound && (
-              <p className='text-red-500 mt-4'>No product found with this SKU.</p>
-            )}
+
           </div>
         </div>
       )}
