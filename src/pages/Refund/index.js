@@ -26,8 +26,8 @@ const columns = [
   {
     name: 'Reason',
     selector: (row) => row.orderAdjustments?.[0]?.reason ?? '',
-    wrap:true,
-    grow:2
+    wrap: true,
+    grow: 2
   },
   {
     name: 'Date',

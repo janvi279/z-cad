@@ -9,7 +9,14 @@ import { useLoading } from '../../Context/LoadingContext';
 const columns = [
   { name: 'Title', selector: (row) => row.title },
   { name: 'SKU', selector: (row) => row.sku },
-  { name: 'Status', selector: (row) => row.status },
+  {
+    name: 'Status', selector: (row) => {
+      if (row.status === 'active') return 'Published';
+      if (row.status === 'draft') return 'Draft';
+      if (row.status === 'archived') return 'Archived';
+      return row.status || '-';
+    }
+  },
   { name: 'Unit In Stock', selector: (row) => row.unitInStock },
   { name: "Product Type", selector: (row) => row.product_type },
   { name: 'Price', selector: (row) => row.price },

@@ -32,7 +32,7 @@ const Location = () => {
           location: response.data.result.location,
         };
         formik.setValues(LocationData)
-      } 
+      }
     } catch (error) {
       console.error('Fetching data error:', error)
     }
@@ -51,7 +51,7 @@ const Location = () => {
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true)
       try {
-       const response = await axiosAuthInstance.post('setting-location/add', values);
+        const response = await axiosAuthInstance.post('setting-location/add', values);
         if (response && response.status === 200) {
           fetchData();
         }
@@ -63,9 +63,9 @@ const Location = () => {
     },
   })
 
-  useEffect (() => {
+  useEffect(() => {
     fetchData();
-  },[])
+  }, [])
 
   useEffect(() => {
     if (formik.values.country) {
