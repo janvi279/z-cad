@@ -101,9 +101,23 @@ const StoreStatus = () => {
 
   return (
     <div className='w-full'>
+      {/* Author Payment Section */}
+      {/* <div className=" p-4 rounded shadow flex flex-col md:flex-row justify-between items-center">
+        <div>
+          <p className="text-sm text-gray-500">Available for Withdrawal</p>
+          <p className="text-xl font-bold">₹{ }</p>
+          <p className="text-sm text-gray-400">Last Withdrawal: {"" ? new Date("").toLocaleDateString() : "N/A"}</p>
+        </div>
+        <button
+
+          className={`mt-4 md:mt-0 px-4 py-2 rounded text-white  ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"}`}
+        >
+          Withdraw
+        </button>
+      </div> */}
       <div className='bg-primary-500 text-white p-3 flex items-center gap-2 rounded-t-lg'>
         <BiMenu className='text-lg' />
-        <h2 className='text-lg'>Store Stats</h2>  
+        <h2 className='text-lg'>Store Stats</h2>
       </div>
       <div className='bg-white h-[372px] p-4 rounded-b-lg shadow-lg'>
         <div className='space-y-4'>
