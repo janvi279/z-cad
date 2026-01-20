@@ -1,7 +1,7 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-const baseURL = "https://zcadgroup.alphabitinfoway.in/api/";
+const baseURL = "https://zcadgroup.alphabitinfoway.com/api/";
 
 const axiosInstance = axios.create({
   baseURL,
