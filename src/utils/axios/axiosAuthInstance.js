@@ -3,7 +3,7 @@ import { getToken } from '../cookies/Cookies'
 import toast from 'react-hot-toast'
 
 // const baseURL = 'http://localhost:8015/api/';
-const baseURL = "https://zcadgroup.alphabitinfoway.in/api/";
+const baseURL = "https://zcadgroup.alphabitinfoway.com/api/";
 
 const axiosInstance = axios.create({
   baseURL,
