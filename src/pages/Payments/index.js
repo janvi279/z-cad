@@ -55,16 +55,16 @@ const WithdrawalModal = ({ isOpen, onRequestClose, transactions }) => {
         </p>
         <p>
           <span className="text-gray-700 font-semibold">Invoice Id: </span>
-          <span className="text-black font-medium">{firstTxn?.invoiceId || '0.00'}</span>
+          <span className="text-black font-medium">{firstTxn?.id || '0.00'}</span>
         </p>
         <p>
           <span className="text-gray-700 font-semibold">Order Id: </span>
-          <span className="text-black font-medium">{firstTxn?.orderId || '0.00'}</span>
+          <span className="text-black font-medium">{firstTxn?.order_id || '0.00'}</span>
         </p>
 
         <p>
           <span className="text-gray-700 font-semibold">Payment Method: </span>
-          <span className="text-black font-medium">{firstTxn?.mode || '-'}</span>
+          <span className="text-black font-medium">{firstTxn?.gateway || '-'}</span>
         </p>
         <p>
           <span className="text-gray-700 font-semibold">Charges: </span>
@@ -124,13 +124,14 @@ const Payments = () => {
         new Date(item.date) <= endDate);
     return matchesSearch && matchesDate && item.kind === 'sale'; // Filter for kind 'sale'
   });
+  console.log("🚀 ~ Payments ~ filteredData:", filteredData)
 
 
   const handleExport = (type) => {
     const exportData = filteredData.map((item) => ({
       Status: item.status,
       InvoiceId: item.invoiceId?.toString() || '-',
-      OrderId: item.orderId?.toString() || '-',
+      OrderId: item?.order_id || '-',
       Amount: item?.amount?.toString() || '-',
       Charges: item?.charges?.toString() || '-',
       Payment: item.payment || '-',
@@ -208,13 +209,15 @@ const Payments = () => {
 
   const columns = [
     { name: <FiMoreHorizontal title="Status" className="h-5 w-5" />, selector: row => row.status },
-    { name: 'Invoice Id', selector: row => row.invoiceId },
-    { name: 'Order Id', selector: row => row.orderId },
+    { name: 'Invoice Id', selector: row => row.id },
+    { name: 'Order Id', selector: row => row.order_id },
     { name: 'Amount', selector: row => `₹${row.amount}` },
     { name: 'Charges', selector: row => `₹${row.charges ?? '—'}` },
-    { name: 'Payment', selector: row => row.payment },
+    { name: 'Payment', selector: row => row.gateway
+ },
     { name: 'Mode', selector: row => row.mode },
-    { name: 'Date', selector: row => row.date ? new Date(row.date).toLocaleDateString('en-IN') : 'N/A' },
+    { name: 'Date', selector: row => row.created_at
+    ? new Date(row.created_at).toLocaleDateString('en-IN') : 'N/A' },
   ];
 
 

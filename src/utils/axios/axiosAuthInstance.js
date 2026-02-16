@@ -3,7 +3,8 @@ import { getToken } from '../cookies/Cookies'
 import toast from 'react-hot-toast'
 
 const baseURL = 'http://localhost:8015/api/';
-// const baseURL = "https://zcadgroup.alphabitinfoway.in/api/";
+// const baseURL = "https://zcadgroup.alphabitinfoway.com/api/";
+// const baseURL="http://89.116.32.101/api/"
 
 const axiosInstance = axios.create({
   baseURL,
@@ -18,10 +19,27 @@ axiosInstance.interceptors.request.use(
     return config
   },
   (error) => {
+    console.log("🚀 ~ error inn comingggggggggg:", error)
     return Promise.reject(error)
   },
 )
+// axiosInstance.interceptors.response.use(
+//   (response) => response, // just return response if ok
+//   (error) => {
+//     console.log("🚀 ~ error:", error)
+//     const status = error.response?.status
+//     if (status === 401) {
+//       toast.error('Session expired. Redirecting to login...')
 
+//       // Optional: clear token or cookies
+//       // removeToken()
+
+//       // Redirect to login page
+//       // window.location.href = '/login'  // or '/home' if needed
+//     }
+//     return Promise.reject(error)
+//   }
+// )
 const axiosAuthInstance = {
   get: async (url, params = {}) => {
     try {
