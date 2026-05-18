@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 import { BiDollar } from 'react-icons/bi'
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend
-} from 'chart.js'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
 import { useLoading } from '../../../Context/LoadingContext'
 
@@ -33,7 +28,8 @@ const options = {
         label: function (context) {
           const label = context.label || ''
           const value = context.raw || 0
-          return `${label}: ₹${value.toFixed(2)}`
+
+          return `${label}: ₹${Number(value).toFixed(2)}`
         },
       },
     },
@@ -41,45 +37,59 @@ const options = {
   cutout: '50%',
 }
 
+const defaultChartData = {
+  labels: ['No Sales Yet'],
+  datasets: [
+    {
+      data: [1],
+      backgroundColor: ['rgb(45, 187, 199)'],
+      borderWidth: 0,
+    },
+  ],
+}
+
 const SalesByProduct = () => {
-  const [chartData, setChartData] = useState({
-    labels: ['No Sales Yet'],
-    datasets: [
-      {
-        data: [10],
-        backgroundColor: ['rgb(45, 187, 199)'],
-        borderWidth: 0,
-      },
-    ],
-  });
-  const { setLoading } = useLoading();
+  const [chartData, setChartData] = useState(defaultChartData)
+  const [loadingChart, setLoadingChart] = useState(true)
+
+  const { setLoading } = useLoading()
 
   const fetchSalesData = async () => {
-    setLoading(true);
+    setLoading(true)
+    setLoadingChart(true)
+
     try {
-      const localData = JSON.parse(localStorage.getItem('_ur') || '{}');
-      const authorId = localData?._id;
+      const response = await axiosAuthInstance.get('shopify/order')
 
-      const response = await axiosAuthInstance.get(`/shopify/product/${authorId}?limit=250`);
+      const orders = Array.isArray(response?.data?.orders)
+        ? response.data.orders
+        : []
 
-      const products = Array.isArray(response.data) ? response.data : [];
+      const productSales = {}
 
-      const productSales = {};
+      orders.forEach((order) => {
+        const lineItems = Array.isArray(order?.products) ? order.products : []
 
-      products.forEach((product) => {
-        const productName = product.title?.split(' - ')[1] || 'Untitled';
-        const productPrice = parseFloat(product.price) || 0;
+        lineItems.forEach((item) => {
+          const productName = item?.productName || 'Untitled Product'
+          const totalPrice = item?.totalPrice
+          const productPrice = parseFloat(item?.productPrice || 0)
 
-        if (!productSales[productName]) {
-          productSales[productName] = 0;
-        }
+          const quantity = Number(item?.quantity || 0)
 
-        // Assuming 1 unit sold per product for demo purpose
-        productSales[productName] += productPrice;
-      });
+          const totalSale = productPrice * quantity
 
-      const labels = Object.keys(productSales);
-      const data = Object.values(productSales);
+          if (!productSales[productName]) {
+            productSales[productName] = 0
+          }
+
+          productSales[productName] += totalSale
+        })
+      })
+      const labels = Object.keys(productSales)
+
+      const data = Object.values(productSales)
+
       const colors = [
         'rgb(45, 187, 199)',
         'rgb(255, 99, 132)',
@@ -88,7 +98,7 @@ const SalesByProduct = () => {
         'rgb(75, 192, 192)',
         'rgb(153, 102, 255)',
         'rgb(255, 159, 64)',
-      ];
+      ]
 
       if (labels.length > 0) {
         setChartData({
@@ -96,51 +106,57 @@ const SalesByProduct = () => {
           datasets: [
             {
               data,
-              backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+              backgroundColor: labels.map(
+                (_, index) => colors[index % colors.length],
+              ),
               borderWidth: 0,
             },
           ],
-        });
+        })
       } else {
-        setChartData({
-          labels: ['No Sales Yet'],
-          datasets: [
-            {
-              data: [10],
-              backgroundColor: ['rgb(45, 187, 199)'],
-              borderWidth: 0,
-            },
-          ],
-        });
+        setChartData(defaultChartData)
       }
-    } catch (err) {
-      console.error('Failed to fetch sales data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    } catch (error) {
+      console.error('Failed to fetch sales data:', error)
 
+      setChartData(defaultChartData)
+    } finally {
+      setLoading(false)
+      setLoadingChart(false)
+    }
+  }
 
   useEffect(() => {
-    fetchSalesData();
-  }, []);
+    fetchSalesData()
+  }, [])
 
   return (
-    <div className="w-full">
-      <div className="bg-primary-500 text-white p-3 flex items-center justify-between rounded-t-lg">
-        <div className="flex items-center gap-2">
-          <BiDollar className="text-lg" />
-          <h2 className="text-lg">Sales by Product</h2>
+    <div className='w-full'>
+      <div className='bg-primary-500 text-white p-3 flex items-center justify-between rounded-t-lg'>
+        <div className='flex items-center gap-2'>
+          <BiDollar className='text-lg' />
+
+          <h2 className='text-lg font-semibold'>Sales by Product</h2>
         </div>
       </div>
 
-      <div className="bg-white pr-2 p-4 rounded-b-lg shadow-lg">
-        <div className="h-[340px] relative">
-          <Doughnut data={chartData} options={options} />
+      <div className='bg-white p-4 rounded-b-lg shadow-lg'>
+        <div className='h-[340px] relative'>
+          {loadingChart ? (
+            <div className='flex items-center justify-center h-full text-gray-500'>
+              Loading chart...
+            </div>
+          ) : (
+            <Doughnut
+              key={JSON.stringify(chartData)}
+              data={chartData}
+              options={options}
+            />
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-export default SalesByProduct;
+export default SalesByProduct

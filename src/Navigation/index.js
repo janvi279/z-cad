@@ -1,4 +1,5 @@
 import Home from '../pages/Home'
+import BookSubmit from '../pages/Home/BookSubmit'
 import Media from '../pages/Media'
 import Products from '../pages/Products'
 import Orders from '../pages/Orders'
@@ -12,10 +13,12 @@ import Profile from '../pages/Profile'
 import AuthorInfo from '../pages/AuthorInfo/index'
 import ViewAuthorInfo from '../pages/AuthorInfo/Actions/View'
 import AuthorRequest from '../pages/AuthorRequest/index'
+import AuthorBooks from '../pages/AuthorBookRequest'
 
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
+  { path: '/submit-book', element: <BookSubmit />, permission: { read: true } },
   { path: '/media', element: <Media />, permission: { read: true } },
   { path: '/products', element: <Products />, permission: { read: true } },
   { path: '/orders', element: <Orders />, permission: { read: true } },
@@ -30,6 +33,9 @@ const AllRoute = [
   { path: '/author-info', element: <AuthorInfo />, permission: {read: true}},
   { path: '/author-info/view/:id', element: <ViewAuthorInfo />, permission:{read:true}},
   { path: '/author-request', element: <AuthorRequest/>, permission:{read:true}},
+   { path: '/author-book-info', element: <AuthorInfo />, permission: {read: true}},
+  { path: '/author-book-info/view/:id', element: <ViewAuthorInfo />, permission:{read:true}},
+  { path: '/author-book-request', element: <AuthorBooks/>, permission:{read:true}},
 ]
 
 export default AllRoute

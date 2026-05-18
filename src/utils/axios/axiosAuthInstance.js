@@ -3,7 +3,7 @@ import { getToken } from '../cookies/Cookies'
 import toast from 'react-hot-toast'
 
 const baseURL = 'http://localhost:8015/api/';
-// const baseURL = "https://zcadgroup.alphabitinfoway.com/api/";
+// const baseURL = 'https://zcadgroup.alphabitinfoway.com/api/'
 // const baseURL="http://89.116.32.101/api/"
 
 const axiosInstance = axios.create({
@@ -19,7 +19,7 @@ axiosInstance.interceptors.request.use(
     return config
   },
   (error) => {
-    console.log("🚀 ~ error inn comingggggggggg:", error)
+    console.log('🚀 ~ error inn comingggggggggg:', error)
     return Promise.reject(error)
   },
 )

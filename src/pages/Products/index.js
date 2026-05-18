@@ -1,102 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import DataTable from 'react-data-table-component';
-import { CiSaveDown2 } from 'react-icons/ci';
-import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import { useLoading } from '../../Context/LoadingContext';
+import React, { useState, useEffect } from 'react'
+import DataTable from 'react-data-table-component'
+import { CiSaveDown2 } from 'react-icons/ci'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
+import * as XLSX from 'xlsx'
+import { saveAs } from 'file-saver'
+import { useLoading } from '../../Context/LoadingContext'
 
 const columns = [
   { name: 'Title', selector: (row) => row.title },
   { name: 'SKU', selector: (row) => row.sku },
   {
-    name: 'Status', selector: (row) => {
-      if (row.status === 'active') return 'Published';
-      if (row.status === 'draft') return 'Draft';
-      if (row.status === 'archived') return 'Archived';
-      return row.status || '-';
-    }
+    name: 'Status',
+    selector: (row) => {
+      if (row.status === 'active') return 'Published'
+      if (row.status === 'draft') return 'Draft'
+      if (row.status === 'archived') return 'Archived'
+      return row.status || '-'
+    },
   },
   { name: 'Unit In Stock', selector: (row) => row.unitInStock },
-  { name: "Product Type", selector: (row) => row.product_type },
+  { name: 'Product Type', selector: (row) => row.product_type },
   { name: 'Price', selector: (row) => row.price },
-
-];
+]
 
 const statusMap = {
   Published: 'active',
   Draft: 'draft',
   Archived: 'archived',
   All: 'All',
-};
+}
 
 const Products = () => {
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [limit, setLimit] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeStatus, setActiveStatus] = useState('All');
-  const [currentPage, setCurrentPage] = useState(1);
-  const { setLoading } = useLoading();
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [limit, setLimit] = useState(10)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [activeStatus, setActiveStatus] = useState('All')
+  const [currentPage, setCurrentPage] = useState(1)
+  const { setLoading } = useLoading()
 
-  const [showSkuModal, setShowSkuModal] = useState(false);
-  const [skuInput, setSkuInput] = useState('');
-  const [skuNotFound, setSkuNotFound] = useState(false);
-  const data = JSON.parse(localStorage.getItem("_ur") || '{}');
-  const authorId = data?._id;
+  const [showSkuModal, setShowSkuModal] = useState(false)
+  const [skuInput, setSkuInput] = useState('')
+  const [skuNotFound, setSkuNotFound] = useState(false)
+  const data = JSON.parse(localStorage.getItem('_ur') || '{}')
+  const authorId = data?._id
 
   const handleExportExcel = () => {
-    const exportData = filteredProducts.map(({ title, sku, status, price, unitInStock }) => ({
-      Title: title || '-',
-      SKU: sku || '-',
-      Status: status || '-',
-      UnitInStock: unitInStock || '-',
-      Price: price ?? '0',
-    }));
+    const exportData = filteredProducts.map(
+      ({ title, sku, status, price, unitInStock }) => ({
+        Title: title || '-',
+        SKU: sku || '-',
+        Status: status || '-',
+        UnitInStock: unitInStock || '-',
+        Price: price ?? '0',
+      }),
+    )
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    worksheet['!cols'] = [
-      { wch: 50 }, { wch: 20 }, { wch: 15 }, { wch: 10 },
-    ];
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    worksheet['!cols'] = [{ wch: 50 }, { wch: 20 }, { wch: 15 }, { wch: 10 }]
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Products')
 
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    })
     const blob = new Blob([excelBuffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
+    })
 
-    saveAs(blob, 'products_export.xlsx');
-  };
+    saveAs(blob, 'products_export.xlsx')
+  }
   useEffect(() => {
     const fetchAuthorProducts = async () => {
-      setLoading(true);
-
+      setLoading(true)
 
       try {
-        const res = await axiosAuthInstance.get(`shopify/product/${authorId}`);
-        setFilteredProducts(res.data);
+        const res = await axiosAuthInstance.get(`shopify/product/${authorId}`)
+        setFilteredProducts(res.data)
       } catch (err) {
-        console.error("Failed to load saved products", err.message);
+        console.error('Failed to load saved products', err.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchAuthorProducts();
-  }, []);
+    fetchAuthorProducts()
+  }, [])
   const handleSkuSearch = async () => {
-    if (!skuInput.trim()) return;
-    setLoading(true);
+    if (!skuInput.trim()) return
+    setLoading(true)
 
     try {
-      const res = await axiosAuthInstance.post("shopify/product", {
+      const res = await axiosAuthInstance.post('shopify/product', {
         sku: skuInput.trim(),
-        authorId: authorId
-      });
+        authorId: authorId,
+      })
       // ✅ Re-fetch from backend to update full list
-      const updatedList = await axiosAuthInstance.get(`shopify/product/${authorId}`);
-      setFilteredProducts(updatedList.data);
+      const updatedList = await axiosAuthInstance.get(
+        `shopify/product/${authorId}`,
+      )
+      setFilteredProducts(updatedList.data)
 
       const productData = {
         title: res.data.title,
@@ -105,53 +109,57 @@ const Products = () => {
         price: res.data.price,
         unitInStock: res.data.variant.unitInStock,
         product_type: res.data.product_type,
-      };
+      }
 
-      setFilteredProducts(prev => [...prev, productData]);
-      setSkuNotFound(false);
+      setFilteredProducts((prev) => [...prev, productData])
+      setSkuNotFound(false)
     } catch (err) {
-      console.error(err.message);
-      setSkuNotFound(true);
+      console.error(err.message)
+      setSkuNotFound(true)
     } finally {
-      setSkuInput('');
-      setShowSkuModal(false);
-      setLoading(false);
-
+      setSkuInput('')
+      setShowSkuModal(false)
+      setLoading(false)
     }
-  };
-
+  }
 
   const handleStatusFilter = (statusLabel) => {
-    setActiveStatus(statusLabel);
-    setCurrentPage(1);
-  };
+    setActiveStatus(statusLabel)
+    setCurrentPage(1)
+  }
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+    setSearchTerm(e.target.value)
+  }
 
   const handleLimitChange = (newLimit) => {
-    setLimit(newLimit);
-    setCurrentPage(1);
-  };
+    setLimit(newLimit)
+    setCurrentPage(1)
+  }
 
   const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
+    if (currentPage > 1) setCurrentPage(currentPage - 1)
+  }
 
   const handleNext = () => {
-    if (currentPage < Math.ceil(filteredData.length / limit)) setCurrentPage(currentPage + 1);
-  };
+    if (currentPage < Math.ceil(filteredData.length / limit))
+      setCurrentPage(currentPage + 1)
+  }
 
-  const filteredData = filteredProducts.filter(product => {
-    const statusMatch = statusMap[activeStatus] === 'All' || product.status === statusMap[activeStatus];
-    const searchMatch = product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku?.toLowerCase().includes(searchTerm.toLowerCase());
-    return statusMatch && searchMatch;
-  });
+  const filteredData = filteredProducts.filter((product) => {
+    const statusMatch =
+      statusMap[activeStatus] === 'All' ||
+      product.status === statusMap[activeStatus]
+    const searchMatch =
+      product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.sku?.toLowerCase().includes(searchTerm.toLowerCase())
+    return statusMatch && searchMatch
+  })
 
-  const paginatedData = filteredData.slice((currentPage - 1) * limit, currentPage * limit);
-
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * limit,
+    currentPage * limit,
+  )
 
   return (
     <>
@@ -162,10 +170,11 @@ const Products = () => {
             <button
               key={btn}
               onClick={() => handleStatusFilter(btn)}
-              className={`border-1 p-2 rounded-lg text-sm ${activeStatus === btn
-                ? 'bg-primary-100 text-primary-600'
-                : 'text-gray-600 hover:bg-primary-100 hover:text-primary-600'
-                }`}
+              className={`border-1 p-2 rounded-lg text-sm ${
+                activeStatus === btn
+                  ? 'bg-primary-100 text-primary-600'
+                  : 'text-gray-600 hover:bg-primary-100 hover:text-primary-600'
+              }`}
             >
               {btn}
             </button>
@@ -176,9 +185,12 @@ const Products = () => {
             onClick={() => setShowSkuModal(true)}
             className='bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600'
           >
-            Add Product
+            Link Store Book
           </button>
-          <button onClick={handleExportExcel} className='bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600'>
+          <button
+            onClick={handleExportExcel}
+            className='bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600'
+          >
             <CiSaveDown2 className='w-5 h-5' />
           </button>
         </div>
@@ -200,20 +212,36 @@ const Products = () => {
           columns={columns}
           data={paginatedData}
           pagination={false}
-          noDataComponent="No products matched."
+          noDataComponent='No products matched.'
         />
 
         <div className='flex justify-between mt-4'>
           <div className='flex gap-2'>
-            <button onClick={handlePrevious} disabled={currentPage === 1} className='px-4 py-2 bg-gray-400 rounded disabled:opacity-50 text-black'>
+            <button
+              onClick={handlePrevious}
+              disabled={currentPage === 1}
+              className='px-4 py-2 bg-gray-400 rounded disabled:opacity-50 text-black'
+            >
               Previous
             </button>
-            <button onClick={handleNext} disabled={currentPage >= Math.ceil(filteredData.length / limit)} className='px-4 py-2 bg-primary-600 text-white rounded disabled:opacity-50'>
+            <button
+              onClick={handleNext}
+              disabled={currentPage >= Math.ceil(filteredData.length / limit)}
+              className='px-4 py-2 bg-primary-600 text-white rounded disabled:opacity-50'
+            >
               Next
             </button>
           </div>
-          <select value={limit} onChange={(e) => handleLimitChange(Number(e.target.value))} className='border p-2 rounded-lg'>
-            {[10, 25, 50, 100].map((size) => <option key={size} value={size}>{size}</option>)}
+          <select
+            value={limit}
+            onChange={(e) => handleLimitChange(Number(e.target.value))}
+            className='border p-2 rounded-lg'
+          >
+            {[10, 25, 50, 100].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -233,24 +261,26 @@ const Products = () => {
             <div className='flex justify-end gap-2'>
               <button
                 onClick={() => {
-                  setShowSkuModal(false);
-                  setSkuInput('');
-                  setSkuNotFound(false);
+                  setShowSkuModal(false)
+                  setSkuInput('')
+                  setSkuNotFound(false)
                 }}
                 className='bg-gray-300 text-black px-4 py-2 rounded'
               >
                 Cancel
               </button>
-              <button onClick={handleSkuSearch} className='bg-blue-600 text-white px-4 py-2 rounded'>
+              <button
+                onClick={handleSkuSearch}
+                className='bg-blue-600 text-white px-4 py-2 rounded'
+              >
                 Submit
               </button>
             </div>
-
           </div>
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Products;
+export default Products
