@@ -7,23 +7,21 @@ import { FiCheckCircle } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 
 const columns = [
-  {
-    name: 'Name',
-    selector: (row) => `${row.firstName} ${row.lastName}`,
-  },
-  {
-    name: 'Email',
-    selector: (row) => row.email,
-  },
-  {
-    name: 'Mobile No.',
-    selector: (row) => row.phone,
-  },
-  {
-    name: 'Actions',
-    selector: (row) => row.actions,
-  },
-]
+  { name: 'First Name', selector: (row) => row.firstName },
+  { name: 'Last Name', selector: (row) => row.lastName },
+  { name: 'Email', selector: (row) => row.email },
+  { name: 'Mobile No.', selector: (row) => row.phone },
+  { name: 'Status', selector:(row)=>   (
+    <span
+      className={` ${
+        row.status === "1" ? "text-red-500" : "text-green-500"
+      }`}
+    >
+      {row.status === "1" ? "Not Approve" : "Approved"}
+    </span>
+  )},
+  { name: 'Actions', selector: (row) => row.actions },
+];
 
 const Index = () => {
   const [data, setData] = useState([])

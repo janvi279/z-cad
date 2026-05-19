@@ -14,6 +14,8 @@ import AuthorInfo from '../pages/AuthorInfo/index'
 import ViewAuthorInfo from '../pages/AuthorInfo/Actions/View'
 import AuthorRequest from '../pages/AuthorRequest/index'
 import AuthorBooks from '../pages/AuthorBookRequest'
+import AuthorBookInfo from '../pages/AuthorBookInfo'
+import BookView from '../pages/AuthorBookInfo/Actions/view'
 
 
 const AllRoute = [
@@ -33,8 +35,8 @@ const AllRoute = [
   { path: '/author-info', element: <AuthorInfo />, permission: {read: true}},
   { path: '/author-info/view/:id', element: <ViewAuthorInfo />, permission:{read:true}},
   { path: '/author-request', element: <AuthorRequest/>, permission:{read:true}},
-   { path: '/author-book-info', element: <AuthorInfo />, permission: {read: true}},
-  { path: '/author-book-info/view/:id', element: <ViewAuthorInfo />, permission:{read:true}},
+   { path: '/author-book-info', element: <AuthorBookInfo />, permission: {read: true}},
+  { path: '/author-book-info/view/:id', element: <BookView />, permission:{read:true}},
   { path: '/author-book-request', element: <AuthorBooks/>, permission:{read:true}},
 ]
 

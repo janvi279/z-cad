@@ -1,37 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import DataTable from 'react-data-table-component';
-import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';
-import { Link } from 'react-router-dom';
-import { FiEye } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react'
+import DataTable from 'react-data-table-component'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
+import { Link } from 'react-router-dom'
+import { FiEye } from 'react-icons/fi'
 
 const columns = [
   { name: 'First Name', selector: (row) => row.firstName },
   { name: 'Last Name', selector: (row) => row.lastName },
   { name: 'Email', selector: (row) => row.email },
   { name: 'Mobile No.', selector: (row) => row.phone },
-  { name: 'Status', selector:(row)=>   (
-    <span
-      className={` ${
-        row.status === "1" ? "text-red-500" : "text-green-500"
-      }`}
-    >
-      {row.status === "1" ? "Not Approve" : "Approved"}
-    </span>
-  )},
+  {
+    name: 'Status',
+    selector: (row) => (
+      <span
+        className={` ${row.status === '1' ? 'text-red-500' : 'text-green-500'}`}
+      >
+        {row.status === '1' ? 'Not Approve' : 'Approved'}
+      </span>
+    ),
+  },
   { name: 'Actions', selector: (row) => row.actions },
-];
+]
 
 const AuthorInfo = () => {
-  const [data, setData] = useState([]);
-  const [pages, setPages] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [totalRows, setTotalRows] = useState(0);
+  const [data, setData] = useState([])
+  const [pages, setPages] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [totalRows, setTotalRows] = useState(0)
 
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('author/get-all-author', {
-        page: pages, limit: limit ,
-      });
+        page: pages,
+        limit: limit,
+      })
       if (response && response.status === 200) {
         const transformedData = response.data.result.docs.map((item) => ({
           ...item,
@@ -44,31 +46,31 @@ const AuthorInfo = () => {
               </div>
             </div>
           ),
-        }));
-        setData(transformedData);
-        setTotalRows(response.data.result.totalDocs);
+        }))
+        setData(transformedData)
+        setTotalRows(response.data.result.totalDocs)
       }
     } catch (error) {
-      console.log('Error fetching author data:', error);
+      console.log('Error fetching author data:', error)
     }
-  };
+  }
 
   const handlePageChange = (newPage) => {
-    setPages(newPage);
-  };
+    setPages(newPage)
+  }
 
   const handleLimitPerPageChange = (newLimit) => {
-    setLimit(newLimit);
-    setPages(1);
-  };
+    setLimit(newLimit)
+    setPages(1)
+  }
 
   useEffect(() => {
-    fetchData();
-  }, [pages, limit]);
+    fetchData()
+  }, [pages, limit])
 
   return (
     <div className='p-3'>
-      <h1 className="text-2xl mb-3">Authors</h1>
+      <h1 className='text-2xl mb-3'>Authors</h1>
       <DataTable
         columns={columns}
         data={data}
@@ -79,7 +81,7 @@ const AuthorInfo = () => {
         onChangeRowsPerPage={handleLimitPerPageChange}
       />
     </div>
-  );
-};
+  )
+}
 
-export default AuthorInfo;
+export default AuthorInfo

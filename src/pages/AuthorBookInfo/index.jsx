@@ -53,11 +53,10 @@ const columns = [
       </span>
     ),
   },
-
   { name: 'Actions', selector: (row) => row.actions },
 ]
 
-const AuthorInfo = () => {
+const AuthorBookInfo = () => {
   const [data, setData] = useState([])
   const [pages, setPages] = useState(1)
   const [limit, setLimit] = useState(10)
@@ -65,10 +64,10 @@ const AuthorInfo = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axiosAuthInstance.get('book/all-books', {
+       const response = await axiosAuthInstance.get('book/all-books', {
         page: pages,
         limit: limit,
-        status: 'Pending Review',
+       
       })
       if (response) {
         const transformedData = response.data.result.docs.map((item) => ({
@@ -120,4 +119,4 @@ const AuthorInfo = () => {
   )
 }
 
-export default AuthorInfo
+export default AuthorBookInfo
