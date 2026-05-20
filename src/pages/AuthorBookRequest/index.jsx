@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import { Link } from 'react-router-dom'
-import { FiEye } from 'react-icons/fi'
+import { FiEye, FiCheck } from 'react-icons/fi'
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -22,40 +22,6 @@ const getStatusColor = (status) => {
       return 'bg-yellow-100 text-yellow-600'
   }
 }
-const columns = [
-  {
-    name: 'Cover',
-    cell: (row) => (
-      <img
-        src={row.coverImage}
-        alt='cover'
-        className='w-14 h-16 rounded object-cover border'
-      />
-    ),
-    width: '100px',
-  },
-  { name: 'Book', selector: (row) => row.title },
-  {
-    name: 'Author',
-    selector: (row) =>
-      `${row.authorId?.firstName || ''} ${row.authorId?.lastName || ''}`,
-  },
-  { name: 'Category', selector: (row) => row.category },
-  {
-    name: 'Status',
-    cell: (row) => (
-      <span
-        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-          row.status,
-        )}`}
-      >
-        {row.status}
-      </span>
-    ),
-  },
-
-  { name: 'Actions', selector: (row) => row.actions },
-]
 
 const AuthorInfo = () => {
   const [data, setData] = useState([])
@@ -63,6 +29,7 @@ const AuthorInfo = () => {
   const [limit, setLimit] = useState(10)
   const [totalRows, setTotalRows] = useState(0)
 
+  // Fetch Books
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('book/all-books', {
@@ -70,29 +37,100 @@ const AuthorInfo = () => {
         limit: limit,
         status: 'Pending Review',
       })
-      if (response) {
-        const transformedData = response.data.result.docs.map((item) => ({
-          ...item,
-          actions: (
-            <div className='flex items-center'>
-              <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
-                <Link to={`view/${item._id}`}>
-                  <FiEye className='w-4 h-4' />
-                </Link>
-              </div>
-            </div>
-          ),
-        }))
-        setData(transformedData)
-        setTotalRows(response.data.result.totalDocs)
-      }
+
+     if (response) {
+            const transformedData = response.data.result.docs.map((item) => ({
+              ...item,
+              actions: (
+                <div className='flex items-center gap-5'>
+                  <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
+                    <Link to={`view/${item._id}`}>
+                      <FiEye className='w-4 h-4' />
+                    </Link>
+                  
+                  </div>
+                   <button
+                  onClick={() => handleApprove(item._id)}
+                  className='bg-primary-500 text-white px-4 py-2 rounded'
+                >
+                  Approve
+                </button>
+                </div>
+              ),
+            }))
+            setData(transformedData)
+            setTotalRows(response.data.result.totalDocs)
+          }
     } catch (error) {
-      console.log('Error fetching author data:', error)
+      console.log('Error fetching books:', error)
     }
   }
 
-  const handlePageChange = (newPage) => {
-    setPages(newPage)
+  // Approve Book
+  const handleApprove = async (id) => {
+    try {
+      await axiosAuthInstance.put(`/book/update-status/${id}`, {
+        status: 'Approved',
+        adminNote: 'Book approved successfully',
+      })
+
+      fetchData()
+    } catch (error) {
+      console.log('Approve Error:', error)
+    }
+  }
+
+  // View Book
+
+  // Table Columns
+  const columns = [
+    {
+      name: 'Cover',
+      cell: (row) => (
+        <img
+          src={row.coverImage}
+          alt='cover'
+          className='w-14 h-16 rounded object-cover border'
+        />
+      ),
+      width: '100px',
+    },
+
+    {
+      name: 'Book',
+      selector: (row) => row.title,
+      sortable: true,
+    },
+
+    {
+      name: 'Author',
+      selector: (row) =>
+        `${row.authorId?.firstName || ''} ${row.authorId?.lastName || ''}`,
+    },
+
+    {
+      name: 'Category',
+      selector: (row) => row.category,
+    },
+
+    {
+      name: 'Status',
+      cell: (row) => (
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+            row.status,
+          )}`}
+        >
+          {row.status}
+        </span>
+      ),
+    },
+
+    { name: 'Actions', selector: (row) => row.actions },
+  ]
+
+  const handlePageChange = (page) => {
+    setPages(page)
   }
 
   const handleLimitPerPageChange = (newLimit) => {
@@ -106,15 +144,19 @@ const AuthorInfo = () => {
 
   return (
     <div className='p-3'>
-      <h1 className='text-2xl mb-3'>Authors</h1>
+      <h1 className='text-2xl mb-3'>Authors Book Request</h1>
+
       <DataTable
         columns={columns}
         data={data}
         pagination
         paginationServer
         paginationTotalRows={totalRows}
+        paginationPerPage={limit}
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleLimitPerPageChange}
+        highlightOnHover
+        responsive
       />
     </div>
   )

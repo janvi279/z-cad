@@ -38,9 +38,9 @@ const AdminDashboard = () => {
               )}
             </div>
           </Link>
-          <Link to='/author-book-info'>
+          <Link to='/author-book-request'>
             <div className='h-28 bg-white rounded-md shadow-md flex flex-col items-center justify-center px-3 py-3'>
-              <div className='font-semibold  text-lg'>Total book Request</div>
+              <div className='font-semibold  text-lg'>Total Book Request</div>
               {data.booksRequest && (
                 <div className='text-primary-500 font-semibold text-2xl mt-2'>
                   {data.booksRequest}

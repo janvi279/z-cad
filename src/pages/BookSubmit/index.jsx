@@ -2,14 +2,16 @@ import React, { useState } from 'react'
 import { useFormik, FormikProvider, Field } from 'formik'
 import * as Yup from 'yup'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
-import CustomInput from '../../../Components/common/CustomInput'
-import CustomTextarea from '../../../Components/common/CustomTextarea'
+import CustomInput from '../../Components/common/CustomInput'
+import CustomTextarea from '../../Components/common/CustomTextarea'
 
-import axiosAuthInstance from '../../../utils/axios/axiosAuthInstance'
+import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 
 const BookSubmit = () => {
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   // =========================================
   // BOOK CATEGORIES
@@ -129,6 +131,7 @@ const BookSubmit = () => {
         })
 
         toast.success(res?.data?.message || 'Book submitted successfully')
+        navigate('/my-books')
 
         resetForm()
       } catch (error) {

@@ -1,5 +1,5 @@
 import Home from '../pages/Home'
-import BookSubmit from '../pages/Home/BookSubmit'
+import BookSubmit from '../pages/BookSubmit'
 import Media from '../pages/Media'
 import Products from '../pages/Products'
 import Orders from '../pages/Orders'
@@ -16,7 +16,8 @@ import AuthorRequest from '../pages/AuthorRequest/index'
 import AuthorBooks from '../pages/AuthorBookRequest'
 import AuthorBookInfo from '../pages/AuthorBookInfo'
 import BookView from '../pages/AuthorBookInfo/Actions/view'
-
+import MyBook from '../pages/authorBook'
+import EditBook from '../pages/authorBook/edit'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -29,15 +30,59 @@ const AllRoute = [
   { path: '/payments', element: <Payments />, permission: { read: true } },
   { path: '/ledger-book', element: <LedgerBook />, permission: { read: true } },
   { path: '/reviews', element: <Reviews />, permission: { read: true } },
-  { path: '/notifications', element: <Notifications />, permission: { read: true } },
+  {
+    path: '/notifications',
+    element: <Notifications />,
+    permission: { read: true },
+  },
   { path: '/profile', element: <Profile />, permission: { read: true } },
 
-  { path: '/author-info', element: <AuthorInfo />, permission: {read: true}},
-  { path: '/author-info/view/:id', element: <ViewAuthorInfo />, permission:{read:true}},
-  { path: '/author-request', element: <AuthorRequest/>, permission:{read:true}},
-   { path: '/author-book-info', element: <AuthorBookInfo />, permission: {read: true}},
-  { path: '/author-book-info/view/:id', element: <BookView />, permission:{read:true}},
-  { path: '/author-book-request', element: <AuthorBooks/>, permission:{read:true}},
+  { path: '/author-info', element: <AuthorInfo />, permission: { read: true } },
+  {
+    path: '/author-info/view/:id',
+    element: <ViewAuthorInfo />,
+    permission: { read: true },
+  },
+  {
+    path: '/author-request',
+    element: <AuthorRequest />,
+    permission: { read: true },
+  },
+  {
+    path: '/author-book-info',
+    element: <AuthorBookInfo />,
+    permission: { read: true },
+  },
+  {
+    path: '/author-book-info/view/:id',
+    element: <BookView />,
+    permission: { read: true },
+  },
+  {
+    path: '/author-book-request/view/:id',
+    element: <BookView />,
+    permission: { read: true },
+  },
+  {
+    path: '/my-books/view/:id',
+    element: <BookView />,
+    permission: { read: true },
+  },
+  {
+    path: '/author-book-request',
+    element: <AuthorBooks />,
+    permission: { read: true },
+  },
+  {
+    path: '/my-books',
+    element: <MyBook />,
+    permission: { read: true },
+  },
+  {
+    path: '/my-books/edit/:id',
+    element: <EditBook />,
+    permission: { read: true },
+  },
 ]
 
 export default AllRoute

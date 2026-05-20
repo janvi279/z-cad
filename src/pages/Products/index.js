@@ -79,7 +79,7 @@ const Products = () => {
         const res = await axiosAuthInstance.get(`shopify/product/${authorId}`)
         setFilteredProducts(res.data)
       } catch (err) {
-        console.error('Failed to load saved products', err.message)
+        console.error('Failed to load saved products', err.message) 
       } finally {
         setLoading(false)
       }
