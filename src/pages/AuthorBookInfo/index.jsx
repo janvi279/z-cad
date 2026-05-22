@@ -137,7 +137,7 @@ const AuthorBookInfo = () => {
 
                   icon: <FiEye />,
 
-                  onClick: () => navigate(`/admin/contracts/view/${item._id}`),
+                  onClick: () => navigate(`/author-book-info/view/${item._id}`),
 
                   className: 'text-purple-600',
                 },
@@ -324,7 +324,7 @@ const AuthorBookInfo = () => {
     },
 
     {
-      name: 'Status',
+      name: 'Book Status',
 
       cell: (row) => (
         <span
@@ -336,30 +336,45 @@ const AuthorBookInfo = () => {
         </span>
       ),
     },
+    {
+      name: 'Author Contract Status',
+
+      cell: (row) => (
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+            row.contractStatus || "",
+          )}`}
+        >
+          {row.status}
+        </span>
+      ),
+    },
 
     {
       name: 'Update Stage',
 
       cell: (row) => (
-        <select
-          className='border rounded px-2 py-1'
-          value={row.currentStage || 'Editing'}
-          onChange={(e) => handleStageUpdate(row._id, e.target.value)}
-        >
-          <option value='Editing'>Editing</option>
+        <div className="min-w-[100px]">
+          <select
+            className='w-full border rounded px-3 py-2 text-sm bg-white focus:outline-none'
+            value={row.currentStage || 'Editing'}
+            onChange={(e) => handleStageUpdate(row._id, e.target.value)}
+          >
+            <option value='Editing'>Editing</option>
 
-          <option value='Proofreading'>Proofreading</option>
+            <option value='Proofreading'>Proofreading</option>
 
-          <option value='Layout Design'>Layout Design</option>
+            <option value='Layout Design'>Layout Design</option>
 
-          <option value='Final Proof Reading'>Final Proof Reading</option>
+            <option value='Final Proof Reading'>Final Proof Reading</option>
 
-          <option value='Printing'>Printing</option>
+            <option value='Printing'>Printing</option>
 
-          <option value='Binding'>Binding</option>
+            <option value='Binding'>Binding</option>
 
-          <option value='Published'>Published</option>
-        </select>
+            <option value='Published'>Published</option>
+          </select>
+        </div>
       ),
     },
 

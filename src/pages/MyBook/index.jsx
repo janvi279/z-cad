@@ -3,6 +3,7 @@ import DataTable from 'react-data-table-component'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import { Link } from 'react-router-dom'
 import { FiEye, FiEdit } from 'react-icons/fi'
+import toast from "react-hot-toast"
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -58,6 +59,30 @@ const MyBook = () => {
       console.log('Error fetching author data:', error)
     }
   }
+  const handleContractStatus = async (
+  bookId,
+  status,
+) => {
+  try {
+    const response =
+      await axiosAuthInstance.put(
+        `/book/contract-status/${bookId}`,
+        {
+          contractStatus: status,
+        },
+      )
+
+    if (response.data.success) {
+      toast.success(
+        `Contract ${status}`,
+      )
+
+      fetchData()
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
   const columns = [
     {
       name: 'Cover',
@@ -73,7 +98,7 @@ const MyBook = () => {
     { name: 'Book', selector: (row) => row.title },
     { name: 'Category', selector: (row) => row.category },
     {
-      name: 'Status',
+      name: 'Book Status',
       cell: (row) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
@@ -85,56 +110,97 @@ const MyBook = () => {
       ),
     },
     {
-      name: 'Update Stage',
+      name: 'Book Update Stage',
       cell: (row) => (
-        <select
-          className='border rounded px-2 py-1'
-          value={row.currentStage || 'Editing'}
-          onChange={(e) => handleStageUpdate(row._id, e.target.value)}
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+            row.currentStage,
+          )}`}
         >
-          <option value='Editing'>Editing</option>
-          <option value='Proofreading'>Proofreading</option>
-          <option value='Layout Design'>Layout Design</option>
-          <option value='Final Proof Reading'>Final Proof Reading</option>
-          <option value='Printing'>Printing</option>
-          <option value='Binding'>Binding</option>
-          <option value='Published'>Published</option>
-        </select>
+          {row.currentStage}
+        </span>
       ),
     },
 
+    {
+  name: 'Contract',
+
+  cell: (row) => (
+    <>
+      {row.contractGenerated ? (
+        <div className='flex gap-2'>
+
+          {/* VIEW */}
+
+          <Link
+            to={`/my-contract/view/${row._id}`}
+            className='bg-blue-500 text-white px-3 py-1 rounded'
+          >
+            View
+          </Link>
+
+          {/* ACCEPT */}
+
+          {row.contractStatus ===
+            'Pending' && (
+            <>
+              <button
+                onClick={() =>
+                  handleContractStatus(
+                    row._id,
+                    'Accepted',
+                  )
+                }
+                className='bg-green-500 text-white px-3 py-1 rounded'
+              >
+                Accept
+              </button>
+
+              <button
+                onClick={() =>
+                  handleContractStatus(
+                    row._id,
+                    'Rejected',
+                  )
+                }
+                className='bg-red-500 text-white px-3 py-1 rounded'
+              >
+                Reject
+              </button>
+            </>
+          )}
+
+          {/* ACCEPTED */}
+
+          {row.contractStatus ===
+            'Accepted' && (
+            <span className='bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm'>
+              Accepted
+            </span>
+          )}
+
+          {/* REJECTED */}
+
+          {row.contractStatus ===
+            'Rejected' && (
+            <span className='bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm'>
+              Rejected
+            </span>
+          )}
+        </div>
+      ) : (
+        <span className='text-gray-400 text-sm'>
+          No Contract
+        </span>
+      )}
+    </>
+  ),
+},
+   
+
     { name: 'Actions', selector: (row) => row.actions },
   ]
-  const handleStageUpdate = async (bookId, stage) => {
-    try {
-      const response = await axiosAuthInstance.put(
-        `/book/update-book-stage/${bookId}`,
-        {
-          stepName: stage,
-          status: 'Completed',
-        },
-      )
-
-      if (response.data.success) {
-        setData((prev) =>
-          prev.map((item) => {
-            if (item._id === bookId) {
-              return {
-                ...item,
-                currentStage: stage,
-                trackingSteps:
-                  response.data.result?.trackingSteps || item.trackingSteps,
-              }
-            }
-
-            return item
-          }),
-        )
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+ 
 
   const handlePageChange = (newPage) => {
     setPages(newPage)

@@ -32,10 +32,6 @@ const dataList = [
         label: 'My Books',
         path: '/my-books',
       },
-      {
-        label: 'Production Status',
-        path: '/production-status',
-      },
     ],
   },
   { label: 'Media', icon: <GoFileMedia />, path: '/media' },

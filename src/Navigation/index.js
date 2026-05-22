@@ -16,8 +16,9 @@ import AuthorRequest from '../pages/AuthorRequest/index'
 import AuthorBooks from '../pages/AuthorBookRequest'
 import AuthorBookInfo from '../pages/AuthorBookInfo'
 import BookView from '../pages/AuthorBookInfo/Actions/view'
-import MyBook from '../pages/authorBook'
-import EditBook from '../pages/authorBook/edit'
+import MyBook from '../pages/MyBook'
+import EditBook from '../pages/MyBook/edit'
+import ViewContract from '../pages/AuthorBookInfo/Actions/viewContract'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -53,6 +54,16 @@ const AllRoute = [
     element: <AuthorBookInfo />,
     permission: { read: true },
   },
+    {
+    path: '/author-book-info/view/:id',
+    element: <ViewContract />,
+    permission: { read: true },
+  },
+      {
+    path: '/my-contract/view/:id',
+    element: <ViewContract />,
+    permission: { read: true },
+  },
   {
     path: '/author-book-info/view/:id',
     element: <BookView />,
@@ -68,6 +79,7 @@ const AllRoute = [
     element: <BookView />,
     permission: { read: true },
   },
+  
   {
     path: '/author-book-request',
     element: <AuthorBooks />,
