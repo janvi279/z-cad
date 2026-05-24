@@ -19,6 +19,7 @@ import BookView from '../pages/AuthorBookInfo/Actions/view'
 import MyBook from '../pages/MyBook'
 import EditBook from '../pages/MyBook/edit'
 import ViewContract from '../pages/AuthorBookInfo/Actions/viewContract'
+import InventoryAnalytics from '../pages/MyBook/InventoryAnalytics'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -95,6 +96,12 @@ const AllRoute = [
     element: <EditBook />,
     permission: { read: true },
   },
+
+  {
+    path: '/my-books/analytics/:id',
+    element: <InventoryAnalytics />,
+    permission: { read: true },
+  }
 ]
 
 export default AllRoute

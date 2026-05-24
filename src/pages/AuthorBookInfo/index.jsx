@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
-import { Link, useNavigate } from 'react-router-dom'
-import { FiEye } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { FiEye, FiPackage } from 'react-icons/fi'
 import CustomModal from '../../Components/common/CustomModel'
 import toast from 'react-hot-toast'
 import { FaRegEdit } from 'react-icons/fa'
@@ -42,6 +42,13 @@ const AuthorBookInfo = () => {
 
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const [copiesModal, setCopiesModal] = useState(false)
+
+  const [copiesData, setCopiesData] = useState({
+    totalCopies: '',
+    giftCopies: '',
+    sku: '',
+  })
 
   // =========================================
   // CONTRACT MODAL
@@ -55,6 +62,65 @@ const AuthorBookInfo = () => {
     isbn: '',
     paymentTerms: '',
   })
+  const [selectedBook, setSelectedBook] = useState(null)
+
+  const handleOpenCopiesModal = (item) => {
+    setSelectedBook(item)
+
+    setCopiesData({
+      totalCopies: item.totalCopies || '',
+
+      giftCopies: item.giftCopies || '',
+
+      sku: item.sku || '',
+    })
+
+    setCopiesModal(true)
+  }
+
+  // =========================================
+  // UPDATE INVENTORY
+  // =========================================
+
+  const handleUpdateCopies = async () => {
+    try {
+      await axiosAuthInstance.put(
+        `/book/update-copies/${selectedBook._id}`,
+        copiesData,
+      )
+
+      toast.success('Inventory updated successfully')
+
+      setCopiesModal(false)
+
+      fetchData()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+const handleResetInventory =
+  async () => {
+    try {
+      await axiosAuthInstance.put(
+        `/book/update-copies/${selectedBook._id}`,
+        {
+          totalCopies: 0,
+          giftCopies: 0,
+          sku: '',
+        },
+      )
+
+      toast.success(
+        'Inventory reset successfully',
+      )
+
+      setCopiesModal(false)
+
+      fetchData()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const handleOpenEditContractModal = (item) => {
     setSelectedAuthor(item)
 
@@ -117,7 +183,15 @@ const AuthorBookInfo = () => {
 
                   className: 'text-blue-600',
                 },
+                item.currentStage === 'Published' && {
+                  label: 'Manage Inventory',
 
+                  icon: <FiPackage />,
+
+                  onClick: () => handleOpenCopiesModal(item),
+
+                  className: 'text-purple-600',
+                },
                 // GENERATE CONTRACT
 
                 !item.contractGenerated && {
@@ -254,31 +328,24 @@ const AuthorBookInfo = () => {
   // UPDATE STAGE
   // =========================================
 
-  const handleStageUpdate = async (bookId, stage) => {
+const handleStageUpdate =
+  async (bookId, stage) => {
     try {
-      const response = await axiosAuthInstance.put(
-        `/book/update-book-stage/${bookId}`,
-        {
-          stepName: stage,
-          status: 'Completed',
-        },
-      )
+      const response =
+        await axiosAuthInstance.put(
+          `/book/update-book-stage/${bookId}`,
+          {
+            stepName: stage,
+            status: 'Completed',
+          },
+        )
 
       if (response.data.success) {
-        setData((prev) =>
-          prev.map((item) => {
-            if (item._id === bookId) {
-              return {
-                ...item,
-                currentStage: stage,
-                trackingSteps:
-                  response.data.result?.trackingSteps || item.trackingSteps,
-              }
-            }
-
-            return item
-          }),
+        toast.success(
+          'Stage updated successfully',
         )
+
+        fetchData()
       }
     } catch (error) {
       console.log(error)
@@ -342,7 +409,7 @@ const AuthorBookInfo = () => {
       cell: (row) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-            row.contractStatus || "",
+            row.contractStatus || '',
           )}`}
         >
           {row.status}
@@ -354,7 +421,7 @@ const AuthorBookInfo = () => {
       name: 'Update Stage',
 
       cell: (row) => (
-        <div className="min-w-[100px]">
+        <div className='min-w-[100px]'>
           <select
             className='w-full border rounded px-3 py-2 text-sm bg-white focus:outline-none'
             value={row.currentStage || 'Editing'}
@@ -420,6 +487,104 @@ const AuthorBookInfo = () => {
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleLimitPerPageChange}
       />
+      {copiesModal && (
+        <CustomModal handleCloseModal={() => setCopiesModal(false)}>
+          <div className='p-5'>
+            <h2 className='text-2xl font-bold mb-5'>Book Inventory Details</h2>
+
+            {/* Total Copies */}
+            <div className='mb-4'>
+              <label className='block mb-2 font-medium'>
+                Total Printed Copies
+              </label>
+
+              <input
+                type='number'
+                value={copiesData.totalCopies}
+                onChange={(e) =>
+                  setCopiesData({
+                    ...copiesData,
+
+                    totalCopies: e.target.value,
+                  })
+                }
+                className='w-full border rounded-lg px-4 py-2'
+              />
+            </div>
+
+            {/* Gift Copies */}
+            <div className='mb-4'>
+              <label className='block mb-2 font-medium'>Gift Copies</label>
+
+              <input
+                type='number'
+                value={copiesData.giftCopies}
+                onChange={(e) =>
+                  setCopiesData({
+                    ...copiesData,
+
+                    giftCopies: e.target.value,
+                  })
+                }
+                className='w-full border rounded-lg px-4 py-2'
+              />
+            </div>
+
+            {/* SKU */}
+            <div className='mb-4'>
+              <label className='block mb-2 font-medium'>Product SKU</label>
+
+              <input
+                type='text'
+                value={copiesData.sku}
+                onChange={(e) =>
+                  setCopiesData({
+                    ...copiesData,
+
+                    sku: e.target.value,
+                  })
+                }
+                className='w-full border rounded-lg px-4 py-2'
+              />
+            </div>
+
+            {/* Buttons */}
+        <div className='flex justify-between mt-6'>
+  
+  {/* RESET */}
+  <button
+    onClick={
+      handleResetInventory
+    }
+    className='bg-red-500 text-white px-5 py-2 rounded-lg'
+  >
+    Reset Inventory
+  </button>
+
+  {/* RIGHT BUTTONS */}
+  <div className='flex gap-3'>
+    <button
+      onClick={() =>
+        setCopiesModal(false)
+      }
+      className='bg-gray-300 px-5 py-2 rounded-lg'
+    >
+      Cancel
+    </button>
+
+    <button
+      onClick={
+        handleUpdateCopies
+      }
+      className='bg-primary-500 text-white px-5 py-2 rounded-lg'
+    >
+      Save
+    </button>
+  </div>
+</div>
+          </div>
+        </CustomModal>
+      )}
 
       {/* CONTRACT MODAL */}
 

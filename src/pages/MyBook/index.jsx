@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import { Link } from 'react-router-dom'
-import { FiEye, FiEdit } from 'react-icons/fi'
+import { FiEye, FiEdit,FiPackage } from 'react-icons/fi'
 import toast from "react-hot-toast"
 
 const getStatusColor = (status) => {
@@ -49,6 +49,19 @@ const MyBook = () => {
               >
                 <FiEdit className='w-4 h-4' />
               </Link>
+             
+            {
+  item.currentStage ===
+    'Published' && (
+    <Link
+      to={`analytics/${item._id}`}
+      className='w-8 h-8 flex items-center justify-center rounded-full text-purple-600'
+      title='Inventory Analytics'
+    >
+      <FiPackage className='w-4 h-4' />
+    </Link>
+  )
+}
             </div>
           ),
         }))

@@ -130,7 +130,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         )
 
       case 'AUTHOR':
-        return item.label !== 'Author Info' && item.label !== 'Author Request'
+        return item.label !== 'Author Info' && item.label !== 'Author Request' && item.label !== 'Author Book Info' && item.label !== 'Author Book Request'
 
       default:
         return true
