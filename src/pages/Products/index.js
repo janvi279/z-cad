@@ -5,8 +5,32 @@ import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 import { useLoading } from '../../Context/LoadingContext'
+import { AiOutlineDelete } from 'react-icons/ai'
 
-const columns = [
+const statusMap = {
+  Published: 'active',
+  Draft: 'draft',
+  Archived: 'archived',
+  All: 'All',
+}
+
+const Products = () => {
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [limit, setLimit] = useState(10 )
+  const [searchTerm, setSearchTerm] = useState('')
+  const [activeStatus, setActiveStatus] = useState('All')
+  const [currentPage, setCurrentPage] = useState(1)
+  const { setLoading } = useLoading()
+
+  const [showSkuModal, setShowSkuModal] = useState(false)
+  const [skuInput, setSkuInput] = useState('')
+  const [skuNotFound, setSkuNotFound] = useState(false)
+  const data = JSON.parse(localStorage.getItem('_ur') || '{}')
+  const authorId = data?._id
+
+
+
+  const columns = [
   { name: 'Title', selector: (row) => row.title },
   { name: 'SKU', selector: (row) => row.sku },
   {
@@ -21,28 +45,22 @@ const columns = [
   { name: 'Unit In Stock', selector: (row) => row.unitInStock },
   { name: 'Product Type', selector: (row) => row.product_type },
   { name: 'Price', selector: (row) => row.price },
+   {
+    name: 'Action',
+    cell: (row) => (
+      <button
+        onClick={() =>
+          handleDelete(row._id)
+        }
+        className='text-red-500 hover:text-red-700'
+      >
+        <AiOutlineDelete
+          size={22}
+        />
+      </button>
+    ),
+  },
 ]
-
-const statusMap = {
-  Published: 'active',
-  Draft: 'draft',
-  Archived: 'archived',
-  All: 'All',
-}
-
-const Products = () => {
-  const [filteredProducts, setFilteredProducts] = useState([])
-  const [limit, setLimit] = useState(10)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [activeStatus, setActiveStatus] = useState('All')
-  const [currentPage, setCurrentPage] = useState(1)
-  const { setLoading } = useLoading()
-
-  const [showSkuModal, setShowSkuModal] = useState(false)
-  const [skuInput, setSkuInput] = useState('')
-  const [skuNotFound, setSkuNotFound] = useState(false)
-  const data = JSON.parse(localStorage.getItem('_ur') || '{}')
-  const authorId = data?._id
 
   const handleExportExcel = () => {
     const exportData = filteredProducts.map(
@@ -71,6 +89,29 @@ const Products = () => {
 
     saveAs(blob, 'products_export.xlsx')
   }
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to unlink this store book?',
+    )
+
+    if (!confirmDelete) return
+
+    try {
+      await axiosAuthInstance.delete(
+        `shopify/product/${id}`,
+      )
+
+      setFilteredProducts((prev) =>
+        prev.filter(
+          (item) => item._id !== id,
+        ),
+      )
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     const fetchAuthorProducts = async () => {
       setLoading(true)
@@ -122,6 +163,7 @@ const Products = () => {
       setLoading(false)
     }
   }
+
 
   const handleStatusFilter = (statusLabel) => {
     setActiveStatus(statusLabel)

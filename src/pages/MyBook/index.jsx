@@ -4,6 +4,7 @@ import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import { Link } from 'react-router-dom'
 import { FiEye, FiEdit,FiPackage } from 'react-icons/fi'
 import toast from "react-hot-toast"
+import { FaEye, FaCheckCircle} from 'react-icons/fa'
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -23,16 +24,50 @@ const getStatusColor = (status) => {
       return 'bg-yellow-100 text-yellow-600'
   }
 }
+const getStatusColorCurrentStage = (
+  stage,
+) => {
+  switch (stage) {
+    case 'Editing':
+      return 'bg-blue-100 text-blue-600'
+
+    case 'Proofreading':
+      return 'bg-cyan-100 text-cyan-600'
+
+    case 'Layout Design':
+      return 'bg-indigo-100 text-indigo-600'
+
+    case 'Final Proof Reading':
+      return 'bg-orange-100 text-orange-600'
+
+    case 'Printing':
+      return 'bg-pink-100 text-pink-600'
+
+    case 'Binding':
+      return 'bg-yellow-100 text-yellow-700'
+
+    case 'Published':
+      return 'bg-green-100 text-green-600'
+
+    default:
+      return 'bg-gray-100 text-gray-600'
+  }
+}
 
 const MyBook = () => {
   const [data, setData] = useState([])
   const [pages, setPages] = useState(1)
   const [limit, setLimit] = useState(10)
   const [totalRows, setTotalRows] = useState(0)
+  const [search, setSearch] =
+  useState('')
 
   const fetchData = async () => {
     try {
-      const response = await axiosAuthInstance.get('book/my-books')
+      const response =
+  await axiosAuthInstance.get(
+    `book/my-books?search=${search}`,
+  )
       if (response) {
         const transformedData = response.data.data.map((item) => ({
           ...item,
@@ -115,7 +150,7 @@ const MyBook = () => {
       cell: (row) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-            row.status,
+            row.status||"pending",
           )}`}
         >
           {row.status}
@@ -123,17 +158,17 @@ const MyBook = () => {
       ),
     },
     {
-      name: 'Book Update Stage',
-      cell: (row) => (
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-            row.currentStage,
-          )}`}
-        >
-          {row.currentStage}
-        </span>
-      ),
-    },
+  name: 'Book Update Stage',
+  cell: (row) => (
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColorCurrentStage(
+        row.currentStage || '',
+      )}`}
+    >
+      {row.currentStage || '-'}
+    </span>
+  ),
+},
 
     {
   name: 'Contract',
@@ -147,9 +182,9 @@ const MyBook = () => {
 
           <Link
             to={`/my-contract/view/${row._id}`}
-            className='bg-blue-500 text-white px-3 py-1 rounded'
+            className='w-8 h-8 flex items-center justify-center rounded-full text-primary-600'
           >
-            View
+            <FaEye  />
           </Link>
 
           {/* ACCEPT */}
@@ -166,6 +201,7 @@ const MyBook = () => {
                 }
                 className='bg-green-500 text-white px-3 py-1 rounded'
               >
+            
                 Accept
               </button>
 
@@ -187,8 +223,9 @@ const MyBook = () => {
 
           {row.contractStatus ===
             'Accepted' && (
-            <span className='bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm'>
-              Accepted
+            <span className=' text-green-600 w-8 h-8 flex items-center justify-center rounded-full'>
+              <FaCheckCircle  />
+              
             </span>
           )}
 
@@ -224,13 +261,30 @@ const MyBook = () => {
     setPages(1)
   }
 
-  useEffect(() => {
-    fetchData()
-  }, [pages, limit])
+useEffect(() => {
+  fetchData()
+}, [
+  pages,
+  limit,
+  search,
+])
 
   return (
     <div className='p-3'>
       <h1 className='text-2xl mb-3'>My Books</h1>
+      <div className='mb-4'>
+  <input
+    type='text'
+    placeholder='Search Book...'
+    value={search}
+    onChange={(e) =>
+      setSearch(
+        e.target.value,
+      )
+    }
+    className='border p-2 rounded-lg w-80'
+  />
+</div>
       <DataTable
         columns={columns}
         data={data}

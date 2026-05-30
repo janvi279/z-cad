@@ -38,29 +38,28 @@ const AuthorInfo = () => {
         status: 'Pending Review',
       })
 
-     if (response) {
-            const transformedData = response.data.result.docs.map((item) => ({
-              ...item,
-              actions: (
-                <div className='flex items-center gap-5'>
-                  <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
-                    <Link to={`view/${item._id}`}>
-                      <FiEye className='w-4 h-4' />
-                    </Link>
-                  
-                  </div>
-                   <button
-                  onClick={() => handleApprove(item._id)}
-                  className='bg-primary-500 text-white px-4 py-2 rounded'
-                >
-                  Approve
-                </button>
-                </div>
-              ),
-            }))
-            setData(transformedData)
-            setTotalRows(response.data.result.totalDocs)
-          }
+      if (response) {
+        const transformedData = response.data.result.docs.map((item) => ({
+          ...item,
+          actions: (
+            <div className='flex items-center gap-5'>
+              <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
+                <Link to={`view/${item._id}`}>
+                  <FiEye className='w-4 h-4' />
+                </Link>
+              </div>
+              <button
+                onClick={() => handleApprove(item._id)}
+                className='bg-primary-500 text-white px-4 py-2 rounded'
+              >
+                Approve
+              </button>
+            </div>
+          ),
+        }))
+        setData(transformedData)
+        setTotalRows(response.data.result.totalDocs)
+      }
     } catch (error) {
       console.log('Error fetching books:', error)
     }

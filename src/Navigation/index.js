@@ -20,6 +20,8 @@ import MyBook from '../pages/MyBook'
 import EditBook from '../pages/MyBook/edit'
 import ViewContract from '../pages/AuthorBookInfo/Actions/viewContract'
 import InventoryAnalytics from '../pages/MyBook/InventoryAnalytics'
+import Wallet from '../pages/Wallet'
+import AdminWithdrawal from '../pages/Home/Admin/AdminWithdraw'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -30,6 +32,7 @@ const AllRoute = [
   { path: '/refund', element: <Refund />, permission: { read: true } },
   { path: '/settings', element: <Settings />, permission: { read: true } },
   { path: '/payments', element: <Payments />, permission: { read: true } },
+  { path: '/withdrawal-request', element: <Wallet />, permission: { read: true } },
   { path: '/ledger-book', element: <LedgerBook />, permission: { read: true } },
   { path: '/reviews', element: <Reviews />, permission: { read: true } },
   {
@@ -55,12 +58,18 @@ const AllRoute = [
     element: <AuthorBookInfo />,
     permission: { read: true },
   },
-    {
+  {
     path: '/author-book-info/view/:id',
-    element: <ViewContract />,
+    element: <BookView />,
     permission: { read: true },
   },
-      {
+  
+  {
+    path: '/Author-withdrawal-request',
+    element: <AdminWithdrawal />,
+    permission: { read: true },
+  },
+  {
     path: '/my-contract/view/:id',
     element: <ViewContract />,
     permission: { read: true },
@@ -80,7 +89,7 @@ const AllRoute = [
     element: <BookView />,
     permission: { read: true },
   },
-  
+
   {
     path: '/author-book-request',
     element: <AuthorBooks />,
@@ -101,7 +110,7 @@ const AllRoute = [
     path: '/my-books/analytics/:id',
     element: <InventoryAnalytics />,
     permission: { read: true },
-  }
+  },
 ]
 
 export default AllRoute

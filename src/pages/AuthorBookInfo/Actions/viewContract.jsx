@@ -8,8 +8,7 @@ const ViewContract = () => {
     const { id } = useParams()
 
     const [book, setBook] = useState(null)
-    console.log("🚀 ~ ViewContract ~ book:", book)
-
+    
     const [loading, setLoading] =
         useState(false)
 
@@ -25,8 +24,7 @@ const ViewContract = () => {
                 await axiosAuthInstance.get(
                     `/book/get-book/${id}`,
                 )
-            console.log("🚀 ~ fetchContract ~ response:", response)
-
+          
             if (response.data) {
                 setBook(response.data.result)
             }

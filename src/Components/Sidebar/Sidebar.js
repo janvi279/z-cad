@@ -34,17 +34,18 @@ const dataList = [
       },
     ],
   },
-  { label: 'Media', icon: <GoFileMedia />, path: '/media' },
+
   {
     label: 'Live Store Books',
     icon: <AiOutlineShoppingCart />,
     path: '/products',
   },
+  { label: 'Media', icon: <GoFileMedia />, path: '/media' },
   { label: 'Orders', icon: <AiOutlineShoppingCart />, path: '/orders' },
   { label: 'Refund', icon: <LuRepeat2 />, path: '/refund' },
   { label: 'Settings', icon: <IoSettingsOutline />, path: '/settings' },
   { label: 'Payments', icon: <MdOutlinePayment />, path: '/payments' },
-  { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
+  //{ label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
   { label: 'Reviews', icon: <FaRegMessage />, path: '/reviews' },
   { label: 'Author Info', icon: <AiOutlineUser />, path: '/author-info' },
   { label: 'Author Request', icon: <FiCheckCircle />, path: '/author-request' },
@@ -57,6 +58,11 @@ const dataList = [
     label: 'Author Book Request',
     icon: <FiCheckCircle />,
     path: '/author-book-request',
+  },
+  {
+    label: 'Withdrawal Requests',
+    icon: <PiMoney />,
+    path: '/Author-withdrawal-request',
   },
 ]
 
@@ -126,11 +132,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label === 'Author Info' ||
           item.label === 'Author Request' ||
           item.label === 'Author Book Info' ||
-          item.label === 'Author Book Request'
+          item.label === 'Author Book Request' ||
+          item.label === 'Withdrawal Requests'
         )
 
       case 'AUTHOR':
-        return item.label !== 'Author Info' && item.label !== 'Author Request' && item.label !== 'Author Book Info' && item.label !== 'Author Book Request'
+        return (
+          item.label !== 'Author Info' &&
+          item.label !== 'Author Request' &&
+          item.label !== 'Author Book Info' &&
+          item.label !== 'Author Book Request' &&
+          item.label !== 'Withdrawal Requests'
+        )
 
       default:
         return true

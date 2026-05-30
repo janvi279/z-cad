@@ -37,6 +37,7 @@ const AuthorBookInfo = () => {
   const [pages, setPages] = useState(1)
   const [limit, setLimit] = useState(10)
   const [totalRows, setTotalRows] = useState(0)
+  const [search, setSearch] = useState("");
 
   const [selectedAuthor, setSelectedAuthor] = useState(null)
 
@@ -98,21 +99,15 @@ const AuthorBookInfo = () => {
       console.log(error)
     }
   }
-const handleResetInventory =
-  async () => {
+  const handleResetInventory = async () => {
     try {
-      await axiosAuthInstance.put(
-        `/book/update-copies/${selectedBook._id}`,
-        {
-          totalCopies: 0,
-          giftCopies: 0,
-          sku: '',
-        },
-      )
+      await axiosAuthInstance.put(`/book/update-copies/${selectedBook._id}`, {
+        totalCopies: 0,
+        giftCopies: 0,
+        sku: '',
+      })
 
-      toast.success(
-        'Inventory reset successfully',
-      )
+      toast.success('Inventory reset successfully')
 
       setCopiesModal(false)
 
@@ -157,13 +152,18 @@ const handleResetInventory =
 
   const fetchData = async () => {
     try {
-      const response = await axiosAuthInstance.get('book/all-books', {
-        params: {
-          page: pages,
-          limit: limit,
-          status: 'Approved',
-        },
-      })
+    
+const response =
+  await axiosAuthInstance.get(
+    "book/all-books",
+    {
+      params: {
+        page: pages,
+        limit: limit,
+        search: search,
+      },
+    }
+  );
 
       if (response.data.success) {
         const transformedData = response.data.result.docs.map((item) => ({
@@ -328,22 +328,18 @@ const handleResetInventory =
   // UPDATE STAGE
   // =========================================
 
-const handleStageUpdate =
-  async (bookId, stage) => {
+  const handleStageUpdate = async (bookId, stage) => {
     try {
-      const response =
-        await axiosAuthInstance.put(
-          `/book/update-book-stage/${bookId}`,
-          {
-            stepName: stage,
-            status: 'Completed',
-          },
-        )
+      const response = await axiosAuthInstance.put(
+        `/book/update-book-stage/${bookId}`,
+        {
+          stepName: stage,
+          status: 'Completed',
+        },
+      )
 
       if (response.data.success) {
-        toast.success(
-          'Stage updated successfully',
-        )
+        toast.success('Stage updated successfully')
 
         fetchData()
       }
@@ -412,7 +408,7 @@ const handleStageUpdate =
             row.contractStatus || '',
           )}`}
         >
-          {row.status}
+          {row.contractStatus}
         </span>
       ),
     },
@@ -424,9 +420,10 @@ const handleStageUpdate =
         <div className='min-w-[100px]'>
           <select
             className='w-full border rounded px-3 py-2 text-sm bg-white focus:outline-none'
-            value={row.currentStage || 'Editing'}
+            value={row.currentStage}
             onChange={(e) => handleStageUpdate(row._id, e.target.value)}
           >
+          <option value='pending'>Pending</option>
             <option value='Editing'>Editing</option>
 
             <option value='Proofreading'>Proofreading</option>
@@ -472,12 +469,20 @@ const handleStageUpdate =
 
   useEffect(() => {
     fetchData()
-  }, [pages, limit])
+  }, [pages, limit,search])
 
   return (
     <div className='p-3'>
       <h1 className='text-2xl mb-3'>Authors Book</h1>
-
+        <input
+  type="text"
+  placeholder="Search Book, Author, Email..."
+  value={search}
+  onChange={(e) =>
+    setSearch(e.target.value)
+  }
+  className="border rounded-lg px-4 py-2 mb-4 w-80"
+/>
       <DataTable
         columns={columns}
         data={data}
@@ -549,39 +554,32 @@ const handleStageUpdate =
             </div>
 
             {/* Buttons */}
-        <div className='flex justify-between mt-6'>
-  
-  {/* RESET */}
-  <button
-    onClick={
-      handleResetInventory
-    }
-    className='bg-red-500 text-white px-5 py-2 rounded-lg'
-  >
-    Reset Inventory
-  </button>
+            <div className='flex justify-between mt-6'>
+              {/* RESET */}
+              <button
+                onClick={handleResetInventory}
+                className='bg-red-500 text-white px-5 py-2 rounded-lg'
+              >
+                Reset Inventory
+              </button>
 
-  {/* RIGHT BUTTONS */}
-  <div className='flex gap-3'>
-    <button
-      onClick={() =>
-        setCopiesModal(false)
-      }
-      className='bg-gray-300 px-5 py-2 rounded-lg'
-    >
-      Cancel
-    </button>
+              {/* RIGHT BUTTONS */}
+              <div className='flex gap-3'>
+                <button
+                  onClick={() => setCopiesModal(false)}
+                  className='bg-gray-300 px-5 py-2 rounded-lg'
+                >
+                  Cancel
+                </button>
 
-    <button
-      onClick={
-        handleUpdateCopies
-      }
-      className='bg-primary-500 text-white px-5 py-2 rounded-lg'
-    >
-      Save
-    </button>
-  </div>
-</div>
+                <button
+                  onClick={handleUpdateCopies}
+                  className='bg-primary-500 text-white px-5 py-2 rounded-lg'
+                >
+                  Save
+                </button>
+              </div>
+            </div>
           </div>
         </CustomModal>
       )}
@@ -596,7 +594,7 @@ const handleStageUpdate =
             </h2>
 
             {/* BOOK INFO */}
-
+    
             <div className='grid grid-cols-2 gap-4 mb-6'>
               <div>
                 <label className='block mb-2 font-medium'>

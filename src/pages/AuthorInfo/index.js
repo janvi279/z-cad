@@ -27,12 +27,15 @@ const AuthorInfo = () => {
   const [pages, setPages] = useState(1)
   const [limit, setLimit] = useState(10)
   const [totalRows, setTotalRows] = useState(0)
+  const [search, setSearch] =
+  useState("");
 
   const fetchData = async () => {
     try {
       const response = await axiosAuthInstance.get('author/get-all-author', {
         page: pages,
         limit: limit,
+        search:search,
       })
       if (response && response.status === 200) {
         const transformedData = response.data.result.docs.map((item) => ({
@@ -66,11 +69,22 @@ const AuthorInfo = () => {
 
   useEffect(() => {
     fetchData()
-  }, [pages, limit])
+  }, [pages, limit,search])
 
   return (
     <div className='p-3'>
       <h1 className='text-2xl mb-3'>Authors</h1>
+      <div className="mb-4">
+  <input
+    type="text"
+    placeholder="Search..."
+    value={search}
+    onChange={(e) =>
+      setSearch(e.target.value)
+    }
+    className="border rounded-lg px-4 py-2 w-80"
+  />
+</div>
       <DataTable
         columns={columns}
         data={data}

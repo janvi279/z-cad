@@ -58,10 +58,16 @@ const Orders = () => {
 
   // Columns
   const columns = [
+    {
+      name:"OrderId",selector:(row)=>row.orderId || '-',
+    },
     { name: 'Customer Name', selector: (row) => row.customer_name },
     { name: 'Email', selector: (row) => row.email },
     { name: 'Order Confirm', selector: (row) => (row.orderConfirm ? 'Yes' : 'No') },
     { name: 'Items Sold', selector: (row) => row.itemsSold },
+    {
+      name:'Product Price' ,selector:(row)=>row.products && row.products.length > 0 ? `₹${row.products.reduce((sum, item) => sum + (item.productPrice || 0), 0)}` : '₹0'
+    },
     { name: 'Total Price', selector: (row) => row.TotalPrice },
     { name: 'Order No.', selector: (row) => row.orderNo?.replace('#', '') },
     {

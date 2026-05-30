@@ -38,12 +38,23 @@ const AdminDashboard = () => {
               )}
             </div>
           </Link>
-          <Link to='/author-book-request'>
+          <Link to='/author-book-info'>
             <div className='h-28 bg-white rounded-md shadow-md flex flex-col items-center justify-center px-3 py-3'>
-              <div className='font-semibold  text-lg'>Total Book Request</div>
-              {data.booksRequest && (
+              <div className='font-semibold  text-lg'>Total Book</div>
+              {data.books && (
                 <div className='text-primary-500 font-semibold text-2xl mt-2'>
-                  {data.booksRequest}
+                  {data.books }
+                </div>
+              )}
+            </div>
+          </Link>
+      
+          <Link to='/Author-withdrawal-request'> 
+            <div className='h-28 bg-white rounded-md shadow-md flex flex-col items-center justify-center px-3 py-3'>
+              <div className='font-semibold  text-lg'>Withdrawal Requests</div>
+              {data.walletreq && (
+                <div className='text-primary-500 font-semibold text-2xl mt-2'>
+                  {data.walletreq}
                 </div>
               )}
             </div>
