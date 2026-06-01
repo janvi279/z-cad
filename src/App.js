@@ -18,6 +18,9 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './Context/AuthContext'
 import { LoadingProvider, useLoading } from './Context/LoadingContext'
 import FullPageLoader from './Components/common/FullPageLoader'
+import DistributorLogin from './pages/Home/distributor/login'
+import DistributorProtectedRoute from './pages/Home/distributor/DistributorProtectedRoute'
+import DistributorDashboard from './pages/Home/distributor/dashboard'
 
 const AppContent = () => {
   const { loading } = useLoading()
@@ -41,6 +44,16 @@ const AppContent = () => {
             ))}
           </Route>
         </Route>
+        <Route path='/distributor/login' element={<DistributorLogin />} />
+
+        <Route
+          path='/distributor/dashboard'
+          element={
+            <DistributorProtectedRoute>
+              <DistributorDashboard />
+            </DistributorProtectedRoute>
+          }
+        />
       </Routes>
     </>
   )
