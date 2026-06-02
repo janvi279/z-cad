@@ -1,6 +1,14 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { MdHome, MdOutlinePayment } from 'react-icons/md'
+import {
+  MdHome,
+  MdInventory,
+  MdOutlinePayment,
+  MdPayments,
+  MdAccountBalanceWallet,
+  MdRequestQuote,
+  MdPerson,
+} from 'react-icons/md'
 import {
   AiOutlineLogout,
   AiOutlineShoppingCart,
@@ -45,7 +53,7 @@ const dataList = [
   { label: 'Refund', icon: <LuRepeat2 />, path: '/refund' },
   { label: 'Settings', icon: <IoSettingsOutline />, path: '/settings' },
   { label: 'Payments', icon: <MdOutlinePayment />, path: '/payments' },
-  //{ label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
+  { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
   { label: 'Reviews', icon: <FaRegMessage />, path: '/reviews' },
   { label: 'Author Info', icon: <AiOutlineUser />, path: '/author-info' },
   { label: 'Author Request', icon: <FiCheckCircle />, path: '/author-request' },
@@ -63,6 +71,47 @@ const dataList = [
     label: 'Withdrawal Requests',
     icon: <PiMoney />,
     path: '/Author-withdrawal-request',
+  },
+  {
+    label: 'Distributor Info',
+    icon: <MdPerson />,
+    path: '/distributor-info',
+  },
+  {
+    label: 'Distributor Withdrawal Requests',
+    icon: <PiMoney />,
+    path: '/distributor-withdrawal-request',
+  },
+  //distributor specific
+  {
+    label: 'Assigned Products',
+    path: '/distributor/products',
+    icon: <MdInventory />,
+  },
+  {
+    label: 'Orders',
+    path: '/distributor/orders',
+    icon: <MdInventory />,
+  },
+  {
+    label: 'Commission',
+    path: '/distributor/commission',
+    icon: <MdPayments />,
+  },
+  {
+    label: 'Wallet',
+    path: '/distributor/wallet',
+    icon: <MdAccountBalanceWallet />,
+  },
+  {
+    label: 'Payout Requests',
+    path: '/distributor/payouts',
+    icon: <MdRequestQuote />,
+  },
+  {
+    label: 'Profile',
+    path: '/distributor/profile',
+    icon: <MdPerson />,
   },
 ]
 
@@ -133,7 +182,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label === 'Author Request' ||
           item.label === 'Author Book Info' ||
           item.label === 'Author Book Request' ||
-          item.label === 'Withdrawal Requests'
+          item.label === 'Withdrawal Requests' ||
+          item.label === 'Distributor Info' ||
+          item.label === 'Distributor Withdrawal Requests'
         )
 
       case 'AUTHOR':
@@ -142,7 +193,37 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label !== 'Author Request' &&
           item.label !== 'Author Book Info' &&
           item.label !== 'Author Book Request' &&
-          item.label !== 'Withdrawal Requests'
+          item.label !== 'Withdrawal Requests' &&
+          item.label !== 'Distributor Info' &&
+          item.label !== 'Distributor Withdrawal Requests' &&
+          item.label !== 'Assigned Products' &&
+          item.label !== 'Orders' &&
+          item.label !== 'Commission' &&
+          item.label !== 'Wallet' &&
+          item.label !== 'Payout Requests' &&
+          item.label !== 'Profile'
+        )
+      case 'DISTRIBUTOR':
+        return (
+          item.label !== 'Author Info' &&
+          item.label !== 'Author Request' &&
+          item.label !== 'Author Book Info' &&
+          item.label !== 'Author Book Request' &&
+          item.label !== 'Withdrawal Requests' &&
+          item.label !== 'Publishing Desk' &&
+          item.label !== 'Settings' &&
+          item.label !== 'Payments' &&
+          item.label !== 'Reviews' &&
+          item.label !== 'Media' &&
+          item.label !== 'Orders' &&
+          item.label !== 'Refund' &&
+          item.label !== 'Ledger Book' &&
+          item.label !== 'Live Store Books' &&
+          item.label !== 'Inventory Analytics' &&
+          item.label !== 'Notifications' &&
+          item.label !== 'Profile' &&
+          item.label !== 'Distributor Info' &&
+          item.label !== 'Distributor Withdrawal Requests'
         )
 
       default:

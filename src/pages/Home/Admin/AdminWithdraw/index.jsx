@@ -59,30 +59,30 @@ const AdminWithdrawal = () => {
                   <div className='flex gap-2'>
                     {item.status ===
                       'Pending' && (
-                      <>
-                        <button
-                          onClick={() =>
-                            handleApprove(
-                              item._id,
-                            )
-                          }
-                          className='bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg'
-                        >
-                          Approve
-                        </button>
+                        <>
+                          <button
+                            onClick={() =>
+                              handleApprove(
+                                item._id,
+                              )
+                            }
+                            className='bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg'
+                          >
+                            Approve
+                          </button>
 
-                        <button
-                          onClick={() =>
-                            handleReject(
-                              item._id,
-                            )
-                          }
-                          className='bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg'
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
+                          <button
+                            onClick={() =>
+                              handleReject(
+                                item._id,
+                              )
+                            }
+                            className='bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg'
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
                   </div>
                 ),
               }),
@@ -141,9 +141,8 @@ const AdminWithdrawal = () => {
       selector: (
         row,
       ) =>
-        `${row.authorId?.firstName || ''} ${
-          row.authorId
-            ?.lastName || ''
+        `${row.authorId?.firstName || ''} ${row.authorId
+          ?.lastName || ''
         }`,
       sortable: true,
     },

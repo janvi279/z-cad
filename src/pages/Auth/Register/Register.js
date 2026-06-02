@@ -19,7 +19,7 @@ const validationSchema = Yup.object({
 })
 
 
-const Register = () => {
+const AuthorRegister = () => {
 
 
     const [showPassword, setShowPassword] = useState(false);
@@ -151,4 +151,4 @@ const navigate = useNavigate();
     );
 };
 
-export default Register;
+export default AuthorRegister;

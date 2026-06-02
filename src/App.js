@@ -3,7 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import PageNotFound from './pages/PageNotFound'
 import Login from './pages/Auth/Login/Login'
-import Register from './pages/Auth/Register/Register'
+import AuthorRegister from './pages/Auth/Register/Register'
+import DistributorRegister from './pages/Home/distributor/register'
 import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword'
 import ResetPassword from './pages/Auth/ForgotPassword/ResetPassword'
 
@@ -19,8 +20,9 @@ import { AuthProvider } from './Context/AuthContext'
 import { LoadingProvider, useLoading } from './Context/LoadingContext'
 import FullPageLoader from './Components/common/FullPageLoader'
 import DistributorLogin from './pages/Home/distributor/login'
-import DistributorProtectedRoute from './pages/Home/distributor/DistributorProtectedRoute'
-import DistributorDashboard from './pages/Home/distributor/dashboard'
+
+import DistributorDashboard from './pages/Home/distributor'
+import RegisterSelection from './pages/RegisterSelection'
 
 const AppContent = () => {
   const { loading } = useLoading()
@@ -33,7 +35,9 @@ const AppContent = () => {
         <Route path='/*' element={<PageNotFound />} />
         <Route element={<PublicRoute />}>
           <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
+          <Route   path="/author-register" element={<AuthorRegister />} />
+          <Route   path="/distributor-register" element={<DistributorRegister />} />
+           <Route   path="/register-selection" element={<RegisterSelection />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password' element={<ResetPassword />} />
         </Route>
@@ -49,9 +53,9 @@ const AppContent = () => {
         <Route
           path='/distributor/dashboard'
           element={
-            <DistributorProtectedRoute>
+            
               <DistributorDashboard />
-            </DistributorProtectedRoute>
+           
           }
         />
       </Routes>

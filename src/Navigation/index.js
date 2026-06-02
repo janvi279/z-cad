@@ -22,6 +22,9 @@ import ViewContract from '../pages/AuthorBookInfo/Actions/viewContract'
 import InventoryAnalytics from '../pages/MyBook/InventoryAnalytics'
 import Wallet from '../pages/Wallet'
 import AdminWithdrawal from '../pages/Home/Admin/AdminWithdraw'
+import DistributerProfile from '../pages/Home/distributor/profile'
+import DistributorInfo from '../pages/DistributerInfo'
+import AssignProduct from '../pages/Home/distributor/AssignProduct'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -32,7 +35,11 @@ const AllRoute = [
   { path: '/refund', element: <Refund />, permission: { read: true } },
   { path: '/settings', element: <Settings />, permission: { read: true } },
   { path: '/payments', element: <Payments />, permission: { read: true } },
-  { path: '/withdrawal-request', element: <Wallet />, permission: { read: true } },
+  {
+    path: '/withdrawal-request',
+    element: <Wallet />,
+    permission: { read: true },
+  },
   { path: '/ledger-book', element: <LedgerBook />, permission: { read: true } },
   { path: '/reviews', element: <Reviews />, permission: { read: true } },
   {
@@ -40,9 +47,23 @@ const AllRoute = [
     element: <Notifications />,
     permission: { read: true },
   },
-  { path: '/profile', element: <Profile />, permission: { read: true } },
 
-  { path: '/author-info', element: <AuthorInfo />, permission: { read: true } },
+  {
+    path: '/distributor-profile',
+    element: <DistributerProfile />,
+    permission: { read: true },
+  },
+  {
+    path: '/profile',
+    element: <Profile />,
+    permission: { read: true },
+  },
+  {
+    path: '/author-info',
+    element: <AuthorInfo />,
+    permission: { read: true },
+  },
+
   {
     path: '/author-info/view/:id',
     element: <ViewAuthorInfo />,
@@ -63,7 +84,7 @@ const AllRoute = [
     element: <BookView />,
     permission: { read: true },
   },
-  
+
   {
     path: '/Author-withdrawal-request',
     element: <AdminWithdrawal />,
@@ -111,6 +132,22 @@ const AllRoute = [
     element: <InventoryAnalytics />,
     permission: { read: true },
   },
+  //distributor specific routes
+  {
+    path: '/distributor/dashboard',
+    element: <Home />,
+    permission: { read: true },
+  },
+  {
+    path: '/distributor-info',
+    element: <DistributorInfo />,
+    permission: { read: true },
+  },
+  {
+    path:'/distributor/products',
+    element:<AssignProduct />,
+    permission:{read:true}
+  }
 ]
 
 export default AllRoute

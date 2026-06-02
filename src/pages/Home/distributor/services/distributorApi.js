@@ -5,3 +5,8 @@ export const distributorLogin = async (data) => {
 
   return response.data
 }
+export const getDistributorDashboard = () =>
+  axiosAuthInstance.get('/distributor/dashboard')
+
+export const getDistributorProfile = () =>
+  axiosAuthInstance.get('/distributor/profile')

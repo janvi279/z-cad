@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { distributorLogin } from "../../services/distributorApi";
+import { distributorLogin } from "../../Home/distributor/services/distributorApi";
 import { useNavigate } from "react-router-dom";
 
 const DistributorLogin = () => {
@@ -21,24 +21,16 @@ const DistributorLogin = () => {
     e.preventDefault();
 
     try {
-      const response = await distributorLogin(formData);
+      await distributorLogin(formData);
 
-      localStorage.setItem(
-        "distributorToken",
-        response.token
-      );
 
-      localStorage.setItem(
-        "distributor",
-        JSON.stringify(response.distributor)
-      );
 
       navigate("/distributor/dashboard");
     } catch (error) {
       console.log(error);
       alert(
         error?.response?.data?.message ||
-          "Login Failed"
+        "Login Failed"
       );
     }
   };
