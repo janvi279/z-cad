@@ -10,6 +10,7 @@ const AssignModal = ({
     books,
     showModal,
     setShowModal,
+    refreshData,
 }) => {
     console.log("🚀 ~ AssignModal ~ selectedBook:", selectedBook)
     const [formData, setFormData] =
@@ -45,9 +46,9 @@ const AssignModal = ({
                     );
 
                 toast.success(
-                    res.data.message,
+                    res?.data?.message,
                 );
-
+await refreshData();
                 setShowModal(
                     false,
                 );

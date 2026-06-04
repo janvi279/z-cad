@@ -8,6 +8,7 @@ import { getColumns } from "./columns";
 import { useAssignProduct } from "./hooks/useAssignProduct";
 import { deleteAssignment } from "./services/assignProductService";
 import { toast } from "react-hot-toast";
+import EditModal from "./components/editModal";
 
 import ViewModal from "./components/ViewModal";
 
@@ -25,6 +26,9 @@ const AssignProduct = () => {
     selectedAssignment,
     setSelectedAssignment,
   ] = useState(null);
+const [editModal, setEditModal] =
+  useState(false);
+
 
   const [
     viewModal,
@@ -42,16 +46,16 @@ const AssignProduct = () => {
     setViewModal(true);
   };
 
-  const handleEdit = (
+ const handleEdit = (
+  assignment
+) => {
+
+  setSelectedAssignment(
     assignment
-  ) => {
+  );
 
-    setSelectedAssignment(
-      assignment
-    );
-
-    setShowModal(true);
-  };
+  setEditModal(true);
+};
   const handleDelete =
     async (id) => {
 
@@ -120,6 +124,19 @@ const AssignProduct = () => {
         distributors={distributors}
         refreshData={fetchData}
       />
+      <EditModal
+  show={editModal}
+  onClose={() =>
+    setEditModal(false)
+  }
+  assignment={
+    selectedAssignment
+  }
+  distributors={
+    distributors
+  }
+  refreshData={fetchData}
+/>
       <ViewModal
         show={viewModal}
         onClose={() => setViewModal(false)}

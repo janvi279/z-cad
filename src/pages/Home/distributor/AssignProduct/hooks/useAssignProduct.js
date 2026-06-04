@@ -37,7 +37,9 @@ export const useAssignProduct = () => {
   return {
     books,
     assignedProducts,
+    setAssignedProducts,
     distributors,
+    
     fetchData,
   }
 }

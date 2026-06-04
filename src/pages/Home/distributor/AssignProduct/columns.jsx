@@ -17,8 +17,10 @@ export const getColumns = (
 
   {
     name: "Distributor",
-    selector: row =>
-      row.distributorId?.name || "-",
+   selector: row =>
+      `${row.distributorId?.firstName || ""}
+       ${row.distributorId?.lastName || ""}`,
+  
   },
 
   {
