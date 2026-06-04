@@ -182,6 +182,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label === 'Author Request' ||
           item.label === 'Author Book Info' ||
           item.label === 'Author Book Request' ||
+          item.label === 'Assigned Products' ||
           item.label === 'Withdrawal Requests' ||
           item.label === 'Distributor Info' ||
           item.label === 'Distributor Withdrawal Requests'
@@ -206,6 +207,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       case 'DISTRIBUTOR':
         return (
           item.label !== 'Author Info' &&
+          item.label !== 'Assigned Products' &&
           item.label !== 'Author Request' &&
           item.label !== 'Author Book Info' &&
           item.label !== 'Author Book Request' &&
