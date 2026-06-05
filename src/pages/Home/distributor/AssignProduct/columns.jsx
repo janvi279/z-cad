@@ -52,6 +52,7 @@ export const getColumns = (
           onClick={() =>
             handleView(row)
           }
+          className="text-primary-500"
         >
           <FiEye />
         </button>
@@ -60,6 +61,7 @@ export const getColumns = (
           onClick={() =>
             handleEdit(row)
           }
+          className="text-primary-500"
         >
           <FiEdit />
         </button>
@@ -70,6 +72,7 @@ export const getColumns = (
               row._id
             )
           }
+          className="text-red-500"
         >
           <FiTrash2 />
         </button>

@@ -1,7 +1,14 @@
 import axiosAuthInstance from '../../../../../utils/axios/axiosAuthInstance'
 
-export const getAssignedProducts = () =>
-  axiosAuthInstance.get('distributor/assigned-products-admin')
+export const getAssignedProducts = (search = "") =>
+  axiosAuthInstance.get(
+    "distributor/assigned-products-admin",
+    {
+      params: {
+        search,
+      },
+    }
+  );
 
 export const getBooks = () => axiosAuthInstance.get('book/all-books')
 

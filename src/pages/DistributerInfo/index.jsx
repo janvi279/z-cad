@@ -22,11 +22,7 @@ const columns = [
         name: "Mobile No.",
         selector: (row) => row.phone,
     },
-    {
-        name: "Commission %",
-        selector: (row) =>
-            row.commissionPercentage || 0,
-    },
+
     {
         name: "Status",
         selector: (row) => (
@@ -57,6 +53,7 @@ const DistributorInfo = () => {
         useState(0);
     const [search, setSearch] =
         useState("");
+
 
     const fetchData = async () => {
         try {
@@ -154,8 +151,12 @@ const DistributorInfo = () => {
     };
 
     useEffect(() => {
-        fetchData();
-    }, [pages, limit]);
+        const timer = setTimeout(() => {
+            fetchData();
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [pages, limit, search]);
 
     return (
         <div className="p-3">
@@ -170,11 +171,10 @@ const DistributorInfo = () => {
                     type="text"
                     placeholder="Search Distributor..."
                     value={search}
-                    onChange={(e) =>
-                        setSearch(
-                            e.target.value
-                        )
-                    }
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setPages(1);
+                    }}
                     className="border rounded-lg px-4 py-2 w-80"
                 />
 

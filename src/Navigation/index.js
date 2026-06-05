@@ -22,9 +22,12 @@ import ViewContract from '../pages/AuthorBookInfo/Actions/viewContract'
 import InventoryAnalytics from '../pages/MyBook/InventoryAnalytics'
 import Wallet from '../pages/Wallet'
 import AdminWithdrawal from '../pages/Home/Admin/AdminWithdraw'
-import DistributerProfile from '../pages/Home/distributor/profile'
+
 import DistributorInfo from '../pages/DistributerInfo'
 import AssignProduct from '../pages/Home/distributor/AssignProduct'
+import MyProduct from '../pages/Home/DistributerOwnProducts'
+import { elements } from 'chart.js'
+import PayoutRequest from '../pages/Home/distributor/PayoutRequest/PayoutRequest'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -50,7 +53,7 @@ const AllRoute = [
 
   {
     path: '/distributor-profile',
-    element: <DistributerProfile />,
+    element: <Profile />,
     permission: { read: true },
   },
   {
@@ -144,10 +147,20 @@ const AllRoute = [
     permission: { read: true },
   },
   {
-    path:'/distributor/products',
-    element:<AssignProduct />,
-    permission:{read:true}
-  }
+    path: '/distributor/products',
+    element: <AssignProduct />,
+    permission: { read: true },
+  },
+  {
+    path: 'distributor/myproducts',
+    element: <MyProduct />,
+    permission: { read: true },
+  },
+  {
+    path: 'distributor/payouts',
+    element: <PayoutRequest />,
+    permission: { read: true },
+  },
 ]
 
 export default AllRoute

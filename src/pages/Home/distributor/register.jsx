@@ -30,10 +30,7 @@ const validationSchema = Yup.object({
             "Passwords must match"
         )
         .required("Confirm Password is Required"),
-    commissionPercentage: Yup.number()
-        .required("Commission Percentage is Required")
-        .min(0, "Commission Percentage cannot be less than 0")
-        .max(100, "Commission Percentage cannot be greater than 100"),
+
 });
 
 const DistributorRegister = () => {
@@ -79,7 +76,7 @@ const DistributorRegister = () => {
                         email: values.email,
                         phone: values.phone,
                         password: values.password,
-                        commissionPercentage: values.commissionPercentage
+
                     }
                 );
 
@@ -116,7 +113,7 @@ const DistributorRegister = () => {
             phone: "",
             password: "",
             confirmPassword: "",
-            commissionPercentage: 0
+
         },
 
         validationSchema,
@@ -258,13 +255,7 @@ const DistributorRegister = () => {
                             </div>
 
                         </div>
-                        <Field
-                            name="commissionPercentage"
-                            label="Commission Percentage"
-                            type="number"
-                            component={CustomInput}
-                            placeholder="Enter Commission Percentage"
-                        />
+
 
                         <button
                             type="submit"

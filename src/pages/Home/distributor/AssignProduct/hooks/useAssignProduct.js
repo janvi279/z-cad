@@ -6,7 +6,10 @@ import {
     getAssignedProducts,
 } from '../services/assignProductService'
 
-export const useAssignProduct = () => {
+export const useAssignProduct = (
+  search
+) => {
+  console.log("🚀 ~ useAssignProduct ~ search:", search)
   const [books, setBooks] = useState([])
 
   const [distributors, setDistributors] = useState([])
@@ -14,11 +17,12 @@ export const useAssignProduct = () => {
 
   const fetchData = async () => {
     try {
-      const [booksRes, assignproductres, distributerRes] = await Promise.all([
-        getBooks(),
-        getAssignedProducts(),
-        getDistributors(),
-      ])
+     const [booksRes, assignproductres, distributerRes] =
+  await Promise.all([
+    getBooks(),
+    getAssignedProducts(search),
+    getDistributors(),
+  ]);
       console.log("🚀 ~ fetchData ~ distributerRes:", distributerRes)
 
       setBooks(booksRes.data.result.docs)
@@ -29,10 +33,14 @@ export const useAssignProduct = () => {
       console.log(error)
     }
   }
+useEffect(() => {
+  const timer = setTimeout(() => {
+    fetchData();
+  }, 500);
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  return () =>
+    clearTimeout(timer);
+}, [search]);
 
   return {
     books,

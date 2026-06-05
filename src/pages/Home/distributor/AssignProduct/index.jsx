@@ -13,12 +13,7 @@ import EditModal from "./components/editModal";
 import ViewModal from "./components/ViewModal";
 
 const AssignProduct = () => {
-  const {
-    books,
-    distributors,
-    assignedProducts,
-    fetchData,
-  } = useAssignProduct();
+
 
   const [showModal, setShowModal] =
     useState(false);
@@ -28,6 +23,13 @@ const AssignProduct = () => {
   ] = useState(null);
 const [editModal, setEditModal] =
   useState(false);
+  const [search, setSearch] = useState("");
+    const {
+    books,
+    distributors,
+    assignedProducts,
+    fetchData,
+  } = useAssignProduct(search);
 
 
   const [
@@ -96,7 +98,17 @@ const [editModal, setEditModal] =
         <h1 className="text-2xl font-bold">
           Assigned Products
         </h1>
-
+<div>
+  <input
+    type="text"
+    placeholder="Search Product / Author / Distributor"
+    value={search}
+    onChange={(e) =>
+      setSearch(e.target.value)
+    }
+    className="border rounded px-3 py-2 w-80"
+  />
+</div>
         <button
           onClick={() =>
             setShowModal(true)

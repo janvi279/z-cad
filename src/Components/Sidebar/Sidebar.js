@@ -89,6 +89,11 @@ const dataList = [
     icon: <MdInventory />,
   },
   {
+ label: 'My Products',
+    path: '/distributor/myproducts',
+    icon: <MdInventory />,
+  },
+  {
     label: 'Orders',
     path: '/distributor/orders',
     icon: <MdInventory />,
@@ -181,6 +186,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label === 'Author Info' ||
           item.label === 'Author Request' ||
           item.label === 'Author Book Info' ||
+         
           item.label === 'Author Book Request' ||
           item.label === 'Assigned Products' ||
           item.label === 'Withdrawal Requests' ||
@@ -202,7 +208,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label !== 'Commission' &&
           item.label !== 'Wallet' &&
           item.label !== 'Payout Requests' &&
-          item.label !== 'Profile'
+          item.label !== 'Profile'&&
+           item.label!=='My Products'
         )
       case 'DISTRIBUTOR':
         return (

@@ -4,7 +4,7 @@ import {
     MdEmail,
     MdPhone,
     MdVerified,
-    MdPercent,
+
 } from "react-icons/md";
 
 import { getDistributorProfile } from "../../Home/distributor/services/distributorApi";
@@ -141,29 +141,6 @@ function DistributorProfile() {
 
                                 <h5 className="font-semibold">
                                     {profile.status}
-                                </h5>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div className="border rounded-lg p-4">
-
-                        <div className="flex items-center gap-3">
-
-                            <MdPercent
-                                size={22}
-                                className="text-yellow-500"
-                            />
-
-                            <div>
-                                <p className="text-gray-500 text-sm">
-                                    Commission %
-                                </p>
-
-                                <h5 className="font-semibold">
-                                    {profile.commissionPercentage}%
                                 </h5>
                             </div>
 
