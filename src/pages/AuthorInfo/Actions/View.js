@@ -8,20 +8,20 @@ const View = () => {
     const [data, setData] = useState(null)
     const [loading, setLoading] = useState(true)
 
-    const fetchAuthorInfoData = async () => {
-        try {
-            const response = await axiosAuthInstance.get(`author/get-user/${id}`)
-            if (response.status === 200) {
-                setData(response.data.result);
-            }
-        } catch (error) {
-            console.error('Error fetching author info', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
     useEffect(() => {
+        const fetchAuthorInfoData = async () => {
+            try {
+                const response = await axiosAuthInstance.get(`author/get-user/${id}`)
+                if (response.status === 200) {
+                    setData(response.data.result);
+                }
+            } catch (error) {
+                console.error('Error fetching author info', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
         fetchAuthorInfoData()
     }, [id])
 
@@ -441,7 +441,7 @@ const View = () => {
                                     <td className='border-b px-4 py-2'>{data.settingSeo.facebookImage ? (
                                         <img
                                             src={data.settingSeo.facebookImage}
-                                            alt="Facebook Image"
+                                            alt="Facebook preview"
                                             className='my-2 w-24 h-24 sm:w-32 sm:h-32 object-contain'
                                         />
                                     ) : 'No image available'}</td>
@@ -459,7 +459,7 @@ const View = () => {
                                     <td className='border-b px-4 py-2'>{data.settingSeo.twitterImage ? (
                                         <img
                                             src={data.settingSeo.twitterImage}
-                                            alt="Twitter Image"
+                                            alt="Twitter preview"
                                             className='my-2 w-24 h-24 sm:w-32 sm:h-32 object-contain'
                                         />
                                     ) : 'No image available'}</td>

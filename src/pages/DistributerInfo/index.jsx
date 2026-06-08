@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import DataTable from "react-data-table-component";
 import axiosAuthInstance from "../../utils/axios/axiosAuthInstance";
 
@@ -53,7 +53,7 @@ const DistributorInfo = () => {
         useState("");
 
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const response =
                 await axiosAuthInstance.get(
@@ -114,7 +114,7 @@ const DistributorInfo = () => {
                 error
             );
         }
-    };
+    }, [pages, limit, search]);
     const handleApprove = async (id) => {
         try {
             const response =
@@ -154,7 +154,7 @@ const DistributorInfo = () => {
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [pages, limit, search]);
+    }, [fetchData]);
 
     return (
         <div className="p-3">

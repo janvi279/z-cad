@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useEffect,
   useState,
 } from 'react'
@@ -40,7 +41,7 @@ const AdminWithdrawal = () => {
   // =====================================
 
   const fetchData =
-    async () => {
+    useCallback(async () => {
       try {
         const response =
           await axiosAuthInstance.get(
@@ -99,7 +100,7 @@ const AdminWithdrawal = () => {
       } catch (error) {
         console.log(error)
       }
-    }
+    }, [])
 
   // =====================================
   // APPROVE
@@ -228,7 +229,7 @@ const AdminWithdrawal = () => {
 
   useEffect(() => {
     fetchData()
-  }, [pages, limit])
+  }, [fetchData, pages, limit])
 
   return (
     <div className='p-3'>

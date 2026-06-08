@@ -13,35 +13,31 @@ const ViewContract = () => {
         useState(false)
 
     // =========================================
-    // FETCH CONTRACT
-    // =========================================
-
-    const fetchContract = async () => {
-        try {
-            setLoading(true)
-
-            const response =
-                await axiosAuthInstance.get(
-                    `/book/get-book/${id}`,
-                )
-          
-            if (response.data) {
-                setBook(response.data.result)
-            }
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    // =========================================
     // USE EFFECT
     // =========================================
 
     useEffect(() => {
+        const fetchContract = async () => {
+            try {
+                setLoading(true)
+
+                const response =
+                    await axiosAuthInstance.get(
+                        `/book/get-book/${id}`,
+                    )
+              
+                if (response.data) {
+                    setBook(response.data.result)
+                }
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
         fetchContract()
-    }, [])
+    }, [id])
 
     if (loading) {
         return (

@@ -8,21 +8,21 @@ const BookView = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchBookData = async () => {
-    try {
-      const response = await axiosAuthInstance.get(`/book/get-book/${id}`)
-
-      if (response.status === 200) {
-        setData(response.data.result)
-      }
-    } catch (error) {
-      console.log('Error fetching book details', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
+    const fetchBookData = async () => {
+      try {
+        const response = await axiosAuthInstance.get(`/book/get-book/${id}`)
+
+        if (response.status === 200) {
+          setData(response.data.result)
+        }
+      } catch (error) {
+        console.log('Error fetching book details', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
     fetchBookData()
   }, [id])
 
@@ -111,15 +111,14 @@ const BookView = () => {
                 <td className='border-b px-4 py-3'>
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium
-                                        ${
-                                          data.status === 'Approved'
-                                            ? 'bg-green-100 text-green-600'
-                                            : data.status === 'Rejected'
-                                              ? 'bg-red-100 text-red-600'
-                                              : data.status === 'Published'
-                                                ? 'bg-purple-100 text-purple-600'
-                                                : 'bg-yellow-100 text-yellow-600'
-                                        }`}
+                                        ${data.status === 'Approved'
+                        ? 'bg-green-100 text-green-600'
+                        : data.status === 'Rejected'
+                          ? 'bg-red-100 text-red-600'
+                          : data.status === 'Published'
+                            ? 'bg-purple-100 text-purple-600'
+                            : 'bg-yellow-100 text-yellow-600'
+                      }`}
                   >
                     {data.status}
                   </span>

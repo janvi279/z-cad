@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import DataTable from 'react-data-table-component'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import { Link } from 'react-router-dom'
@@ -30,7 +30,7 @@ const AuthorInfo = () => {
   const [totalRows, setTotalRows] = useState(0)
 
   // Fetch Books
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axiosAuthInstance.get('book/all-books', {
         page: pages,
@@ -63,7 +63,7 @@ const AuthorInfo = () => {
     } catch (error) {
       console.log('Error fetching books:', error)
     }
-  }
+  }, [pages, limit])
 
   // Approve Book
   const handleApprove = async (id) => {
@@ -139,7 +139,7 @@ const AuthorInfo = () => {
 
   useEffect(() => {
     fetchData()
-  }, [pages, limit])
+  }, [fetchData])
 
   return (
     <div className='p-3'>
