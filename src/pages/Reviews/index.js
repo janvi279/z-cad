@@ -56,7 +56,7 @@ const renderStars = (rating) => {
   return <div style={{ display: 'flex', gap: '2px' }}>{stars}</div>;
 };
 const Reviews = () => {
-  const [activeButton, setActiveButton] = useState('All');
+  const [activeButton] = useState('All');
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [pages, setPages] = useState(1);

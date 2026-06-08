@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import DataTable from 'react-data-table-component'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import { useNavigate } from 'react-router-dom'
@@ -146,118 +146,117 @@ const AuthorBookInfo = () => {
       console.log(error)
     }
   }
-  // =========================================
-  // FETCH DATA
-  // =========================================
+// =========================================
+// FETCH DATA
+// =========================================
 
-  const fetchData = async () => {
-    try {
-    
-const response =
-  await axiosAuthInstance.get(
-    "book/all-books",
-    {
-      params: {
-        page: pages,
-        limit: limit,
-        search: search,
-      },
+const fetchData = useCallback(async () => {
+  try {
+    const response =
+      await axiosAuthInstance.get(
+        "book/all-books",
+        {
+          params: {
+            page: pages,
+            limit: limit,
+            search: search,
+          },
+        }
+      );
+
+    if (response.data.success) {
+      const transformedData = response.data.result.docs.map((item) => ({
+        ...item,
+
+        actions: (
+          <CustomActions
+            options={[
+              // VIEW BOOK
+
+              {
+                label: 'View Book',
+
+                icon: <FiEye />,
+
+                onClick: () => navigate(`view/${item._id}`),
+
+                className: 'text-blue-600',
+              },
+              item.currentStage === 'Published' && {
+                label: 'Manage Inventory',
+
+                icon: <FiPackage />,
+
+                onClick: () => handleOpenCopiesModal(item),
+
+                className: 'text-purple-600',
+              },
+              // GENERATE CONTRACT
+
+              !item.contractGenerated && {
+                label: 'Generate Contract',
+
+                icon: <FiFileText />,
+
+                onClick: () => handleOpenContractModal(item),
+
+                className: 'text-green-600',
+              },
+
+              // VIEW CONTRACT
+
+              item.contractGenerated && {
+                label: 'View Contract',
+
+                icon: <FiEye />,
+
+                onClick: () => navigate(`/author-book-info/view/${item._id}`),
+
+                className: 'text-purple-600',
+              },
+
+              // EDIT CONTRACT
+
+              item.contractGenerated && {
+                label: 'Edit Contract',
+
+                icon: <FaRegEdit />,
+
+                onClick: () => handleOpenEditContractModal(item),
+
+                className: 'text-yellow-600',
+              },
+
+              // DELETE CONTRACT
+
+              item.contractGenerated && {
+                label: 'Delete Contract',
+
+                icon: <MdDeleteOutline />,
+
+                onClick: () => handleDeleteContract(item._id),
+
+                className: 'text-red-600 border-t border-gray-100',
+              },
+            ].filter(Boolean)}
+          />
+        ),
+      }))
+
+      setData(transformedData)
+
+      setTotalRows(response.data.result.totalDocs)
     }
-  );
-
-      if (response.data.success) {
-        const transformedData = response.data.result.docs.map((item) => ({
-          ...item,
-
-          actions: (
-            <CustomActions
-              options={[
-                // VIEW BOOK
-
-                {
-                  label: 'View Book',
-
-                  icon: <FiEye />,
-
-                  onClick: () => navigate(`view/${item._id}`),
-
-                  className: 'text-blue-600',
-                },
-                item.currentStage === 'Published' && {
-                  label: 'Manage Inventory',
-
-                  icon: <FiPackage />,
-
-                  onClick: () => handleOpenCopiesModal(item),
-
-                  className: 'text-purple-600',
-                },
-                // GENERATE CONTRACT
-
-                !item.contractGenerated && {
-                  label: 'Generate Contract',
-
-                  icon: <FiFileText />,
-
-                  onClick: () => handleOpenContractModal(item),
-
-                  className: 'text-green-600',
-                },
-
-                // VIEW CONTRACT
-
-                item.contractGenerated && {
-                  label: 'View Contract',
-
-                  icon: <FiEye />,
-
-                  onClick: () => navigate(`/author-book-info/view/${item._id}`),
-
-                  className: 'text-purple-600',
-                },
-
-                // EDIT CONTRACT
-
-                item.contractGenerated && {
-                  label: 'Edit Contract',
-
-                  icon: <FaRegEdit />,
-
-                  onClick: () => handleOpenEditContractModal(item),
-
-                  className: 'text-yellow-600',
-                },
-
-                // DELETE CONTRACT
-
-                item.contractGenerated && {
-                  label: 'Delete Contract',
-
-                  icon: <MdDeleteOutline />,
-
-                  onClick: () => handleDeleteContract(item._id),
-
-                  className: 'text-red-600 border-t border-gray-100',
-                },
-              ].filter(Boolean)}
-            />
-          ),
-        }))
-
-        setData(transformedData)
-
-        setTotalRows(response.data.result.totalDocs)
-      }
-    } catch (error) {
-      console.log('Error fetching author data:', error)
-    }
+  } catch (error) {
+    console.log('Error fetching author data:', error)
   }
+}, [pages, limit, search, navigate])
 
-  // =========================================
-  // OPEN/CLOSE CONTRACT MODAL
-  // =========================================
+// =========================================
+// OPEN/CLOSE CONTRACT MODAL
+// =========================================
 
-  const handleOpenContractModal = (authorItem) => {
+const handleOpenContractModal = (authorItem) => {
     setSelectedAuthor(authorItem)
 
     setIsContractModalOpen(true)
@@ -469,7 +468,7 @@ const response =
 
   useEffect(() => {
     fetchData()
-  }, [pages, limit,search])
+  }, [fetchData])
 
   return (
     <div className='p-3'>

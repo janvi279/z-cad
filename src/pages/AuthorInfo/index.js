@@ -30,34 +30,6 @@ const AuthorInfo = () => {
   const [search, setSearch] =
   useState("");
 
-  const fetchData = async () => {
-    try {
-      const response = await axiosAuthInstance.get('author/get-all-author', {
-        page: pages,
-        limit: limit,
-        search:search,
-      })
-      if (response && response.status === 200) {
-        const transformedData = response.data.result.docs.map((item) => ({
-          ...item,
-          actions: (
-            <div className='flex items-center'>
-              <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
-                <Link to={`view/${item._id}`}>
-                  <FiEye className='w-4 h-4' />
-                </Link>
-              </div>
-            </div>
-          ),
-        }))
-        setData(transformedData)
-        setTotalRows(response.data.result.totalDocs)
-      }
-    } catch (error) {
-      console.log('Error fetching author data:', error)
-    }
-  }
-
   const handlePageChange = (newPage) => {
     setPages(newPage)
   }
@@ -68,8 +40,36 @@ const AuthorInfo = () => {
   }
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosAuthInstance.get('author/get-all-author', {
+          page: pages,
+          limit: limit,
+          search: search,
+        })
+        if (response && response.status === 200) {
+          const transformedData = response.data.result.docs.map((item) => ({
+            ...item,
+            actions: (
+              <div className='flex items-center'>
+                <div className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary pointer hover:text-primary-600 text-primary-500'>
+                  <Link to={`view/${item._id}`}>
+                    <FiEye className='w-4 h-4' />
+                  </Link>
+                </div>
+              </div>
+            ),
+          }))
+          setData(transformedData)
+          setTotalRows(response.data.result.totalDocs)
+        }
+      } catch (error) {
+        console.log('Error fetching author data:', error)
+      }
+    }
+
     fetchData()
-  }, [pages, limit,search])
+  }, [pages, limit, search])
 
   return (
     <div className='p-3'>

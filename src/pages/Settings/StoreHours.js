@@ -55,6 +55,7 @@ const StoreHours = () => {
       try {
         const response = await axiosAuthInstance.post('setting-storehours/add', values)
         console.log(response);
+
         if (response && response.status === 200) {
           fetchData();
         }
