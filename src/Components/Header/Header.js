@@ -12,6 +12,8 @@ const Header = (props) => {
   const searchRef = useRef(null)
 
   const { profileData } = useContext(AuthContext);
+  const userdata = localStorage.getItem('_ur');
+const userRole = userdata ? JSON.parse(userdata).role : null;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -91,10 +93,10 @@ const Header = (props) => {
           <div className='relative group'>
             <div className='w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center transition-all duration-300 group-hover:bg-primary'>
               <Link
-                to='/profile'
+                to={userRole === "DISTRIBUTOR" ? '/distributor-profile' : '/profile'}
                 className='flex items-center justify-center w-full h-full text-gray-600 group-hover:text-white'
               >
-                  {profileData && profileData?.avtar ?
+                {profileData && profileData?.avtar ?
                 <div className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-primary-100 hover:bg-primary-200'>
                   <img
                     src={profileData.avtar}

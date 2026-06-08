@@ -6,11 +6,12 @@ import CustomInput from '../../../Components/common/CustomInput';
 import { toast } from 'react-hot-toast';
 import axiosCommanInstance from '../../../utils/axios/axiosCommanInstance';
 import * as  Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object({
     firstName: Yup.string().trim().required("First Name is Required"),
     lastName: Yup.string().trim().required("Last Name is Required"),
-    email: Yup.string().required("Email is required"),
+    email: Yup.string().email("Invalid email format").required("Email is Required"),
     password: Yup.string().required("Password is required"),
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], "Passwords must match")
@@ -18,13 +19,13 @@ const validationSchema = Yup.object({
 })
 
 
-const Register = () => {
+const AuthorRegister = () => {
 
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+const navigate = useNavigate();
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
@@ -43,6 +44,7 @@ const Register = () => {
                 password: values.password,
             });
             toast.success(response.data?.message);
+            navigate('/login');
             formik.resetForm();
         } catch (error) {
             toast.error(error.response?.data?.message)
@@ -149,4 +151,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default AuthorRegister;

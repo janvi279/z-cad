@@ -22,6 +22,7 @@ const Payment = () => {
             iban: response.data.result.iban,
             swiftCode: response.data.result.swiftCode,
             ifscCode: response.data.result.ifscCode,
+            upiId: response.data.result.upiId,
           };
           formik.setValues(PaymentData);
         }
@@ -41,6 +42,7 @@ const Payment = () => {
       iban: '',
       swiftCode: '',
       ifscCode: '',
+      upiId: '',
     },
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
@@ -148,6 +150,12 @@ const Payment = () => {
                   name="ifscCode"
                   label="IFSC Code"
                   placeholder="IFSC Code"
+                  component={CustomInput}
+                />
+                <Field
+                  name="upiId"
+                  label="UPI ID"
+                  placeholder="UPI ID"
                   component={CustomInput}
                 />
               </div>
