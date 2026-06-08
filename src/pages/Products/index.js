@@ -25,6 +25,7 @@ const Products = () => {
   const [showSkuModal, setShowSkuModal] = useState(false)
   const [skuInput, setSkuInput] = useState('')
   const [skuNotFound, setSkuNotFound] = useState(false)
+  console.log("🚀 ~ Products ~ skuNotFound:", skuNotFound)
   const data = JSON.parse(localStorage.getItem('_ur') || '{}')
   const authorId = data?._id
 
