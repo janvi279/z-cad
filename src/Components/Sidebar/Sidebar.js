@@ -204,7 +204,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label !== 'Distributor Info' &&
           item.label !== 'Distributor Withdrawal Requests' &&
           item.label !== 'Assigned Products' &&
-          item.label !== 'Orders' &&
+        
           item.label !== 'Commission' &&
           item.label !== 'Wallet' &&
           item.label !== 'Payout Requests' &&
