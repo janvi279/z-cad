@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import axiosAuthInstance from "../../utils/axios/axiosAuthInstance";
-import { Link } from "react-router-dom";
-import { FiEye } from "react-icons/fi";
-import Header from '../../Components/Header/Header';
+
 
 const columns = [
     {

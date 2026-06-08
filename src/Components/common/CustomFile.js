@@ -37,7 +37,7 @@ const CustomFile = ({
     if (url) {
       setPreviewUrl(url)
     }
-  }, [])
+  }, [url])
 
   return (
     <div className='w-full'>

@@ -4,8 +4,8 @@ import {
   MdHome,
   MdInventory,
   MdOutlinePayment,
-  MdPayments,
-  MdAccountBalanceWallet,
+  // MdPayments,
+  // MdAccountBalanceWallet,
   MdRequestQuote,
   MdPerson,
 } from 'react-icons/md'
