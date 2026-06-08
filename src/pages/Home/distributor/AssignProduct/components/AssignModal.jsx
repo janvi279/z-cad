@@ -13,30 +13,24 @@ const AssignModal = ({
     refreshData,
 }) => {
     console.log("🚀 ~ AssignModal ~ selectedBook:", selectedBook)
-    const [formData, setFormData] =
-        useState({
-            distributorId: "",
-            productId: "",
-            authorId: "",
-            commissionPercentage: 20,
-        });
+    const [formData, setFormData] = useState({
+        distributorId: "",
+        sku: "",
+        authorId: "",
+        commissionPercentage: 20,
+    });
 
 
     const handleAssign =
         async () => {
             try {
                 const payload = {
-                    distributorId:
-                        formData.distributorId,
-
-                    productId:
-                        formData.productId,
-
-                    authorId:
-                        formData.authorId,
-
-                    commissionPercentage:
-                        formData.commissionPercentage,
+                    distributorId: formData.distributorId,
+                    sku: formData.sku,
+                    authorId: formData.authorId,
+                    commissionPercentage: Number(
+                        formData.commissionPercentage
+                    ),
                 };
 
 
@@ -48,7 +42,7 @@ const AssignModal = ({
                 toast.success(
                     res?.data?.message,
                 );
-await refreshData();
+                await refreshData();
                 setShowModal(
                     false,
                 );
@@ -116,23 +110,16 @@ await refreshData();
                 </select>
                 <select
                     className="w-full border p-2 rounded mb-4"
-                    value={formData.productId}
+                    value={formData.sku}
                     onChange={(e) => {
-
-                        const selectedBook =
-                            books.find(
-                                (book) =>
-                                    book._id ===
-                                    e.target.value
-                            );
+                        const selectedBook = books.find(
+                            (book) => book.sku === e.target.value
+                        );
 
                         setFormData({
                             ...formData,
-                            productId:
-                                e.target.value,
-                            authorId:
-                                selectedBook
-                                    ?.authorId?._id,
+                            sku: e.target.value,
+                            authorId: selectedBook?.authorId?._id,
                         });
                     }}
                 >
@@ -143,9 +130,9 @@ await refreshData();
                     {books.map((book) => (
                         <option
                             key={book._id}
-                            value={book._id}
+                            value={book.sku}
                         >
-                            {book.title}
+                            {book.title} ({book.sku})
                         </option>
                     ))}
                 </select>

@@ -134,7 +134,7 @@ function DistributorProfile() {
                                 className="text-green-500"
                             />
 
-                            <div>
+                            {/* <div>
                                 <p className="text-gray-500 text-sm">
                                     Status
                                 </p>
@@ -142,7 +142,7 @@ function DistributorProfile() {
                                 <h5 className="font-semibold">
                                     {profile.status}
                                 </h5>
-                            </div>
+                            </div> */}
 
                         </div>
 

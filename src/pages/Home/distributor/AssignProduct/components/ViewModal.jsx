@@ -1,4 +1,3 @@
-import React from "react";
 
 const ViewModal = ({
   show,
@@ -6,16 +5,13 @@ const ViewModal = ({
   assignment,
 }) => {
 
-  if (
-    !show ||
-    !assignment
-  )
+  if (!show || !assignment)
     return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-      <div className="bg-white w-[600px] rounded-xl p-6">
+      <div className="bg-white w-[650px] rounded-xl p-6">
 
         <div className="flex justify-between items-center mb-5">
 
@@ -32,18 +28,65 @@ const ViewModal = ({
 
         </div>
 
-        <div className="space-y-3">
+        <div className="flex gap-5 mb-5">
 
-          <div>
-            <strong>
-              Book :
-            </strong>{" "}
-            {
-              assignment
-                ?.productId
-                ?.title
+          <img
+            src={
+              assignment?.book
+                ?.coverImage
             }
+            alt="Book"
+            className="w-28 h-36 object-cover rounded border"
+          />
+
+          <div className="space-y-2">
+
+            <div>
+              <strong>
+                Book :
+              </strong>{" "}
+              {
+                assignment?.book
+                  ?.title
+              }
+            </div>
+
+            <div>
+              <strong>
+                SKU :
+              </strong>{" "}
+              {
+                assignment?.sku
+              }
+            </div>
+
+            <div>
+              <strong>
+                Category :
+              </strong>{" "}
+              {
+                assignment?.book
+                  ?.category
+              }
+            </div>
+
+            <div>
+              <strong>
+                Book Status :
+              </strong>{" "}
+              {
+                assignment?.book
+                  ?.status
+              }
+            </div>
+
           </div>
+
+        </div>
+
+        <hr className="my-4" />
+
+        <div className="space-y-3">
 
           <div>
             <strong>
@@ -51,13 +94,24 @@ const ViewModal = ({
             </strong>{" "}
             {
               assignment
-                ?.distributorId
+                ?.distributor
                 ?.firstName
             }{" "}
             {
               assignment
-                ?.distributorId
+                ?.distributor
                 ?.lastName
+            }
+          </div>
+
+          <div>
+            <strong>
+              Distributor Email :
+            </strong>{" "}
+            {
+              assignment
+                ?.distributor
+                ?.email
             }
           </div>
 
@@ -67,23 +121,23 @@ const ViewModal = ({
             </strong>{" "}
             {
               assignment
-                ?.authorId
+                ?.author
                 ?.firstName
             }{" "}
             {
               assignment
-                ?.authorId
+                ?.author
                 ?.lastName
             }
           </div>
 
           <div>
             <strong>
-              Email :
+              Author Email :
             </strong>{" "}
             {
               assignment
-                ?.authorId
+                ?.author
                 ?.email
             }
           </div>
@@ -101,7 +155,7 @@ const ViewModal = ({
 
           <div>
             <strong>
-              Status :
+              Assignment Status :
             </strong>{" "}
             {
               assignment
@@ -109,14 +163,6 @@ const ViewModal = ({
             }
           </div>
 
-          <div>
-            <strong>
-              Assigned Date :
-            </strong>{" "}
-            {new Date(
-              assignment.createdAt
-            ).toLocaleDateString()}
-          </div>
 
         </div>
 

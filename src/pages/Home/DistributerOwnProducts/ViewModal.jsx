@@ -29,7 +29,7 @@ const ViewModal = ({
                             Book Name
                         </label>
                         <p>
-                            {product?.productId?.title ||
+                            {product?.book?.title ||
                                 "-"}
                         </p>
                     </div>
@@ -39,7 +39,7 @@ const ViewModal = ({
                             SKU
                         </label>
                         <p>
-                            {product?.productId?.sku ||
+                            {product?.book?.sku ||
                                 "-"}
                         </p>
                     </div>
@@ -49,7 +49,7 @@ const ViewModal = ({
                             Category
                         </label>
                         <p>
-                            {product?.productId
+                            {product?.book
                                 ?.category || "-"}
                         </p>
                     </div>
@@ -79,11 +79,11 @@ const ViewModal = ({
                         </label>
                         <p>
                             {
-                                product?.authorId
+                                product?.author
                                     ?.firstName
                             }{" "}
                             {
-                                product?.authorId
+                                product?.author
                                     ?.lastName
                             }
                         </p>
@@ -95,7 +95,7 @@ const ViewModal = ({
                         </label>
                         <p>
                             {
-                                product?.authorId
+                                product?.author
                                     ?.email
                             }
                         </p>

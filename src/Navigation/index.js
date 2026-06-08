@@ -26,8 +26,9 @@ import AdminWithdrawal from '../pages/Home/Admin/AdminWithdraw'
 import DistributorInfo from '../pages/DistributerInfo'
 import AssignProduct from '../pages/Home/distributor/AssignProduct'
 import MyProduct from '../pages/Home/DistributerOwnProducts'
-import { elements } from 'chart.js'
+import DistributorProfile from '../pages/Home/distributor/profile'
 import PayoutRequest from '../pages/Home/distributor/PayoutRequest/PayoutRequest'
+import DistributerOrder from '../pages/Home/distributor/DistributerOrder'
 
 const AllRoute = [
   { path: '/', element: <Home />, permission: { read: true } },
@@ -52,13 +53,13 @@ const AllRoute = [
   },
 
   {
-    path: '/distributor-profile',
+    path: '/profile',
     element: <Profile />,
     permission: { read: true },
   },
   {
-    path: '/profile',
-    element: <Profile />,
+    path: '/distributor-profile',
+    element: <DistributorProfile />,
     permission: { read: true },
   },
   {
@@ -149,6 +150,11 @@ const AllRoute = [
   {
     path: '/distributor/products',
     element: <AssignProduct />,
+    permission: { read: true },
+  },
+  {
+    path: '/distributor/orders',
+    element: <DistributerOrder />,
     permission: { read: true },
   },
   {

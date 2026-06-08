@@ -11,41 +11,64 @@ export const getColumns = (
 ) => [
   {
     name: "Book",
-    selector: row =>
-      row.productId?.title || "-",
+    selector: (row) =>
+      row.book?.title || "-",
+  },
+
+  {
+    name: "SKU",
+    selector: (row) =>
+      row.sku || "-",
+  },
+
+  {
+    name: "Category",
+    selector: (row) =>
+      row.book?.category || "-",
   },
 
   {
     name: "Distributor",
    selector: row =>
-      `${row.distributorId?.firstName || ""}
-       ${row.distributorId?.lastName || ""}`,
+      `${row.distributor?.firstName || ""}
+       ${row.distributor?.lastName || ""}`,
   
   },
 
   {
     name: "Author",
-    selector: row =>
-      `${row.authorId?.firstName || ""}
-       ${row.authorId?.lastName || ""}`,
+    selector: (row) =>
+      `${row.author?.firstName || ""}
+       ${row.author?.lastName || ""}`,
   },
 
   {
     name: "Commission %",
-    selector: row =>
-      row.commissionPercentage,
+    selector: (row) =>
+      row.commissionPercentage || 0,
   },
 
   {
     name: "Status",
-    selector: row =>
+    selector: (row) =>
       row.status,
+  },
+
+  {
+    name: "Cover",
+    cell: (row) => (
+      <img
+        src={row.book?.coverImage}
+        alt="book"
+        className="w-12 h-12 object-cover rounded"
+      />
+    ),
   },
 
   {
     name: "Action",
 
-    cell: row => (
+    cell: (row) => (
       <div className="flex gap-2">
 
         <button
@@ -68,9 +91,7 @@ export const getColumns = (
 
         <button
           onClick={() =>
-            handleDelete(
-              row._id
-            )
+            handleDelete(row._id)
           }
           className="text-red-500"
         >

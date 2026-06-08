@@ -89,7 +89,7 @@ const PayoutRequest = () => {
         toast.error(
           error.response?.data
             ?.message ||
-            "Something went wrong"
+          "Something went wrong"
         );
       } finally {
         setLoading(false);
@@ -114,7 +114,7 @@ const PayoutRequest = () => {
 
           <h2 className="text-2xl font-bold text-green-600">
             ₹
-            {wallet?.balance ||
+            {wallet?.availableBalance ||
               0}
           </h2>
         </div>

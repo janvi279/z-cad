@@ -47,29 +47,29 @@ const MyProduct = () => {
         {
             name: "Book Name",
             selector: (row) =>
-                row.productId?.title || "-",
+                row.book?.title || "-",
             sortable: true,
         },
         {
             name: "SKU",
             selector: (row) =>
-                row.productId?.sku || "-",
+                row.book?.sku || "-",
         },
         {
             name: "Category",
             selector: (row) =>
-                row.productId?.category || "-",
+                row.book?.category || "-",
         },
         {
             name: "Author",
             selector: row =>
-                `${row.authorId?.firstName || ""}
-       ${row.authorId?.lastName || ""}`,
+                `${row.author?.firstName || ""}
+       ${row.author?.lastName || ""}`,
         },
         {
             name: "Author Mail",
             selector: (row) =>
-                row.authorId?.email || "-",
+                row.author?.email || "-",
         },
         {
             name: "Commission %",

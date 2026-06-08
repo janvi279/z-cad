@@ -53,7 +53,7 @@ const dataList = [
   { label: 'Refund', icon: <LuRepeat2 />, path: '/refund' },
   { label: 'Settings', icon: <IoSettingsOutline />, path: '/settings' },
   { label: 'Payments', icon: <MdOutlinePayment />, path: '/payments' },
-  { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
+  // { label: 'Ledger Book', icon: <PiMoney />, path: '/ledger-book' },
   { label: 'Reviews', icon: <FaRegMessage />, path: '/reviews' },
   { label: 'Author Info', icon: <AiOutlineUser />, path: '/author-info' },
   { label: 'Author Request', icon: <FiCheckCircle />, path: '/author-request' },
@@ -89,25 +89,25 @@ const dataList = [
     icon: <MdInventory />,
   },
   {
- label: 'My Products',
+    label: 'My Products',
     path: '/distributor/myproducts',
     icon: <MdInventory />,
   },
   {
-    label: 'Orders',
+    label: 'Sale Orders',
     path: '/distributor/orders',
     icon: <MdInventory />,
   },
-  {
-    label: 'Commission',
-    path: '/distributor/commission',
-    icon: <MdPayments />,
-  },
-  {
-    label: 'Wallet',
-    path: '/distributor/wallet',
-    icon: <MdAccountBalanceWallet />,
-  },
+  // {
+  //   label: 'Commission',
+  //   path: '/distributor/commission',
+  //   icon: <MdPayments />,
+  // },
+  // {
+  //   label: 'Wallet',
+  //   path: '/distributor/wallet',
+  //   icon: <MdAccountBalanceWallet />,
+  // },
   {
     label: 'Payout Requests',
     path: '/distributor/payouts',
@@ -186,7 +186,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label === 'Author Info' ||
           item.label === 'Author Request' ||
           item.label === 'Author Book Info' ||
-         
           item.label === 'Author Book Request' ||
           item.label === 'Assigned Products' ||
           item.label === 'Withdrawal Requests' ||
@@ -204,12 +203,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           item.label !== 'Distributor Info' &&
           item.label !== 'Distributor Withdrawal Requests' &&
           item.label !== 'Assigned Products' &&
-        
+          item.label !== 'Sale Orders' &&
           item.label !== 'Commission' &&
           item.label !== 'Wallet' &&
           item.label !== 'Payout Requests' &&
-          item.label !== 'Profile'&&
-           item.label!=='My Products'
+          item.label !== 'Profile' &&
+          item.label !== 'My Products'
         )
       case 'DISTRIBUTOR':
         return (
