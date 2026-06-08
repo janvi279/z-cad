@@ -3,7 +3,7 @@ import { useFormik, FormikProvider, Field } from 'formik';
 import CustomInput from '../../Components/common/CustomInput';
 import CustomFile from '../../Components/common/CustomFile';
 import CustomSelect from '../../Components/common/CustomSelect';
-import CustomTextarea from '../../Components/common/CustomTextarea';
+
 import CustomCheckbox from '../../Components/common/CustomCheckbox';
 import CustomQuill from '../../Components/common/CustomQuill';
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance';

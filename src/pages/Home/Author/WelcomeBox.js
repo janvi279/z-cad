@@ -16,6 +16,7 @@ const WelcomeBox = () => {
   })
 
   const [canWithdraw, setCanWithdraw] = useState(false)
+  console.log("🚀 ~ WelcomeBox ~ canWithdraw:", canWithdraw)
 
   const fetchSalesData = async () => {
     setLoading(true)

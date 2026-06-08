@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import axiosAuthInstance from '../../utils/axios/axiosAuthInstance'
 import { Link } from 'react-router-dom'
-import { FiEye, FiCheck } from 'react-icons/fi'
+import { FiEye } from 'react-icons/fi'
 
 const getStatusColor = (status) => {
   switch (status) {

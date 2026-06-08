@@ -9,6 +9,7 @@ import { AuthContext } from '../../Context/AuthContext'
 
 const Header = (props) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  console.log("🚀 ~ Header ~ isSearchOpen:", isSearchOpen)
   const searchRef = useRef(null)
 
   const { profileData } = useContext(AuthContext);

@@ -72,7 +72,7 @@ const SalesByProduct = () => {
 
         lineItems.forEach((item) => {
           const productName = item?.productName || 'Untitled Product'
-          const totalPrice = item?.totalPrice
+     
           const productPrice = parseFloat(item?.productPrice || 0)
 
           const quantity = Number(item?.quantity || 0)
